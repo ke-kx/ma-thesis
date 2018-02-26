@@ -1,8 +1,30 @@
-\chapter{Related Work}<++>
-Position of this Anfang oder ende
+\chapter{Related Work}
+Position this here or just before conclusion? - right now here seems better though
 
 What is the general state of the art (maybe extra section?)
 Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
 
 How to split this in the best way?
 -> check interesting related work and split it by topic / used technique / goal
+
+General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
+
+\section{general approaches for bug detection}<++>
+static stuff, rules based, etc
+
+\section{Some section on recommender systems in general?}
+
+\section{Section on approaches which learn from the given code}
+Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
+
+Remember the general machine learning approaches which were not super successful, but at least learned a LOT
+especially like general code smells for example
+
+\section{Previous work on detecting missing method calls / object usages}
+short summaries of the two DMMC papers: \cite{monperrus2010detecting} and \cite{monperrus2013detecting}
+
+The paper on graph based object using pattern mining seems also super related \cite{nguyen2009graph}
+downside: relatively complicated and high false positive rate
+
+This \cite{wasylkowski2007detecting} goes in the direction of detecting method order and seems quite interesting
+quite old, but has implementation and also an interesting related work section!
