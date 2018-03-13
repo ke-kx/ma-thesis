@@ -1,22 +1,48 @@
 \chapter{Introduction}\label{chapter:introduction}
 
-First: some stuff about real life situation where missing method call can be a problem
+Some stuff about real life situation where missing method call can be a problem
 -> find different bug report then the one the Majority Rule papers uses, but something like that
-  
-\section{Motivation}<++>
-Motivating the research aka which problem are we trying to solve
-general description of the problem
 
-General idea why we want to use Recommender Systems / Learning!
+[Example]
+bugs related to missing method calls can be found all over the internet
+the issues they cause range from runtime exceptions to problems in limit cases
+but generally reveal a code smell
+
+\section{Motivation}<++>
+% Motivating the research aka which problem are we trying to solve, general description of the problem
+
+in an extensive analysis of the eclipse bug repository \cite{monperrus2013detecting} showed
+that even in mature code there are many bugs related to missing method calls
+developer not only spend time during development on bugs related to mm (Sandra example from paper)
+bugs also survive development and get checked in to the repository
+
+Thus it would be desirable to be able to detect missing method calls in production code
+not only save expensive developer hours, also make maintenance cheaper and easier
+
+% General idea why we want to use Recommender Systems / Learning!
+A simple and straightforward approach would be to build a set of hard coded rules regarding method calls such as
+``always call setControl() after instanciating a TextView''
+``in Method ''onCreate`` of class extending ''XYZ`` always call ''foo.bar`)`` or
+''when calling blub() also call blob()``
+While well crafted and thought-out rules could allow for very high precision in detecting MMs, it would also require tremendous effort in maintaining the rule list
+this kind of effort could be justified for big apis or libraries, but even then the ROI is questionable
+
+To circumvent this problem, we would like to automatically and without needing any further input detect locations with potentially missing method calls
+such an approach would adapt to a changing system without needing additional work and can also be applied to properitary code not open to the public
+while the locations which will be found will probably not be 100\% accurate, they can then be examined by an expert who will determine the severity of the finding and issue a fix if necessary
+
 -> much better than fixed preprogrammed rules, can adapt to changing system, be specific for own not open library, etc
 
-Mention the ideas of \cite{bruch2012ide}, chapter 2 as an inspiration / the way to the idea
+the approach chosen in this work bases of recommender systems / learning
+(Mention the ideas of \cite{bruch2012ide}, chapter 2 as an inspiration / the way to the idea - maybe)
 first find likely recommendations, for writing, then realize, if something is super likely given a particular situation, but it is not there, it seems like a good indicator of an error
 
 \section{Contribution}<++>
-reevaluation of the type usage characterization introduced by XXX
-type usage is\ldots
 
-Further evaluation of the concept with comparison test using different similarity measures, \ldots
+In this thesis we present a thorough reevaluation of the type usage characterization first introduced by Monperrus et al.\cite{monperrus2010detecting} and further refined in a follow up publication \cite{monperrus2013detecting}
+type usage: list of method calls invoked on variable of a given type which occur in the body of a specific method
+Majority rules idea: if a type is used in one particular way many many times and differently only one (or few) times, this probably indicates a bug
+
+Further evaluation of the concept with comparison test using different similarity measures, application to big data set of open source android applications, \ldots
 
 FINALLY: Summary of the other chapters of this thesis
