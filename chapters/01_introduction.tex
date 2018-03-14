@@ -1,5 +1,20 @@
 \chapter{Introduction}\label{chapter:introduction}
 
+In bigger software systems often a significant amount of work is outsourced to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
+While those APIs are usually designed to be easy to use, there is always a trade-off between usability and flexibility.
+To enable the users of a more complex library to use it in the way most appropriate for their specific use case, their API cannot remain trivial.
+In the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API in the correct way.
+Often there are constraints or requirements which might not be clear from the outset, but which have to be heeded in order to avoid serious bugs or complications.
+In the worst case, this knowledge might not even be explicitly documented.
+
+USAGE PATTERNS
+while there might be a manifold of correct ways to use an API, often there are underlying patterns which 
+all correct usages of the api follow one or more of those patterns
+such patterns are also called api usage patterns (ref overview paper)
+if one deviates from those patterns during the usage of an api there are usually problems, also known as api misusage(?)
+while one can imagine many different types of api missusages (eg related to parameter choice, method order, \ldots)
+In this work we focus on one specific type of api usage problem, missing method calls
+
 Some stuff about real life situation where missing method call can be a problem
 -> find different bug report then the one the Majority Rule papers uses, but something like that
 
@@ -8,36 +23,38 @@ bugs related to missing method calls can be found all over the internet
 the issues they cause range from runtime exceptions to problems in limit cases
 but generally reveal a code smell
 
-\section{Motivation}<++>
+\section{Motivation}
 % Motivating the research aka which problem are we trying to solve, general description of the problem
 
-in an extensive analysis of the eclipse bug repository \cite{monperrus2013detecting} showed
-that even in mature code there are many bugs related to missing method calls
-developer not only spend time during development on bugs related to mm (Sandra example from paper)
-bugs also survive development and get checked in to the repository
+Consider for instance the following stack overflow post:
+% TODO include example like Sandra from monperus paper about missing method call stalling development
+Here a developer spent many hours of their valuable time on debugging a relatively simple problem related to just one method call which was missing.
 
-Thus it would be desirable to be able to detect missing method calls in production code
-not only save expensive developer hours, also make maintenance cheaper and easier
+However, developer not only spent time during development on bugs related to missing method calls, these kind of bugs also survive development and get checked into the code repository where they cause problems in the future.
+In their extensive analysis of the Eclipse bug repository Monperrus et al. \cite{monperrus2013detecting} show that even in mature code bases there are many bugs related to missing method calls.
+Together this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save expensive developer time, but also to make maintenance cheaper and easier.
 
 % General idea why we want to use Recommender Systems / Learning!
-A simple and straightforward approach would be to build a set of hard coded rules regarding method calls such as
-``always call setControl() after instanciating a TextView''
-``in Method ''onCreate`` of class extending ''XYZ`` always call ''foo.bar`)`` or
-''when calling blub() also call blob()``
-While well crafted and thought-out rules could allow for very high precision in detecting MMs, it would also require tremendous effort in maintaining the rule list
-this kind of effort could be justified for big apis or libraries, but even then the ROI is questionable
+A simple and straightforward approach for this would be to build a set of hard-coded rules regarding method calls, such as for example:
+\begin{itemize}
+    \item ``always call \code{setControl()} after instantiating a \code{TextView}''
+    \item ``in Method \code{onCreate()} of classes extending \code{AppCompatActivity} always call \code{setContentView()}''
+    \item ``when calling \code{foo()} also call \code{bar()}''
+\end{itemize}
+Well crafted and thought-out rules like this could facilitate a very high precision in detecting missing method calls, however, creating and maintaining such a rules list would require a tremendous effort.
+While such work might be justified for large and important libraries, the necessary effort would also grow with the size of the library until it becomes completely infeasible.
 
-To circumvent this problem, we would like to automatically and without needing any further input detect locations with potentially missing method calls
-such an approach would adapt to a changing system without needing additional work and can also be applied to properitary code not open to the public
-while the locations which will be found will probably not be 100\% accurate, they can then be examined by an expert who will determine the severity of the finding and issue a fix if necessary
+To circumvent this problem, we would like to automatically detect locations in a code base where a method call is potentially missing without needing any further input.
+Such an approach would adapt to a changing system without requiring additional work of a developer and could also be applied to proprietary code which is not open to the public.
+While the discovered locations will probably not be 100\% accurate, they could then be examined by an expert who would determine the severity of the finding and issue a fix if necessary.
 
--> much better than fixed preprogrammed rules, can adapt to changing system, be specific for own not open library, etc
+-> express some more much better than fixed preprogrammed rules, can adapt to changing system, be specific for own not open library, etc
 
 the approach chosen in this work bases of recommender systems / learning
 (Mention the ideas of \cite{bruch2012ide}, chapter 2 as an inspiration / the way to the idea - maybe)
 first find likely recommendations, for writing, then realize, if something is super likely given a particular situation, but it is not there, it seems like a good indicator of an error
 
-\section{Contribution}<++>
+\section{Contribution}
 
 In this thesis we present a thorough reevaluation of the type usage characterization first introduced by Monperrus et al.\cite{monperrus2010detecting} and further refined in a follow up publication \cite{monperrus2013detecting}
 type usage: list of method calls invoked on variable of a given type which occur in the body of a specific method
