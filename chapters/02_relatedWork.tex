@@ -1,20 +1,25 @@
 \chapter{Related Work}
 %Position this here or just before conclusion? - right now here seems better though
 
-What is the general state of the art (maybe extra section?)
-Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
-
 How to split this in the best way?
 -> check interesting related work and split it by topic / used technique / goal
 
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
 + check to read stuff\ldots
 
-\section{general approaches for bug detection}
+here: short intro to related work in general
+Relevance of code smells and finding them!
+first an overview of the different approaches that are commonly used for code smell detection
+this includes static rules and bla
+[summary of the other section]
+
+\section{general approaches for bug detection / code smells}
+What is the general state of the art (maybe extra section?)
 static stuff, rules based, etc
 mention findbugs?
 
 \section{Section on approaches which learn from the given code}
+Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
 also mention some stuff about recommender systems in general (it is the official thesis topic after all\ldots)
 
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
@@ -23,15 +28,33 @@ Remember the general machine learning approaches which were not super successful
 especially like general code smells for example
 
 \section{Previous work on detecting missing method calls / object usages}
+-> api missuse detection
+
 short summaries of the two DMMC papers: \cite{monperrus2010detecting} and \cite{monperrus2013detecting}
+    less about the method as it is explained more in depth in the next section but about results
 
 mention the related work from detecting mmc paper
 
-The paper on graph based object using pattern mining seems also super related \cite{nguyen2009graph}
-downside: relatively complicated and high false positive rate
-
 This \cite{wasylkowski2007detecting} goes in the direction of detecting method order and seems quite interesting
 quite old, but has implementation and also an interesting related work section!
+    extract object usage models from Java code - uses finite state automata for the usage model
+    build automata for each method, similarly to control flow graph of the code with intsructions as the transitions
+    mine temporal properties out of those object usage models -> method a can appear before method b, iff there is a path through the automata whera a appears before b
+    For this they are using Frequent Itemset Mining (reference to J. Han and M. Kamber. Data mining: concepts and techniques. Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, second edition, 2006. ?) -> short explanation of FIM
+    these temporal properties are then combined into patterns and deviations of those patters are flagged as an anomaly
+    an anomaly occurs if many methods respect the pattern and only a few (a single one) break it
+    in experiments: 790 Violations, by manual analysis 2 defects, 5 smells, 84 ``hints'' (could be improved with regard to redability / maintainability)
+    -> large number of false positives (87.8\%?! says next paper), but with an additional ranking methdod able to to get the 2 defects and 3/5 smells within top10 results
+    already project dependent patterns as it extracts them from the existing code
+
+The paper on graph based object using pattern mining seems also super related \cite{nguyen2009graph}
+    graph-based representation of object usages of one or even multiple objects -> this makes it stand out
+    also about temporal dependencies
+    labeled directed graph: nodes = object constructor calls, method cals, field accesses and brnching via control structures
+    edges are temporal usage orders and dependencies between them
+    patterns are mined using a frequent induced subgraph detection algorithm which start building larger patterns from smaller patterns ground up (similar to merge sort maybe?)
+    anomaly also when a pattern violation is ``rare'' ie doesn't appear often in the dataset in relation to the size
+    evaluation via casestudy finds 64 defects in some software with 5 defects, 8 smells, 11 hints -> 62.5\% false positive rate, top 10 has 3/2/1
 
 \section{Section on Anomaly Detection}
 

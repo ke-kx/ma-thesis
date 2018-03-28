@@ -1,10 +1,18 @@
 \chapter{Evaluation}
+Which questions are we trying to answer with the evaluation?
+    qualitative evaluation: are the findings useful in practice?
+    quantitative evaluation: given some assumptions, how useful can we expect this technique to be?
+    make sure I will be able to a) answer those questions and b) the answers are ``interesting''
+
 general idea behind evaluation method and what we are trying to detect
 actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
     imitation of the real system of software development
     using a much simpler system, namely dropping method calls
     obvious question: how similar are the such created mmcs to mmcs in the wild?
 Robustness explanation
+    wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
+    what is needed for it to work (lines of code, feature richness, etc) 
+    problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
 Metrics explanation - Precision, Recall
     additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
     performance -> training time + performance when working
@@ -17,3 +25,12 @@ checking if their ``mistakes'' / inaccuracies make a difference or not
     would be super sexy to apply the best method to some library / framework and see what happens
 
 subsection: threats to validity
+
+qualitative evaluation:
+    pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
+
+explain problems with the automatic evaluation
+    how related are the degraded TUs to missing method calls you can find in the wild?
+    improving the metrics by dropping cases where we know we won't find an answer
+    also mention runtime!
+    \ldots
