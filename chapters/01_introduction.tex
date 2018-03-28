@@ -1,52 +1,51 @@
 \chapter{Introduction}\label{chapter:introduction}
 
-NOW: flesh out the structur and general plan for this section a bit more!
-
 %1.  software systems want to use APIs to facilitate reuse, however using an api is not always trivial
 Larger software systems often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 Even if the designers of those APIs focus on making the interface as easy to use as possible, there is always a trade-off between usability and flexibility.
 Especially more complex and powerful libraries cannot provide a trivial API, if they want to enable the user to use it in the way most appropriate for their specific use case.
-Thus, in the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API in the correct way.
-Often there are constraints or requirements which might not be clear from the outset, but which have to be heeded in order to avoid serious bugs or complications.
+Thus, in the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API correctly.
+There can be constraints or requirements which are not be clear from the outset, but which have to be heeded in order to avoid serious bugs or complications.
 In the worst case, this knowledge might not even be explicitly documented.
 
 %2. since it is often not trivial to use an api correctly, there will be ``wrong'' usages + examples?
-CHANGE
-If code in a software project deviates from the usual patterns when using an API, this can hint at a bug or problem, which makes it interesting to detect these unusual instances, also known as API misusages(?).
-There are many different types of API misusages, they can be related to parameter choice, method order or (?).
+The fact that APIs are not trivial and have might have complex requirements makes it inevitable, that there will be erroneous invocations of these APIs.
+Such errors can relate to parameter choice, method order, or a number of other factors (e.g. some methods must be invoked in an extra thread, \ldots).
+Examples which come to mind in Java are are call to \texttt{next()} without first checking with \texttt{hasNext()} if there is even another object in the iterator.
+Or a class which overrides equals() without ensuring that hashCode() also is the same for two equal objects.
 
 %3. correct usages of an api often share some underlying patterns + examples of them
 Despite the fact that there might be manifold correct ways to use an API, often there are underlying patterns which the correct invocations have in common.
-%todo add some examples of patterns EG always call method X before Y, if object Z is a parameter to method A it has to have these properties, etc
-Such patterns are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
-%todo explain defect?
+These patterns could take a lot of different forms and shapes, for example ``call method X before calling method Y'', ``if object Z is used as a parameter to method A it has to implement interface IA'', ``never call method M in the GUI thread'', etc.
+For the Java examples mentioned above they could take the form of ``an object which implements \texttt{equals()} must also implement \texttt{hashCode()}'', ``if object A equals object B, their hashCode() must also be equal'' or ``a call to \texttt{next()} on an iterator should be preceded by a call to \texttt{hasNext()} to ensure that it actually contains another object''.
 
 %4. if we can extract the patterns, hopefully the wrong usages will stand out and enable us to detect bugs
+Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
+If code in a software project deviates (too much) from the usual patterns when using an API, this hints at a bug or problem or is at least a code smell which should probably be corrected.
+This makes it interesting to detect these unusual instances, also known as API misusages(?).
 
-%5. while there might be subtle mistakes one can make when using an api and relevant patterns, we will focus on MMCs
-In this work we focus on one specific type of API usage problem, namely missing method calls.
+%5. we will focus on MMCs + top-level view of missing method calls + example
+As already mentioned above, there are many subtle mistakes a developer can make when invoking an API.j:w
+In this work we focus on one specific type of API usage problem, namely missing method calls, which can occur in the context of Object Oriented Programming (OOP).
+In OOP software an object is normally used by invoking some of its methods.
+Some types will then have underlying patterns such as: when methods A and B are invoked, then method C is called as well.
+If there exists some usage (what is a usage?\ldots) where only methods A and B are called, then we can say that the call to C is missing.
 
-%6. top-level view of missing method calls + example
-[What is meant by that in this context?]
-object oriented software
-using an object by invoking some methods on it
-then typical pattern: if method a and b are invoked, then usually also method C is called (order not relevant)
-
-example: button in a gui system
-if set text is being called, usually setFont is also called
-or - 2nd pattern!
+As an example consider a Button class in a GUI system.
+This button can either appear as a TextButton or as an ImageButton, where the first displays a word or short text regarding the button's functionality, while the second one only displays an image.
+Then one could imagine that the function \texttt{setText()} is usually called together with \texttt{setFont()} whereas the function \texttt{setImage()} is called together with \texttt{setToolTipText()}.
+If the programmer writes some new code where she creates a button and assigns it some text to display by calling \texttt{setText()} but forgets to also call \texttt{setFont()} this would be a missing method call and a bug in the code (imagine all buttons using a beautiful specialized font but this one button sticking with ComicSans!)
 
 \section{Motivation}
 % Motivating the research aka which problem are we trying to solve, general description of the problem
 
 %7. missing method calls are a real problem which occurs in real software
-Some stuff about real life situation where missing method call can be a problem
--> find different bug report then the one the Majority Rule papers uses, but something like that
+In an informal review Monperrus et al. \cite{monperrus2013detecting} found but reports and problems related to missing method calls in many news groups, bug trackers and forums.
+The issues caused range from runtime exception to problems in some limit cases, but generally reveal at least a code smell if not worse.
 
 [Example]
-bugs related to missing method calls can be found all over the internet
-the issues they cause range from runtime exceptions to problems in limit cases
-but generally reveal a code smell
+Some stuff about real life situation where missing method call can be a problem
+-> find different bug report then the one the Majority Rule papers uses, but something like that
 
 %8 real developers struggle with problems related to mmcs even if the bugs do not make it to the production code
 Consider for instance the following stack overflow post:
