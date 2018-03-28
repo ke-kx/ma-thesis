@@ -1,20 +1,45 @@
 \chapter{Introduction}\label{chapter:introduction}
 
+NOW: flesh out the structur and general plan for this section a bit more!
+
+%1.  software systems want to use APIs to facilitate reuse, however using an api is not always trivial
 Larger software systems often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
-While those APIs are usually designed to be easy to use, there is always a trade-off between usability and flexibility.
-To enable the users of a more complex library to use it in the way most appropriate for their specific use case, their API cannot remain trivial.
-In the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API in the correct way.
+Even if the designers of those APIs focus on making the interface as easy to use as possible, there is always a trade-off between usability and flexibility.
+Especially more complex and powerful libraries cannot provide a trivial API, if they want to enable the user to use it in the way most appropriate for their specific use case.
+Thus, in the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API in the correct way.
 Often there are constraints or requirements which might not be clear from the outset, but which have to be heeded in order to avoid serious bugs or complications.
 In the worst case, this knowledge might not even be explicitly documented.
 
-USAGE PATTERNS
-while there might be a manifold of correct ways to use an API, often there are underlying patterns which 
-all correct usages of the api follow one or more of those patterns
-such patterns are also called api usage patterns (ref overview paper)
-if one deviates from those patterns during the usage of an api there are usually problems, also known as api misusage(?)
-while one can imagine many different types of api missusages (eg related to parameter choice, method order, \ldots)
-In this work we focus on one specific type of api usage problem, missing method calls
+%2. since it is often not trivial to use an api correctly, there will be ``wrong'' usages + examples?
+CHANGE
+If code in a software project deviates from the usual patterns when using an API, this can hint at a bug or problem, which makes it interesting to detect these unusual instances, also known as API misusages(?).
+There are many different types of API misusages, they can be related to parameter choice, method order or (?).
 
+%3. correct usages of an api often share some underlying patterns + examples of them
+Despite the fact that there might be manifold correct ways to use an API, often there are underlying patterns which the correct invocations have in common.
+%todo add some examples of patterns EG always call method X before Y, if object Z is a parameter to method A it has to have these properties, etc
+Such patterns are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
+%todo explain defect?
+
+%4. if we can extract the patterns, hopefully the wrong usages will stand out and enable us to detect bugs
+
+%5. while there might be subtle mistakes one can make when using an api and relevant patterns, we will focus on MMCs
+In this work we focus on one specific type of API usage problem, namely missing method calls.
+
+%6. top-level view of missing method calls + example
+[What is meant by that in this context?]
+object oriented software
+using an object by invoking some methods on it
+then typical pattern: if method a and b are invoked, then usually also method C is called (order not relevant)
+
+example: button in a gui system
+if set text is being called, usually setFont is also called
+or - 2nd pattern!
+
+\section{Motivation}
+% Motivating the research aka which problem are we trying to solve, general description of the problem
+
+%7. missing method calls are a real problem which occurs in real software
 Some stuff about real life situation where missing method call can be a problem
 -> find different bug report then the one the Majority Rule papers uses, but something like that
 
@@ -23,18 +48,18 @@ bugs related to missing method calls can be found all over the internet
 the issues they cause range from runtime exceptions to problems in limit cases
 but generally reveal a code smell
 
-\section{Motivation}
-% Motivating the research aka which problem are we trying to solve, general description of the problem
-
+%8 real developers struggle with problems related to mmcs even if the bugs do not make it to the production code
 Consider for instance the following stack overflow post:
 % TODO include example like Sandra from monperus paper about missing method call stalling development
 Here a developer spent many hours of their valuable time on debugging a relatively simple problem related to just one method call which was missing.
 
+%9. Monperrus et all also showed that the bugs sometimes DO get into the code, all in all we want to be able to detect them
 However, developer not only spent time during development on bugs related to missing method calls, these kind of bugs also survive development and get checked into the code repository where they cause problems in the future.
 In their extensive analysis of the Eclipse bug repository Monperrus et al. \cite{monperrus2013detecting} show that even in mature code bases there are many bugs related to missing method calls.
 Together this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save expensive developer time, but also to make maintenance cheaper and easier.
 
 % General idea why we want to use Recommender Systems / Learning!
+%10. first idea for detection: static rules, but problem: very time/cost intensive
 A simple and straightforward approach for this would be to build a set of hard-coded rules regarding method calls, such as for example:
 \begin{itemize}
     \item ``always call \code{setControl()} after instantiating a \code{TextView}''
@@ -44,12 +69,15 @@ A simple and straightforward approach for this would be to build a set of hard-c
 Well crafted and thought-out rules like this could facilitate a very high precision in detecting missing method calls, however, creating and maintaining such a rules list would require a tremendous effort.
 While such work might be justified for large and important libraries, the necessary effort would also grow with the size of the library until it becomes completely infeasible.
 
+%11 solution: automatic detection, even if it has some drawbacks
 To circumvent this problem, we would like to automatically detect locations in a code base where a method call is potentially missing without needing any further input.
 Such an approach would adapt to a changing system without requiring additional work of a developer and could also be applied to proprietary code which is not open to the public.
 While the discovered locations will probably not be 100\% accurate, they could then be examined by an expert who would determine the severity of the finding and issue a fix if necessary.
 
+%12. additional advantages to automatic detection: continuous integration, adabtability, can be used on closed software, etc
 -> express some more much better than fixed preprogrammed rules, can adapt to changing system, be specific for own not open library, etc
 
+%13. how this work relates to recommender systems
 the approach chosen in this work bases of recommender systems / learning
 (Mention the ideas of \cite{bruch2012ide}, chapter 2 as an inspiration / the way to the idea - maybe)
 first find likely recommendations, for writing, then realize, if something is super likely given a particular situation, but it is not there, it seems like a good indicator of an error
@@ -61,5 +89,6 @@ type usage: list of method calls invoked on variable of a given type which occur
 Majority rules idea: if a type is used in one particular way many many times and differently only one (or few) times, this probably indicates a bug
 
 Further evaluation of the concept with comparison test using different similarity measures, application to big data set of open source android applications, \ldots
+mention some results!
 
 FINALLY: Summary of the other chapters of this thesis
