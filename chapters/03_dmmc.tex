@@ -1,30 +1,32 @@
 \chapter{Detecting Missing Method Calls}
 
- trennen: previous work + what i did -> move their stuff to related work?
-	theoretical explanation of the different approaches
-	Majority Rule - intuition (restaurant example) + formalized 
+%--- quick intro again why it is interesting to detect them
 
-my work:
+%--- overview of this chapter
+
+\section{Majority Rule - existing work}
+%--- start with intuition (restaurant example)
+
+
+%--- formalized -> read the papers again for inspiration
+
+%--- what is a type usage
+
+%--- what are exactly equal and almost equal
+
+%--- strangeness score calculation
+
+%--- caveats
+
+\section{Extensions / my work}
+theoretical explanation of the different approaches
+    load type usages in different ways
+        per class type usages / ignore context
+    look for different things (wrong method call, superfluous method)
+
     naive bayesian learner as baseline?
-    clustering approach (hypersphere)
     something as of now unknown from anomaly detection
+    clustering approach (hypersphere)
     working with the inheritance hierarchy!
-    per class type usages
-    wrong method call, superfluous method
 
---- generally: (in this section or implementation? or somewhere totally else or not at all?)
-
-3 main parts: Feature Extraction, Learning, Results -	for each tons of different options and combinations
-FE:
-    what are the features, restricted to method calls?, granularity? (including parameters?)
-    method order?
-
-Learning:
-    Struktur finden und anomalien ermiteln	
-    consider what the expected structure MEANS (eg bruch expects a kind of uniformity to object usages, which is probably mostly present in GUI etc Frameworks)
-    maybe some method can also detect multiple missing calls, order, ...
-
-Results:
-	how is the "quality", under which circumstances?
-	some kind of statement about the initial assumptions behind idea and 
 

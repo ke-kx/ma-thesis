@@ -1,10 +1,31 @@
 \chapter{Implementation}
-	details about implementation and pitfalls that had to be overcome
-	why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
+details about implementation and pitfalls that had to be overcome
+    soot as analysis framework -> what is soot
+    why bytecode over sourcecode
+    \ldots
+why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
 
 explaining all the work i did
     first reading their code, coming across a couple of discrepancies between code and paper, later check if everthing still works (evaluation)
     refactoring everything + saving stuff to database
     building python infrastructure for analysis
+    building benchmarking infrastructure
+    downloading + automatically analyzing android apps (in evaluation section?)
     
 details on the different detectors I implemented
+
+--- generally: (in this section or implementation? or somewhere totally else or not at all?)
+
+3 main parts: Feature Extraction, Learning, Results -	for each tons of different options and combinations
+FE:
+    what are the features, restricted to method calls?, granularity? (including parameters?)
+    method order?
+
+Learning:
+    Struktur finden und anomalien ermiteln	
+    consider what the expected structure MEANS (eg bruch expects a kind of uniformity to object usages, which is probably mostly present in GUI etc Frameworks)
+    maybe some method can also detect multiple missing calls, order, ...
+
+Results:
+	how is the "quality", under which circumstances?
+	some kind of statement about the initial assumptions behind idea and 
