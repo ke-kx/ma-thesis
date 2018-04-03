@@ -71,7 +71,28 @@ Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint
 
 % todo mention more related work from detecting mmc paper?
 
-\section{Section on Anomaly Detection}
+% \section{Section on Anomaly Detection}
 
-\section{Section on Android specific stuff}
+\section{Android specific smell detection}
+
+In the evaluation %todo ref!
+we are analyzing a number of open source android applications.
+As a small overview of android related code smell detection consider the following papers.
+
+quick mention of the PAPRIKA paper mentioned in aDoctor intro?
+    operates on byte code
+    builds graph model from byte code and stores in db
+    uses cypher query language to detect the smells -> basically hand coded rules as well
+    only recognizes 4 android specific smells (and 4 general ones)
+    --> understand the evalution / result section\ldots
+
+Palomba et al. \cite{palomba2017lightweight}:
+can detect 15 of 30 android specific smells proposed by Reimann et al. (cite), namely those which relate to a problem in the source code
+works on abstract syntax tree of source code and uses specificly coded rules to detect each of the smells
+
+evaluation: check 18 apps, compare analysis results of program against manually found smells
+manual built oracle: 2 ppl read the code of the apps and flagged smells
+average precision and recall 98\%
+
+interesting results: the cases in which detection fails / yields false positives are exactly those where the hard coded detection rules don't consider a special case / a new library / \ldots
 
