@@ -30,31 +30,46 @@ especially like general code smells for example
 \section{Previous work on detecting missing method calls / object usages}
 -> api missuse detection
 
+there have been a number of works concerned with finding patterns in object usages and using those to find potential bugs
+
 short summaries of the two DMMC papers: \cite{monperrus2010detecting} and \cite{monperrus2013detecting}
-    less about the method as it is explained more in depth in the next section but about results
+most important for this works are the two papers by Monperrus et all (cite)
+which introduced the notion of almost similarity and are the primary inspiration for this work
+they consider the invocation of methods on an object of a particular type in a particular context a type usage
+here the context is nothing more than the name of the method in which the object is used and its signature (type of its parameters)
+after mining a list of all the type usages present in a code base, they relate the number of exactly equal type usages to the number of almost equal ones
+exactly equal means that context, type and method list are identical and almost equal means the same only that the method list can contain one additional method
+if there are a lot of almost equal type usages and very few equal ones, the tu under scrunity is probably an anomaly.
+more details on their method can be found in the next section
 
-mention the related work from detecting mmc paper
+results of monperrus et all:
+% TODO do results!
 
-This \cite{wasylkowski2007detecting} goes in the direction of detecting method order and seems quite interesting
-quite old, but has implementation and also an interesting related work section!
-    extract object usage models from Java code - uses finite state automata for the usage model
-    build automata for each method, similarly to control flow graph of the code with intsructions as the transitions
-    mine temporal properties out of those object usage models -> method a can appear before method b, iff there is a path through the automata whera a appears before b
-    For this they are using Frequent Itemset Mining (reference to J. Han and M. Kamber. Data mining: concepts and techniques. Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, second edition, 2006. ?) -> short explanation of FIM
-    these temporal properties are then combined into patterns and deviations of those patters are flagged as an anomaly
-    an anomaly occurs if many methods respect the pattern and only a few (a single one) break it
-    in experiments: 790 Violations, by manual analysis 2 defects, 5 smells, 84 ``hints'' (could be improved with regard to redability / maintainability)
-    -> large number of false positives (87.8\%?! says next paper), but with an additional ranking methdod able to to get the 2 defects and 3/5 smells within top10 results
-    already project dependent patterns as it extracts them from the existing code
+Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of methodcalls.
+First, they extract usage models from Java code by building a finite state automata for each method.
+The automata can be imagined similarly to the control flow graph of the method with instructions as transitions in the graph.
+From these they mine temporal properties, which describe if a method $A$ can appear before another method $B$.
+One can imagine this process as determining if there exists a path through the automata on which $A$ appears before $B$, which in turn implies an call to $A$ can happen before one to $B$.
+Finally, they are using frequent itemset mining \cite{han2006data} to combine the temporal properties into patterns.
+% todo add short explanation of frequent itemset mining? I think not really relevant
 
-The paper on graph based object using pattern mining seems also super related \cite{nguyen2009graph}
-    graph-based representation of object usages of one or even multiple objects -> this makes it stand out
-    also about temporal dependencies
-    labeled directed graph: nodes = object constructor calls, method cals, field accesses and brnching via control structures
-    edges are temporal usage orders and dependencies between them
-    patterns are mined using a frequent induced subgraph detection algorithm which start building larger patterns from smaller patterns ground up (similar to merge sort maybe?)
-    anomaly also when a pattern violation is ``rare'' ie doesn't appear often in the dataset in relation to the size
-    evaluation via casestudy finds 64 defects in some software with 5 defects, 8 smells, 11 hints -> 62.5\% false positive rate, top 10 has 3/2/1
+In this work an anomaly also occurs when many methods respect a pattern and only a few (a single one) break it.
+In their experiments they find 790 violations when analyzing an open source program and find 790 violations.
+Manual evaluation classifies those into 2 real defect, 5 smells and 84 ``hints'' (readability or maintainability could be improved).
+This adds up to a fals positive rate of 87.8\%, but with an additional ranking method they were able to obtain the 2 defects and 3 out of 5 smells within the top 10 results.
+
+In a related work Nguyen et al \cite{nguyen2009graph} use a graph-based representation of object usages to detect temporal dependencies.
+This method stands out because it enables detecting dependencies between multiple objects and not just one.
+% todo what does the branching thing even mean?
+The object usages are represented as a labeled directed graph where the nodes are field accesses, constructor or method calls and branching is represented by control structures.
+The edges of the graph represent the temporal usage order of methods and the dependencies between them.
+% todo is this merge sort thing true?!
+Patterns are then mined using a frequent induced subgraph detection algorithm which builds larger patterns from small patterns from the ground up, similar to the way merge sort operates.
+Here an anomaly is also classifed as a ``rare'' violation of a pattern, i.e. it does not appear often in the dataset in relation to its size.
+In an evaluation case study this work finds 64 defects in 9 open source software systems which the authors classifies to 5 true defects, 8 smells and 11 hints, which equals a false positive rate of 62.5\%.
+Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint.
+
+% todo mention more related work from detecting mmc paper?
 
 \section{Section on Anomaly Detection}
 
