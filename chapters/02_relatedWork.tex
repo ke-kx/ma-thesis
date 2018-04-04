@@ -4,8 +4,6 @@
 How to split this in the best way?
 -> check interesting related work and split it by topic / used technique / goal
 
-General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
-+ check to read stuff\ldots
 
 here: short intro to related work in general
 Relevance of code smells and finding them!
@@ -18,11 +16,41 @@ What is the general state of the art (maybe extra section?)
 static stuff, rules based, etc
 mention findbugs?
 
-\section{Section on approaches which learn from the given code}
-Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
-also mention some stuff about recommender systems in general (it is the official thesis topic after all\ldots)
+\section{Android specific Smell Detection}
+%todo move this section up to after the general smell detection section?
+
+In the evaluation section \ref{ch:eval} we are analyzing a large number of open source android applications.
+Thus, as a small overview of android related code smell detection consider the following papers.
+
+quick mention of the PAPRIKA paper mentioned in aDoctor intro?
+    operates on byte code
+    builds graph model from byte code and stores in db
+    uses cypher query language to detect the smells -> basically hand coded rules as well
+    only recognizes 4 android specific smells (and 4 general ones)
+    --> understand the evalution / result section\ldots
+
+After Reimann et al. \cite{reimann2014tool} presented a catalogue of 30 android specific code smells, Palomba et al. \cite{palomba2017lightweight} developed a tool to detect 15 of them.
+It works on the abstract syntax tree of the source code and uses specifically coded rules to detect each of the smells.
+For the evaluation of their approach they examine 18 Android applications by comparing the results of their tool against a manually built oracle.
+The oracle was created by having two Masters students study the code of the applications in depth and manually flag offending locations.
+While they reach an average precision and recall of 98\%, there are a number of cases in which their tool fails or yields false positives.
+These cases are exactly those where the hard coded detection rules do not consider a special case, a new library or otherwise changing criteria.
+
+[explain shortcoming a bit better!]
+example where they only included 2 compression libraries in their rules, but there is a third new one
+
+\section{Inferring Properties from the Code at Hand}
+
+As the results of the previous paper showed, it can be difficult and costly to keep hard coded detection rules up to date and relevant.
+Because of this, there has been a lot of interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
+
+[Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind),
+also mention some stuff about recommender systems in general (it is the official thesis topic after all\ldots)]
 
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
+
+General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
++ check to read stuff\ldots
 
 Remember the general machine learning approaches which were not super successful, but at least learned a LOT
 especially like general code smells for example
@@ -72,27 +100,4 @@ Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint
 % todo mention more related work from detecting mmc paper?
 
 % \section{Section on Anomaly Detection}
-
-\section{Android specific smell detection}
-
-In the evaluation %todo ref!
-we are analyzing a number of open source android applications.
-As a small overview of android related code smell detection consider the following papers.
-
-quick mention of the PAPRIKA paper mentioned in aDoctor intro?
-    operates on byte code
-    builds graph model from byte code and stores in db
-    uses cypher query language to detect the smells -> basically hand coded rules as well
-    only recognizes 4 android specific smells (and 4 general ones)
-    --> understand the evalution / result section\ldots
-
-Palomba et al. \cite{palomba2017lightweight}:
-can detect 15 of 30 android specific smells proposed by Reimann et al. (cite), namely those which relate to a problem in the source code
-works on abstract syntax tree of source code and uses specificly coded rules to detect each of the smells
-
-evaluation: check 18 apps, compare analysis results of program against manually found smells
-manual built oracle: 2 ppl read the code of the apps and flagged smells
-average precision and recall 98\%
-
-interesting results: the cases in which detection fails / yields false positives are exactly those where the hard coded detection rules don't consider a special case / a new library / \ldots
 

@@ -1,12 +1,20 @@
 \chapter{Detecting Missing Method Calls}
 
 %--- quick intro again why it is interesting to detect them
+thinking back to example in introduction, it is easy to see that there are bugs out there which occur because of missing method calls
+additionally Monperrus et al. showed in their informal evaluation that real software systems have many bugs related to missing method calls
 
 %--- overview of this chapter
 
 \section{Majority Rule - existing work}
 %--- start with intuition (restaurant example)
-
+intutition behind the idea of the majority rule as follows
+imagine being the waiter preparing the tables in a restaurant
+there are 100 seats and each of them has a plate, a knife on the right (?) and a fork on the left
+however only 99 of them have a spoon on the top,
+one is missing the spoon.
+then it is highly likely that this one exception to the rule: ``each seat should have a plate, a knife, a fork and a spoon'' is a mistake
+and you should add the spoon to singular seat where it is missing
 
 %--- formalized -> read the papers again for inspiration
 
@@ -17,6 +25,9 @@
 %--- strangeness score calculation
 
 %--- caveats
+do real software systems actually behave in this way
+ie: is it ``necessary'' to use classes in the same way
+probably: most likely present in GUI systems
 
 \section{Extensions / my work}
 theoretical explanation of the different approaches
