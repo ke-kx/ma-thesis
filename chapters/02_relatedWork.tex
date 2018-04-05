@@ -1,20 +1,48 @@
 \chapter{Related Work}
-%Position this here or just before conclusion? - right now here seems better though
+%todo Position this here or just before conclusion? - right now here seems better though
 
-How to split this in the best way?
--> check interesting related work and split it by topic / used technique / goal
+%--- relevance of code smells and finding them
+finding bugs in code is hard
+removing code smells and irregularities can contribute to code quality and thus make finding bugs easier / prevent them
+especially for larger software systems, automatically detecting low quality code and improving it can contribute significantly to the maintainability of the code
+Thus, there has been a lot of interest in automatic approaches for detecting code smells (and bugs)
 
+%--- section summary
+In this section we will present a number of different approaches for smell detection.
+We start with some ``conventional'' methods which mostly rely on hard coded rules and pattern matching (?)
+Give a quick overview of Smell detection specificly related to android applications, as we are applying the method studied in this thesis to a number of android apps in the evaluation section
+Finally we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which were given bei the developer a-priori.
 
-here: short intro to related work in general
-Relevance of code smells and finding them!
-first an overview of the different approaches that are commonly used for code smell detection
-this includes static rules and bla
-[summary of the other section]
+\section{Finding Code Smells with static Analysis}
+%todo section title like this or smth different? (hard coded rules, ..)
 
-\section{general approaches for bug detection / code smells}
-What is the general state of the art (maybe extra section?)
-static stuff, rules based, etc
-mention findbugs?
+Findbugs (url) is a static analysis tool that finds bugs / smells in Java code
+reports around 300 bug patterns + potentially more using a plugin architecture
+specific detector for each of the patterns, with special sometimes complex detection mechanism (hand crafted!)
+detectors often built starting from real bugs (attempting to find the bug in question and all similar ones automatically)
+
+Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications (Sun's JDK and Glassfish J2EE server) and portions of googles java codebase
+premise: static analysis often finds true but trivial bugs, in the sense that these bugs won't really cause a defect in the software / are intentional / don't cause any measurable misbehavior
+examples are deliberate errors, infeasible situations (``cannot happen'') or situations which cannot be recovered from anyways
+in their analysis they find 379 medium and high priority warnings which they classify as follows
+5 due to erroneous analysis by findbugs
+160 as impossible or having little to no functional impact
+176 as potentially having some impact
+38 as true defects having substantial impact (the real behavior is clearly not as intended)
+takeaway: this can find a lot of true bugs, but also lots of false positives and it can be difficult to distinguish them
+
+To alevieate the problem of high false positives among the findings reported by findbugs
+Shen et al. \cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less important warnings
+based on defect likelihood -> manual analysis of findings of a large project (JDK) and flagged as true / false finding for each
+then across bug categories and types calculate likelihood of a finding being a true finding (from the manual analysis data)
+Findings with higher likelyhood are displayed first (with variance as tiebreaker)
+additionally the rankings are updated using user feedback on their projects
+Evaluation with 3 open source applications (Tomcat, AspectJ, Axis)
+comparing their ranking against the default severity ranking of findbugs (basically hardcoded value for each bug type)
+using a cutoff at 10, 20, 30, \ldots percent of the total findings
+-> precision and recall systematically better than the default ranking, especially for cutoffs around 50\%
+
+%todo Which other papers?!
 
 \section{Android specific Smell Detection}
 %todo move this section up to after the general smell detection section?
@@ -22,12 +50,15 @@ mention findbugs?
 In the evaluation section \ref{ch:eval} we are analyzing a large number of open source android applications.
 Thus, as a small overview of android related code smell detection consider the following papers.
 
-quick mention of the PAPRIKA paper mentioned in aDoctor intro?
-    operates on byte code
-    builds graph model from byte code and stores in db
+quick mention of the PAPRIKA paper mentioned in aDoctor intro? \cite{hecht2015detecting}
+    operates on byte code, but tries to infer smells on the source code level
+    builds graph model of the application from byte code and stores it in graph db (nodes are entities such as the app itself, classes, methods, attributes and variables, further annotated with specific metrics)
     uses cypher query language to detect the smells -> basically hand coded rules as well
     only recognizes 4 android specific smells (and 4 general ones)
-    --> understand the evalution / result section\ldots
+    Evaluation: specifically developed wittness application whith 62 known smells
+    using the right kind of metrics they whereable to reach precision and recall of 1 on this witness application
+    further they apply their tool to a bunch of free android apps in the playstore and make some assertions about the prelevance of antipatterns in publicly available applications
+    findings: some antipatterns, especially related to memory leaks appear in up to 39\% of applications, ``big'' ones like facebook or skype
 
 After Reimann et al. \cite{reimann2014tool} presented a catalogue of 30 android specific code smells, Palomba et al. \cite{palomba2017lightweight} developed a tool to detect 15 of them.
 It works on the abstract syntax tree of the source code and uses specifically coded rules to detect each of the smells.
