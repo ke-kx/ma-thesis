@@ -1,18 +1,18 @@
 \chapter{Introduction}\label{chapter:introduction}
 
 new ideas:
-    mention code smells and their origin?, less focus on ``bugs'' per se (see aDoctor paper) -> after all my title is also related to smells!
+    mention code smells and their origin?, less focus on ``bugs'' per se (see aDoctor paper) -> while the thesis title is related to bugs, I think I can / want to use smell as well 
 
 %--- software systems want to use APIs to facilitate reuse, however using an api is not always trivial
 Larger software systems often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 Even if the designers of those APIs focus on making the interface as easy to use as possible, there is always a trade-off between usability and flexibility.
 Especially more complex libraries cannot provide a trivial API, if they want to enable the programmer to facilitate it in the way most appropriate for their specific use case.
-Thus, in the case of large frameworks or very powerful libraries, often a lot of knowledge is required to invoke the API correctly.
+Thus, often a lot of knowledge is required to invoke the API correctly, even more so in the case of large frameworks or powerful libraries.
 This can be because of constraints or requirements which are not clear from the outset, but which have to be heeded in order to avoid serious bugs or complications, or because of a complex interplay between different parts of the library.
 In the worst case, this knowledge might not even be explicitly documented.
 
 %--- since it is often not trivial to use an api correctly, there will be ``wrong'' usages + examples?
-The fact that APIs are not trivial and have might have complex requirements makes it inevitable, that there will be erroneous invocations of these APIs.
+The fact that APIs are not trivial and have might have complex requirements makes it inevitable that there will be erroneous invocations of these APIs.
 Such errors can relate to parameter choice, method order, or a number of other factors (e.g. some methods must be invoked in an extra thread, some specific precondition has to be satisfied, etc.).
 An example which comes to mind in Java are an iterator on which the programmer calls \texttt{next()} without first checking with \texttt{hasNext()} if it even contains another object.
 Or a class which overrides \texttt{equals()} without ensuring that an invocation of \texttt{hashCode()} always produces the same output for two equal objects.
@@ -25,7 +25,7 @@ For the Java examples mentioned above they could take the form of ``an object wh
 %--- if we can extract the patterns, hopefully the wrong usages will stand out and enable us to detect bugs
 Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
 If code in a software project deviates (too much) from the usual patterns when using an API, this hints at a bug or problem or is at least a code smell which should probably be corrected.
-This makes it interesting to detect these unusual instances, also known as API misusages(?).
+This makes it interesting to detect these unusual instances.
 
 \section{Motivation}
 % Motivating the research aka which problem are we trying to solve, general description of the problem
@@ -35,7 +35,7 @@ As already mentioned above, there are many subtle mistakes a developer can make 
 In this work we focus on one specific type of API usage problem, namely missing method calls, which can occur in the context of Object Oriented Programming (OOP).
 In OOP software an object of a specific type is normally used by invoking some of its methods.
 Some types will then have underlying patterns such as: ``when methods A and B are invoked, then method C is called as well`` or ''Methods X and Y are always used together``.
-If we have an object of this type on which only methods A and B are called, we can say that a call to C is missing, respectively if we have an object where only X or only Y is invokec, we can say that a call to the other is missing.
+If we have an object of this type on which only methods A and B are called, we can say that a call to C is missing, respectively if we have an object where only X or only Y is invoked, we can say that a call to the other is missing.
 
 As an example consider a Button class in a GUI system.
 This button can either appear as a TextButton or as an ImageButton, where the first displays a word or short text regarding the button's functionality, while the second one only displays an image.
@@ -59,7 +59,7 @@ Here a developer spent many hours of their valuable time on debugging a relative
 
 %9. Monperrus et all also showed that the bugs sometimes DO get into the code, all in all we want to be able to detect them
 However, developer not only spent time during development on bugs related to missing method calls, these kind of bugs also survive development and get checked into the code repository where they cause problems in the future.
-In their extensive analysis of the Eclipse bug repository Monperrus et al. \cite{monperrus2013detecting} show that even in mature code bases there are many bugs related to missing method calls.
+In their extensive analysis of the Eclipse bug repository Monperrus et al. \cite{monperrus2013detecting} show that even mature code bases can contain many bugs related to missing method calls.
 Together this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save expensive developer time, but also to make maintenance cheaper and easier.
 
 % General idea why we want to use Recommender Systems / Learning!

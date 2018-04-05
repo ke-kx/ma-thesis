@@ -1,53 +1,56 @@
 \chapter{Related Work}
 %todo Position this here or just before conclusion? - right now here seems better though
 
+%todo somewhere difference between smell and bug herausarbeiten
+
 %--- relevance of code smells and finding them
-finding bugs in code is hard
-removing code smells and irregularities can contribute to code quality and thus make finding bugs easier / prevent them
-especially for larger software systems, automatically detecting low quality code and improving it can contribute significantly to the maintainability of the code
-Thus, there has been a lot of interest in automatic approaches for detecting code smells (and bugs)
+The process of realizing that there exists a bug in a software system, identifying its cause and understanding the steps necessary to remove it, is difficult and time consuming.
+Especially for larger software systems automatically detecting low quality code and improving it can contribute significantly to the maintainability of the code and prevent bugs in the future.
+Thus, there has been a lot of interest in approaches for automatically detecting bugs or even just smells in code.
 
 %--- section summary
-In this section we will present a number of different approaches for smell detection.
-We start with some ``conventional'' methods which mostly rely on hard coded rules and pattern matching (?)
-Give a quick overview of Smell detection specificly related to android applications, as we are applying the method studied in this thesis to a number of android apps in the evaluation section
-Finally we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which were given bei the developer a-priori.
+In this section we will present a number of different approaches for smell and bug detection.
+We start with some ``conventional'' methods which mostly rely on hard coded rules and pattern matching(?).
+We then give a quick overview of smell detection specifically related to android applications, as we are applying the method studied in this thesis to a number of android apps in the evaluation section.
+Finally, we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which were given by the developer a-priori.
+Such techniques have the advantage of needing fewer manual oversight and changes when the system which is to be tested evolves.
 
 \section{Finding Code Smells with static Analysis}
 %todo section title like this or smth different? (hard coded rules, ..)
 
-Findbugs (url) is a static analysis tool that finds bugs / smells in Java code
-reports around 300 bug patterns + potentially more using a plugin architecture
-specific detector for each of the patterns, with special sometimes complex detection mechanism (hand crafted!)
-detectors often built starting from real bugs (attempting to find the bug in question and all similar ones automatically)
+%todo improve flow\ldots and bug pattern what?
+Findbugs\footnote{\url{http://findbugs.sourceforge.net/}, in the meantime there has been a successor: \url{https://spotbugs.github.io/}} is a static analysis tool that finds bugs and smells in Java code.
+It reports around 400 bug patterns and can be extended using a plugin architecture.
+Each bug pattern has its own specific detector, which uses some special, sometimes quite complex detection mechanism.
+These detectors are often built starting from a real bugs, first attempting to find the bug in question and then all similar ones automatically as well.
 
-Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications (Sun's JDK and Glassfish J2EE server) and portions of googles java codebase
-premise: static analysis often finds true but trivial bugs, in the sense that these bugs won't really cause a defect in the software / are intentional / don't cause any measurable misbehavior
-examples are deliberate errors, infeasible situations (``cannot happen'') or situations which cannot be recovered from anyways
-in their analysis they find 379 medium and high priority warnings which they classify as follows
-5 due to erroneous analysis by findbugs
-160 as impossible or having little to no functional impact
-176 as potentially having some impact
-38 as true defects having substantial impact (the real behavior is clearly not as intended)
-takeaway: this can find a lot of true bugs, but also lots of false positives and it can be difficult to distinguish them
+In their work Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications (Sun's JDK and Glassfish J2EE server) and portions of Googles Java codebase.
+Their premise is, that static analysis often finds true but trivial bugs, in the sense of these bugs not really causing a defect in the software.
+This can be because they are deliberate errors, occur in situations which cannot happen anyways or situations from which recovery isn't possible.
+In their analysis Findbugs finds 379 medium and high priority warnings which they classify as follows:
+\begin{itemize}
+    \item 5 are due to erroneous analysis by Findbugs
+    \item 160 are impossible or have little to no functional impact
+    \item 176 can potentially have some impact
+    \item 38 are true defects which have substantial impact, i.e. the real behavior is clearly not as intended
+\end{itemize}
+The takeaway is, that this kind of static analysis can find a lot of true bugs, however there will also be a lot of false positives among them and it can be difficult to distinguish them.
 
-To alevieate the problem of high false positives among the findings reported by findbugs
-Shen et al. \cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less important warnings
-based on defect likelihood -> manual analysis of findings of a large project (JDK) and flagged as true / false finding for each
-then across bug categories and types calculate likelihood of a finding being a true finding (from the manual analysis data)
-Findings with higher likelyhood are displayed first (with variance as tiebreaker)
-additionally the rankings are updated using user feedback on their projects
-Evaluation with 3 open source applications (Tomcat, AspectJ, Axis)
-comparing their ranking against the default severity ranking of findbugs (basically hardcoded value for each bug type)
-using a cutoff at 10, 20, 30, \ldots percent of the total findings
--> precision and recall systematically better than the default ranking, especially for cutoffs around 50\%
+To alleviate the problem of a high false positive rate among the findings reported by Findbugs, Shen et al. \cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less important warnings.
+It is based on a principle they call ``defect likelihood''.
+With the findings of a large project (in this case the JDK) as a basis, they manually flag each finding as a true or false positive, before using this data to calculate the probability that a finding is a true finding.
+This likelihodd can not only be calculated for one specific bug pattern but also across categories and types with variance as a tiebreaker.
+The resulting ranking can further be refined with user feedback, when it is applied to a specific project.
+In their evaluation on 3 open source applications (Tomcat, AspectJ and Axis) they compare their ranking against the default severity ranking of Findbugs, which is basically a hardcoded value for each bug type.
+Using cutoffs at 10\%, 20\%, 30\%, \ldots of the total findings, they achieve precision and recall systematically better than the default ranking.
+This especially holds true for cutoff values around 50\%.
 
 %todo Which other papers?!
 
 \section{Android specific Smell Detection}
 %todo move this section up to after the general smell detection section?
 
-In the evaluation section \ref{ch:eval} we are analyzing a large number of open source android applications.
+In Section \ref{ch:eval} we are analyzing a large number of open source android applications.
 Thus, as a small overview of android related code smell detection consider the following papers.
 
 quick mention of the PAPRIKA paper mentioned in aDoctor intro? \cite{hecht2015detecting}
