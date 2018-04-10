@@ -1,8 +1,14 @@
 \chapter{Evaluation}\label{ch:eval}
+roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
+
 Which questions are we trying to answer with the evaluation?
     qualitative evaluation: are the findings useful in practice?
     quantitative evaluation: given some assumptions, how useful can we expect this technique to be?
     make sure I will be able to a) answer those questions and b) the answers are ``interesting''
+
+    do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
+        -> answer with graphs related to general score verteilung
+	how "useful" is this verfahren -> how many true findings in relation to false positives does it find + average number of findings per app (remember that the findings now are for all 626 apps)
 
 general idea behind evaluation method and what we are trying to detect
 actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
@@ -33,4 +39,5 @@ explain problems with the automatic evaluation
     how related are the degraded TUs to missing method calls you can find in the wild?
     improving the metrics by dropping cases where we know we won't find an answer
     also mention runtime!
+    wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
     \ldots
