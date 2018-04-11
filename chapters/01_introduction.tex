@@ -9,10 +9,11 @@ This can be because of constraints or requirements which are not clear from the 
 In the worst case, this knowledge might not even be explicitly documented.
 
 %--- since it is often not trivial to use an api correctly, there will be ``wrong'' usages + examples?
-The fact that APIs are not trivial and have might have complex requirements makes it inevitable that there will be erroneous invocations of these APIs.
+The fact that some APIs are not trivial and might have complex requirements makes it inevitable that there will be erroneous invocations of these APIs.
+\todo{include frameworks as well in some better way}
 Such errors can relate to parameter choice, method order, or a number of other factors (e.g. some methods must be invoked in an extra thread, some specific precondition has to be satisfied, etc.).
-An example which comes to mind in Java are an iterator on which the programmer calls \texttt{next()} without first checking with \texttt{hasNext()} if it even contains another object.
-Or a class which overrides \texttt{equals()} without ensuring that an invocation of \texttt{hashCode()} always produces the same output for two equal objects.
+An example, which comes to mind in Java, is an iterator on which the programmer calls \texttt{next()} without first checking with \texttt{hasNext()} if it even contains another object.
+Another one might be a class which overrides \texttt{equals()} without ensuring that an invocation of \texttt{hashCode()} always produces the same output for two equal objects.
 
 %--- correct usages of an api often share some underlying patterns + examples of them
 Despite the fact that there might be manifold correct ways to use an API, often there are underlying patterns which the correct invocations have in common.
@@ -23,6 +24,7 @@ For the Java examples mentioned above they could take the form of ``an object wh
 Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
 If code in a software project deviates (too much) from the usual patterns when using an API, this hints at a bug or problem or is at least a code smell which should probably be corrected.
 This makes it interesting to detect these unusual instances.
+%todo this this repetition
 
 \section{Motivation}
 % Motivating the research aka which problem are we trying to solve, general description of the problem
@@ -31,20 +33,21 @@ This makes it interesting to detect these unusual instances.
 As already mentioned above, there are many subtle mistakes a developer can make when invoking an API.
 In this work we focus on one specific type of API usage problem, namely missing method calls, which can occur in the context of Object Oriented Programming (OOP).
 In OOP software an object of a specific type is normally used by invoking some of its methods.
-Some types will then have underlying patterns such as: ``when methods A and B of type T are invoked, then method C is called as well`` or ''methods X and Y of type T are always used together``.
-If we have an object of this type T on which only methods A and B are called, we can say that a call to C is missing, respectively if we have an object where only X or only Y is invoked, we can say that a call to the other is missing.
+Some types will then have underlying patterns such as: ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well`` or ''methods \code{X} and \code{Y} of type $T_2$ are always used together``.
+If we have an object of this type $T_1$ on which only methods \code{A} and \code{B} are called, we can say that a call to \code{C} is missing, respectively if we have an object of type $T_2$ where only \code{X} or only \code{Y} is invoked, we can say that a call to the other is missing.
 
 As an example consider a Button class in a GUI system.
 This button can either appear as a TextButton or as an ImageButton, where the first displays a word or short text regarding the button's functionality, while the second one only displays an image.
-Then one could imagine that the function \texttt{setText()} is usually called together with \texttt{setFont()} whereas the function \texttt{setImage()} is called together with \texttt{setToolTipText()}.
-If a programmer writes some new code where she creates a button and assigns it some text to display by calling \texttt{setText()} but forgets to also call \texttt{setFont()} this would be a missing method call and a bug in the code.
-Imagine all buttons in the application using a special and beautiful font but this one button sticking with the standard ComicSans!
+Then one could imagine that the function \texttt{setText()} is usually called together with \texttt{setFont()}, whereas the function \texttt{setImage()} is called together with \texttt{setToolTipText()}.
+If a programmer writes some new code in which she creates a button and assigns it some text to display by calling \texttt{setText()}, but forgets to also call \texttt{setFont()} this would be a missing method call and a bug in the code.
+Imagine all buttons in the application using a special and beautiful font, but this one button sticking with the standard Comic Sans!
 
+\subsection{Examples from the real World}
 %--- real developers struggle with problems related to mmcs even if the bugs do not make it to the production code
-Unclear APIs or frameworks and the resulting missing method calls are a real problem developers struggling with.
-Consider for instance this example from Monperrus et al.\cite{monperrus2010detecting}:
+Unclear APIs or frameworks and the resulting missing method calls are a real problem developers struggle with.
+Consider for instance this example from Monperrus et al. \cite{monperrus2010detecting}:
 The developer Alice wants to create a dialog page for Eclipse.
-After some search she finds a corresponding class \code{DialogPage} in the API reference.
+After some searching she finds the corresponding class \code{DialogPage} in the API reference.
 She creates a new class using the Eclipse helper and ends up with the following boiler-plate code:
 \begin{lstlisting}
 public class MyPage extends DialogPage {
@@ -69,23 +72,22 @@ org.eclipse.core.runtime.AssertionFailedException
 null argument:
 \end{lstlisting}
 This is a typical case of implicit contracts which are not mentioned in the API documentation.
-Here the Eclipse JFace user-interface framework expects that any class overriding \code{createControl} also ensures that the created control can be accessed later by calling \code{setControl}.
+Here, the Eclipse JFace user-interface framework expects that any class overriding \code{createControl} also ensures that the created control can be accessed later by calling \code{setControl}.
 Unfortunately, this is not mentioned in the documentation of \code{DialogPage} and Alice assumed that registering the new composite is enough.%
 \footnote{Actually in the current version\footnotemark of the documentation this is mentioned, albeit not in the section directly related to \code{DialogPage}.}
 \footnotetext{\url{http://help.eclipse.org/oxygen/topic/org.eclipse.platform.doc.isv/reference/api/org/eclipse/jface/dialogs/IDialogPage.html\#createControl-org.eclipse.swt.widgets.Composite-}}
 In this specific scenario, additionally the resulting error message is not helpful at all, which makes debugging the problem more difficult and time-consuming.
 
-
-Because of this, Alice had to ask a question in the Eclipse mailing list to discover that this problem is related to a missing call to \code{this.setControl}.
+Because of this, Alice had to ask a question in the Eclipse mailing list to discover that this problem is related to a missing call to \code{setControl}.
 Only after receiving help she understands that it is necessary to call \code{this.Control(mycomp)} at the end of her \code{createControl} method.
-While her code finally works, she spent many hours of her valuable time on debugging a relatively simple problem related to just one method call which was missing.
+While her code finally works, she spent several hours of her valuable time on debugging a relatively simple problem related to just one method call which was missing.
 According to Monperrus et al. the described scenario regularly happened in the Eclipse newsgroup, thus showing that it is quite easy to make an error relating to missed method calls.
 
 %--- Monperrus et all also showed that the bugs sometimes DO get into the code, all in all we want to be able to detect them
 However, developer not only spend time during development on bugs related to missing method calls, these kind of bugs also survive development and get checked into the code repository where they cause problems in the future.
 As an example, consider this\footnote{\url{https://issues.apache.org/jira/browse/TORQUE-42}} bug report on Apache Torque, an object-relation mapper for Java, which is intended to facilitate the access and manipulation of data stored in relational databases.
 This is the diff for the patch which was issued to fix the problem:
-\begin{lstlisting}    
+\begin{lstlisting}[language=diff]
 @@ -2307,7 +2307,7 @@
       */
      public Criteria andDate(String column, int year, int month, int date)
@@ -104,32 +106,36 @@ This is the diff for the patch which was issued to fix the problem:
          return this;
      }
 \end{lstlisting}
-%todo use this for nicer colors https://tex.stackexchange.com/questions/105995/is-there-a-ready-solution-to-typeset-a-diff-file
 This is a very simple function, but the developer still forgot to call the \code{getTime} method call on the newly created \code{GregorianCalendar} object.
-Before the patch, if the \code{andDate} method was invoked, it would lead to an \code{SQLException}, because the SQL query was built in the wrong manner.
+Before the patch, invoking the \code{andDate} method would lead to an \code{SQLException}, because the SQL query was built in the wrong manner.
 
-This is hardly the only bug report related to missing method calls out there.
+This is hardly the only bug report related to missing method calls in established software projects.
 In an informal review Monperrus et al. found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many news groups, bug trackers and forums.
-The issues caused range from runtime exception to problems in some limit cases, but generally reveal at least a code smell if not worse.
+The issues range from runtime exceptions to problems in some limit cases, but generally reveal at least a code smell if not worse.
+In addition to the informal review, Monperrus et al. \cite{monperrus2013detecting} also did an extensive analysis of the Eclipse bug repository.
+First, they searched for syntactic patterns which they deemed related to missing method calls, such as: ``should call'', ``does not call'', ``is not called'', ``should be called'', etc.
+Manual inspection then confirmed 117 of the 211 (55\%) thus obtained bug reports as truly related to a missing method call.
 
-In their extensive analysis of the Eclipse bug repository Monperrus et al. \cite{monperrus2013detecting} show that even mature code bases can contain many bugs related to missing method calls.
-\todo{MENTION RESULTS + numbers!!!}
-Together this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save expensive developer time, but also to make maintenance cheaper and easier.
+This shows that even mature code bases can contain many bugs related to missing method calls, especially considering that this number is a lower bound on the total number of related bugs in the repository.
+After all, they might have missed some syntactic patterns or bugs which might not even have been discovered yet.
+Together, this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save expensive developer time, but also to make maintenance cheaper and easier.
 
+\subsection{Detection - but how?}
 % General idea why we want to use Recommender Systems / Learning!
 %10. first idea for detection: static rules, but problem: very time/cost intensive
-A simple and straightforward approach for this would be to build a set of hard-coded rules regarding method calls, such as for example:
+A simple and straightforward approach for this would be to build a set of hard-coded rules regarding method calls, such as:
 \begin{itemize}
     \item ``always call \code{setControl()} after instantiating a \code{TextView}''
     \item ``in Method \code{onCreate()} of classes extending \code{AppCompatActivity} always call \code{setContentView()}''
     \item ``when calling \code{foo()} also call \code{bar()}''
+    \item ``when calling \code{next()} on an Iterator always call \code{hasNext()} (before)''
 \end{itemize}
-Well-crafted and thought-out rules like this could facilitate a very high precision in detecting missing method calls and contribute to better, more bug-free code.
+Well-crafted and thought-out rules along those lines could facilitate a very high precision in detecting missing method calls and contribute to better, more bug-free code.
 However, creating and maintaining a list of rules like this would require a tremendous investment of time and money, especially in a world were software is constantly changing and improving.
-While such work might be justified for large and important libraries, the necessary effort would also grow with the size of the library until it becomes completely infeasible.
+While this might be justified for large and important libraries, the necessary effort would also grow with the size of the library until it becomes completely infeasible.
 
 %11 solution: automatic detection, even if it has some drawbacks
-To circumvent this problem, we would like to automatically detect locations in a code base where a method call is potentially missing without needing any further input.
+To circumvent this problem, we would like to automatically detect locations in a code base where a method call is potentially missing without needing any further input besides the code itself.
 Such an approach would adapt to changing libraries without requiring additional work from a developer and could also be applied to proprietary code which is not open to the public.
 While the discovered locations will probably not be as accurate as those discovered by a hand-crafted list of rules, they could then be examined by an expert who would determine the severity of the finding and issue a fix if necessary.
 
@@ -144,15 +150,16 @@ While the discovered locations will probably not be as accurate as those discove
 
 \section{Contribution}
 
-In this thesis we present a thorough reevaluation of the type usage characterization first introduced by Monperrus et al.\cite{monperrus2010detecting} and further refined in a follow up publication \cite{monperrus2013detecting}.
+In this thesis we present a thorough reevaluation of the type usage characterization first introduced by Monperrus et al. \cite{monperrus2010detecting} and further refined in a follow up publication \cite{monperrus2013detecting}.
 A type usage is the list of method calls invoked on an object of some type which occur in the body of some method (the context).
 The general idea behind the technique by Monperrus et al. is to check for outliers among the type usages by using the majority rule:
 If a type is used in one particular way many, many times (that is, in the majority of cases) and in a different way only one (or a few) times, this probably indicates a bug.
 
 We evaluate this concept by applying it to a data set of more than 600 open source android applications and performing a manual evaluation of the results.
 We further experiment with small changes to their initial idea and put them under the scrutiny of an automated benchmark.
-Additionally, we compare the results of manual vs automated evaluation and consider what this means for future research.
-
+Additionally, we compare the results of the manual evaluation against those of the automated one and consider what this means for future research.
 \todo{mention some results!}
 
+In Chapter \ref{ch:relWork} we present previous work which goes in a similar direction.
+%The presented papers are grouped into \ldots -> skip this bc I already mention this in intro of next section?
 \todo[inline]{FINALLY: Summary of the other chapters of this thesis}
