@@ -1,56 +1,79 @@
 \chapter{Evaluation}\label{ch:eval}
 roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
 
-sections:
-    methology (android apps, bla bla)
-        qualitative (manual) evaluation
-        automatic benchmark
-    Results (would like to answer the following questions)
-        Q1 (-> explanation of question, then results + interprettation)
-        Q2
-        \ldots
-    General takeaway
+% http://libguides.usc.edu/writingguide/methodology
 
-Which questions are we trying to answer with the evaluation?
-    qualitative evaluation: are the findings useful in practice?
-    quantitative evaluation: given some assumptions, how useful can we expect this technique to be?
-    make sure I will be able to a) answer those questions and b) the answers are ``interesting''
+\todo[inline]{does this order make sense or rather split by research question?}
+\section{Methodology}
 
-    do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
-        -> answer with graphs related to general score verteilung
-	how "useful" is this verfahren -> how many true findings in relation to false positives does it find + average number of findings per app (remember that the findings now are for all 626 apps)
-    does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
-        -> comparison between manual evaluation of findings vs 
-    would love to have the robustness question in here, however how to evaluate if it's working vs not working?
+\subsection{Qualitative Evaluation / Android Case Study}
+android apps, blabla
+manual review of top 50 findings for each ``method''
+-> which are the different methods?
+
+\subsection{Automated Benchmark}
+degrading type usages + checking if they will be detected
+
+sometimes in even further degraded settings (degrade more than one)
 
 general idea behind evaluation method and what we are trying to detect
 actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
     imitation of the real system of software development
     using a much simpler system, namely dropping method calls
     obvious question: how similar are the such created mmcs to mmcs in the wild?
-Robustness explanation
-    wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
-    what is needed for it to work (lines of code, feature richness, etc) 
-    problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
+
 Metrics explanation - Precision, Recall
     additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
     performance -> training time + performance when working
 
+\section{Results}
+Which questions are we trying to answer with the evaluation?
+quick overview + method to do this
 
-checking if their ``mistakes'' / inaccuracies make a difference or not
+qualitative evaluation: are the findings useful in practice?
+quantitative evaluation: given some assumptions, how useful can we expect this technique to be? robustness? Qualitative vs automatic same results?
+make sure I will be able to a) answer those questions and b) the answers are ``interesting''
 
-(Case Study - if time...)
-    ANDROID?!
-    would be super sexy to apply the best method to some library / framework and see what happens
+for each question: explanation of question, then results + interprettation
+\subsection{Q0: How does the type usage notion fare in the Android ecosystem?}
+what kind of dataset do we have?
+what are typeusages in Android apps like? (length of methods, percentage on Android framework, percentage on other stuff, etc)
 
-subsection: threats to validity!!!
+general data about avg tus related to different settings etc -> what does our dataset even consist of?
 
-qualitative evaluation:
-    pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
+\subsection{Q1: Does the Strangeness Score behave as expected on Android Apps?}
+
+do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
+    -> answer with graphs related to general score verteilung
+    what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
+
+\subsection{Q2: How ``useful'' is this technique?}
+qualitative evaluation findings:
+how many true findings in relation to false positives does it find + average number of findings per app (remember that the findings now are for all 626 apps)
+    each for the slightly adapted 
+
+pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
++ of course the REAL bug + some real smells
+
+\subsection{Q3: How meaningful are the benchmarking results?}
+does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
+    -> comparison between manual evaluation of findings vs automatic benchmark
+
+\subsection{Q3.1: How robust is this technique in the face of erroneous input data?}
+I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
+would love to have the robustness question in here, however how to evaluate if it's working vs not working?
+
+Robustness explanation
+    wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
+    what is needed for it to work (lines of code, feature richness, etc) 
+    problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
+
+\section{Threats to Validity}
 
 explain problems with the automatic evaluation
-    how related are the degraded TUs to missing method calls you can find in the wild?
-    improving the metrics by dropping cases where we know we won't find an answer
-    also mention runtime!
-    wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
-    \ldots
+how related are the degraded TUs to missing method calls you can find in the wild?
+improving the metrics by dropping cases where we know we won't find an answer
+
+also mention runtime!
+wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
+\ldots
