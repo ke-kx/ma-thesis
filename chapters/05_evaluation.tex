@@ -40,6 +40,7 @@ what kind of dataset do we have?
 what are typeusages in Android apps like? (length of methods, percentage on Android framework, percentage on other stuff, etc)
 
 general data about avg tus related to different settings etc -> what does our dataset even consist of?
+possible merge this with Q1
 
 \subsection{Q1: Does the Strangeness Score behave as expected on Android Apps?}
 
@@ -50,23 +51,37 @@ do the general assumptions hold? (most tus have a low score, most apps have few 
 \subsection{Q2: How ``useful'' is this technique?}
 qualitative evaluation findings:
 how many true findings in relation to false positives does it find + average number of findings per app (remember that the findings now are for all 626 apps)
-    each for the slightly adapted 
+each for the slightly adapted forms (no context, class merged, etc)
 
 pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
 + of course the REAL bug + some real smells
 
+and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
+
+reverse test: find actual missing call in bug database -> can I find it using the approach and is it among the top findings?
+
 \subsection{Q3: How meaningful are the benchmarking results?}
 does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
-    -> comparison between manual evaluation of findings vs automatic benchmark
+-> comparison between manual evaluation of findings vs automatic benchmark over the different techniques used (context, no context, class merge, \ldots)
 
 \subsection{Q3.1: How robust is this technique in the face of erroneous input data?}
 I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
-would love to have the robustness question in here, however how to evaluate if it's working vs not working?
 
 Robustness explanation
     wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
     what is needed for it to work (lines of code, feature richness, etc) 
     problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
+
+additional test:
+	for true findings, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
+    / instead of throwing away: introducing random errors in the related tus
+
+\subsection{Q3.2: How big does the input have to be?}
+ie: how big of a codebase do we need to be able to ``learn''. When can we apply this to a project which does not rely on some well known open source framework (Android) where it is easy to gather additional data, but on for example an in-house-closed-source library oä.
+
+extremely hard to answer especially if the findings regarding benchmark validity are more or less negative.
+however, even if I cannot give experimental answers, I can at least give some lower bounds + thoughts
+(need at least 10 tus within the same ``category'' to even reach a score > 0.9, from practical results in qualitative analysis, that is probably not enough, blabla)
 
 \section{Threats to Validity}
 

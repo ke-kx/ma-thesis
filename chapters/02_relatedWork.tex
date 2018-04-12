@@ -2,9 +2,10 @@
 %todo Position this here or just before conclusion? - right now here seems better though
 
 %todo somewhere difference between smell and bug herausarbeiten
-new ideas:
+\todo[inline]{new ideas:
     mention code smells and their origin?, less focus on ``bugs'' per se (see aDoctor paper) -> while the thesis title is related to bugs, I think I can / want to use smell as well 
     Reference die belegt, dass es eine Korrelation zwischen bugs und smells gibt
+}
 
 %--- relevance of code smells and finding them
 The process of realizing that there exists a bug in a software system, identifying its cause and understanding the steps necessary to remove it, is difficult and time consuming.
@@ -12,13 +13,13 @@ Especially for larger software systems automatically detecting low quality code 
 Thus, there has been a lot of interest in approaches for automatically detecting bugs or even just smells in code.
 
 %--- section summary
-In this section we will present a number of different approaches for smell and bug detection.
+In this chapter we will present a number of different approaches for smell and bug detection.
 We start with some ``conventional'' methods which mostly rely on hard coded rules and pattern matching(?).
-We then give a quick overview of smell detection specifically related to android applications, as we are applying the method studied in this thesis to a number of android apps in the evaluation section.
+We then give a quick overview of smell detection specifically related to android applications, because we are applying the method studied in this thesis to a number of android apps in the evaluation section.
 Finally, we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which were given by the developer a-priori.
 Such techniques have the advantage of needing fewer manual oversight and changes when the system which is to be tested evolves.
 
-\section{Finding Code Smells with static Analysis}
+\section{Finding Code Smells with Static Analysis}
 %todo section title like this or smth different? (hard coded rules, ..)
 
 %todo improve flow\ldots and bug pattern what?
@@ -27,9 +28,10 @@ It reports around 400 bug patterns and can be extended using a plugin architectu
 Each bug pattern has its own specific detector, which uses some special, sometimes quite complex detection mechanism.
 These detectors are often built starting from a real bugs, first attempting to find the bug in question and then all similar ones automatically as well.
 
-In their work Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications (Sun's JDK and Glassfish J2EE server) and portions of Googles Java codebase.
+In their work Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications (Sun's JDK and Glassfish J2EE server) and portions of Google's Java codebase.
+\todo{links!}
 Their premise is, that static analysis often finds true but trivial bugs, in the sense of these bugs not really causing a defect in the software.
-This can be because they are deliberate errors, occur in situations which cannot happen anyways or situations from which recovery isn't possible.
+This can be because they are deliberate errors, occur in situations which cannot happen anyways or situations from which recovery is not possible.
 In their analysis Findbugs finds 379 medium and high priority warnings which they classify as follows:
 \begin{itemize}
     \item 5 are due to erroneous analysis by Findbugs
@@ -44,18 +46,18 @@ It is based on a principle they call ``defect likelihood''.
 With the findings of a large project (in this case the JDK) as a basis, they manually flag each finding as a true or false positive, before using this data to calculate the probability that a finding is a true finding.
 This likelihodd can not only be calculated for one specific bug pattern but also across categories and types with variance as a tiebreaker.
 The resulting ranking can further be refined with user feedback, when it is applied to a specific project.
-In their evaluation on 3 open source applications (Tomcat, AspectJ and Axis) they compare their ranking against the default severity ranking of Findbugs, which is basically a hardcoded value for each bug type.
+In their evaluation on three open source applications (Tomcat, AspectJ and Axis) they compare their ranking against the default severity ranking of Findbugs, which is basically a hardcoded value for each bug type.
 Using cutoffs at 10\%, 20\%, 30\%, \ldots of the total findings, they achieve precision and recall systematically better than the default ranking.
 This especially holds true for cutoff values around 50\%.
 
 %todo Which other papers?!
 
 \section{Android specific Smell Detection}
-%todo move this section up to after the general smell detection section?
 
-In Section \ref{ch:eval} we are analyzing a large number of open source android applications.
+In Chapter \ref{ch:eval} we are analyzing a large number of open source android applications.
 Thus, as a small overview of android related code smell detection consider the following papers.
 
+\todo[inline]{
 quick mention of the PAPRIKA paper mentioned in aDoctor intro? \cite{hecht2015detecting}
     operates on byte code, but tries to infer smells on the source code level
     builds graph model of the application from byte code and stores it in graph db (nodes are entities such as the app itself, classes, methods, attributes and variables, further annotated with specific metrics)
@@ -65,22 +67,27 @@ quick mention of the PAPRIKA paper mentioned in aDoctor intro? \cite{hecht2015de
     using the right kind of metrics they whereable to reach precision and recall of 1 on this witness application
     further they apply their tool to a bunch of free android apps in the playstore and make some assertions about the prelevance of antipatterns in publicly available applications
     findings: some antipatterns, especially related to memory leaks appear in up to 39\% of applications, ``big'' ones like facebook or skype
+}
 
-After Reimann et al. \cite{reimann2014tool} presented a catalogue of 30 android specific code smells, Palomba et al. \cite{palomba2017lightweight} developed a tool to detect 15 of them.
+After Reimann et al. \cite{reimann2014tool} presented a catalogue of 30 Android specific code smells, Palomba et al. \cite{palomba2017lightweight} developed a tool to detect 15 of them.
 It works on the abstract syntax tree of the source code and uses specifically coded rules to detect each of the smells.
 For the evaluation of their approach they examine 18 Android applications by comparing the results of their tool against a manually built oracle.
 The oracle was created by having two Masters students study the code of the applications in depth and manually flag offending locations.
 While they reach an average precision and recall of 98\%, there are a number of cases in which their tool fails or yields false positives.
 These cases are exactly those where the hard coded detection rules do not consider a special case, a new library or otherwise changing criteria.
 
+\todo[inline]{
 [explain shortcoming a bit better!]
 example where they only included 2 compression libraries in their rules, but there is a third new one
+-> exactly one of those cases where automated detection might be superior!
+}
 
 \section{Inferring Properties from the Code at Hand}
 
 As the results of the previous paper showed, it can be difficult and costly to keep hard coded detection rules up to date and relevant.
 Because of this, there has been a lot of interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
+\todo[inline]{
 [Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind),
 also mention some stuff about recommender systems in general (it is the official thesis topic after all\ldots)]
 
@@ -91,10 +98,12 @@ General: read the summary paper \cite{robillard2013automated} again and check wh
 
 Remember the general machine learning approaches which were not super successful, but at least learned a LOT
 especially like general code smells for example
+}
 
 \section{Previous work on detecting missing method calls / object usages}
--> api missuse detection
+% -> api missuse detection
 
+\todo[inline]{
 there have been a number of works concerned with finding patterns in object usages and using those to find potential bugs
 
 short summaries of the two DMMC papers: \cite{monperrus2010detecting} and \cite{monperrus2013detecting}
@@ -107,14 +116,15 @@ exactly equal means that context, type and method list are identical and almost 
 if there are a lot of almost equal type usages and very few equal ones, the tu under scrunity is probably an anomaly.
 more details on their method can be found in the next section
 
-results of monperrus et all:
+results of monperrus et al.:
 % TODO do results!
+}
 
 Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of methodcalls.
 First, they extract usage models from Java code by building a finite state automata for each method.
 The automata can be imagined similarly to the control flow graph of the method with instructions as transitions in the graph.
 From these they mine temporal properties, which describe if a method $A$ can appear before another method $B$.
-One can imagine this process as determining if there exists a path through the automata on which $A$ appears before $B$, which in turn implies an call to $A$ can happen before one to $B$.
+One can imagine this process as determining if there exists a path through the automata on which $A$ appears before $B$, which in turn implies that a call to $A$ can happen before one to $B$.
 Finally, they are using frequent itemset mining \cite{han2006data} to combine the temporal properties into patterns.
 % todo add short explanation of frequent itemset mining? I think not really relevant
 
@@ -134,7 +144,7 @@ Here an anomaly is also classifed as a ``rare'' violation of a pattern, i.e. it 
 In an evaluation case study this work finds 64 defects in 9 open source software systems which the authors classifies to 5 true defects, 8 smells and 11 hints, which equals a false positive rate of 62.5\%.
 Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint.
 
-% todo mention more related work from detecting mmc paper?
+\todo[inline]{mention more related work from detecting mmc paper?}
 
 % \section{Section on Anomaly Detection}
 
