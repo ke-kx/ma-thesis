@@ -97,6 +97,7 @@ Mention \cite{engler2001bugs} as probably the first paper which proposed the gen
 
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
 + check to read stuff\ldots
++ for more information: check this summary paper
 
 Remember the general machine learning approaches which were not super successful, but at least learned a LOT
 especially like general code smells for example
@@ -105,21 +106,16 @@ especially like general code smells for example
 \section{Previous work on detecting missing method calls / object usages}
 % -> api missuse detection
 
+There have been a number of works concerned with finding patterns in object usages and using those to find potential bugs.
+Most relevant for this work are two papers by Monperrus et al.\cite{monperrus2010detecting}\cite{monperrus2013detecting} which introduced the notion of almost similarity and are the primary inspiration for this work.
+Their method considers the invocation of methods on an object of a particular type in a particular context a type usage.
+Here, the context is nothing more than the name of the method in which the type usage occurs together with its signature (the types of the method parameters).
+After mining a list of all the type usages present in a code base, they relate the number of exactly equal type usages to the number of almost equal ones.
+Exactly equal means that context, type and method list are exactly identical, while almost equal means the same, only that the method list can contain one additional method.
+This technique is explained in detail in Chapter \ref{ch:dmmc}.
+
 \todo[inline]{
-there have been a number of works concerned with finding patterns in object usages and using those to find potential bugs
-
-short summaries of the two DMMC papers: \cite{monperrus2010detecting} and \cite{monperrus2013detecting}
-most important for this works are the two papers by Monperrus et all (cite)
-which introduced the notion of almost similarity and are the primary inspiration for this work
-they consider the invocation of methods on an object of a particular type in a particular context a type usage
-here the context is nothing more than the name of the method in which the object is used and its signature (type of its parameters)
-after mining a list of all the type usages present in a code base, they relate the number of exactly equal type usages to the number of almost equal ones
-exactly equal means that context, type and method list are identical and almost equal means the same only that the method list can contain one additional method
-if there are a lot of almost equal type usages and very few equal ones, the tu under scrutiny is probably an anomaly.
-more details on their method can be found in the next section
-
 results of monperrus et al.:
-% TODO do results!
 }
 
 Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of methodcalls.
