@@ -1,6 +1,9 @@
 \chapter{Implementation}
 details about implementation and pitfalls that had to be overcome
 
+operates by statically analyzing a piece of software
+(not on the source code, but rather on the compiled byte code -> why: easier)
+
 \section{Bytecode Analysis}
 maybe rename section?
 
@@ -8,9 +11,20 @@ soot as analysis framework -> what is soot
 why bytecode over sourcecode
 \ldots
 
+\section{Procedure}
+
+1. extract tus from software
+2. for every tu:
+    a) search for tus which are EXACTLY similar
+    b) search for TUs which are almost similar
+    c) compute the strangeness score
+    d) extract list of potentially missing calls
+3. output a list of tus, sorted by S score, the the ones with a score above XX are considered to be an anomaly + their missing calls
+
 \section{Improvements}
 using a database + flexible python benchmarking / analysis
 -> proper overview of resulting system: java analysis -> db -> python
+-> somewhere a proper overview of the concrete steps that are taken + explanation of them?! (maybe in extra chapter BEFORE this one?) - similar to monperrus2010 p7
 
 explaining all the work i did
     first reading their code, coming across a couple of discrepancies between code and paper, later check if everthing still works (evaluation)

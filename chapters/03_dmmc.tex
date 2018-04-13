@@ -3,33 +3,157 @@
 %--- quick intro again why it is interesting to detect them
 thinking back to example in introduction, it is easy to see that there are bugs out there which occur because of missing method calls
 additionally Monperrus et al. showed in their informal evaluation that real software systems have many bugs related to missing method calls
+\todo[inline]{INTRO WHAT? - why is it interesting to detect them + what method are we using oä?}
 
 %--- overview of this chapter
+In this chapter we will first give a proper explanation of the method proposed by Monperrus et al..
+This includes a proper qualification of the notions of type usages as well as their equality and almost equality, which have already been mentioned in the previous chapter.
+We will then explain how the strangeness score, which describes the amount a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
+
+In the second section of this chapter, we explain some minor tweaks to the type usage notion, whose ability to detect missing method calls we explore further in Chapter \ref{ch:eval}.
+\todo{more details? -> when proper contents are decided}
 
 \section{The Majority Rule}
 -> existing work
+\todo{make sure that chapter intro + this section intro work well together}
+
+intuition:
+a piece of code is likely to contain a defect, it: very few exactly similar instances, lots of slightly different instances
 
 %--- start with intuition (restaurant example)
-intutition behind the idea of the majority rule as follows
+analogy for the idea of the majority rule as follows
 imagine being the waiter preparing the tables in a restaurant
 there are 100 seats and each of them has a plate, a knife on the right (?) and a fork on the left
 however only 99 of them have a spoon on the top,
 one is missing the spoon.
-then it is highly likely that this one exception to the rule: ``each seat should have a plate, a knife, a fork and a spoon'' is a mistake
-and you should add the spoon to singular seat where it is missing
+then it is highly likely that this one exception to the rule: ``each seat should have a plate, a knife, a fork and a spoon''
+is a mistake and you should add the spoon to singular seat where it is missing
+
+the rest of this section extends this idea to object oriented software and formalizes the different notions required to implement a system detecting places like such
+here: spoon = method call, ie extend the concept of the majority rule to type usages
 
 \subsection{Type Usages}
-%--- formalized -> read the papers again for inspiration
 %--- what is a type usage
+abstraction over analyzed code
+ignores order! / abstract away
+list of method calls on some object of a particular type occurring in body of some method
+[Show example + describe!!!]
+important information which is saved: the list of methods, the calls being made, the context = method in which tu appears
+context = name of the method in which the tu appears + type of the parameters (i think the return type is ignored?)
 
-\subsection{Equal and almost equal}
+%--- formalized -> read the papers again for inspiration
+for each variable x
+extract T(x) => the type
+the context C(x), which is whole method name in which the variable is used + type of parameters (i think return type is ignored?)
+and list of invoked Methods: $M(x) = {m_1, m_2, \dotsc, m_n}$ (within C on x)
+if there are two variables of the same type, this results in two type usages extracted (unless they refer to the same object)
+[again example: code + the corresponding values for T(x), C(x), M(x), maybe same figure as example above]
+
+\subsection{Exact and Almost Similarity}
+\todo[inline]{hate the title right now, ``equal and almost equal'' sounds better but is not as precise, what else?}
+
 %--- what are exactly equal and almost equal
+consider talking about similarity instead (variable names, surrounding code, location, blabla) might be different
+
+informally:
+exactly similar ->
+    same type!
+    type usage appears in a similar method (ie context is the same)
+    the invoked methods = list of methodcalls is identical
+[include example + describe]
+``Similar'' instead of ``equal'' because several things are not the same:
+variable names, surrounding code, method order, LOCATION!, \ldots
+
+almost similar ->
+    again the type and context are the same
+    list of method calls is identical + one additional call
+    [again include + describe example, probably in same figure?]
+
+%--- formalized
+to formalize define binary relationships over type usages
+relationship for Exact similarity (Equality) E
+two type usages x and y are exactly-similar if and only if:
+
+\begin{align*}
+xEy \iff & T(x) = T(y) \: \land \\
+         & C(x) = C(y) \: \land \\
+         & M(x) = M(y)
+\end{align*}
+\todo{potentially change alignment to make look a bit nicer}
+
+then the set of exactly similar type usages of x is defined as
+\begin{equation*}
+E(x) = \{y \mid xEy \}
+\end{equation*}
+
+this holds true for the identity, ie xEx is always true and E(x) is always at least {x} (and |E(x)| >= 1)
+
+For almost equality we define the relation A which holds if two type usages are almost similar
+a type usage y is almost similar to a type usage x iff:
+\begin{align*}
+xAy \iff & T(x) = T(y) \: \land \\
+         & C(x) = C(y) \: \land \\
+         & M(x) \subset M(y) \: \land \\
+         & |M(y)| = |M(x)| + 1
+\end{align*}
+
+Similarly to $E(x)$ we define $A(x)$ as the set of type usages which are almost similar to $x$:
+\begin{equation*}
+A(x) = \{y \mid xAy \}
+\end{equation*}
+
+in contrast to $E(x)$, $A(x)$ can be empty and $|A(x)|\geq0$
+
+furthermore, it is possible to adapt the definition of almost similarity
+instead of looking for type usages which have the same method calls + one additional ones, we could also look at k additional ones
+then in the definition of A the last line changes as follows: $|M(y)| = |M(x)| + k, k\geq1$
 
 \subsection{The Strangeness Score}
+
+assumption behind system:
+a type usage is abnormal, if a small number is exactly similar, but a large number are almost similar
+Informally: a few places use this type in exactly the same way, but a big majority use it in a way which is only slightly different
+assuming the majority is correct, the tu under scrutiny is deviant and potentially erroneous
+
+to capture concretely how anomalous an object is, we need a measure of strangenss
+this will be the Strangeness score
+it allows to order type usages, to identify the ``strangest'' TUs, which are most interesting for evaluation by a human expert
+
 %--- strangeness score calculation
+we define the S(trangeness)-Score as:
+\begin{equation*}
+    S-score(x) = 1 - \frac{|E(x)|}{|E(x)|+|A(x)|}
+\end{equation*}
+
+convince yourself that this definition correctly handles extreme cases:
+given one type usage a without any additional exactly similar or almost similar tus: $|E(a)| = 1, |A(a)|=0 \rightarrow S-score(a) = 1-\frac{1}{1} = 0$
+so: one unique type usage without any ``neighbors'' is totally normal and not strange
+
+given a type usage b with 99 almost similar and NO other exactly similar TUs: $|E(b)| = 1, |A(b)| = 99 \rightarrow S-score(b) = 1-\frac{1}{1+99} = 0.99$
+by intuition such a type usage is very strange and the s score supports the intuition
 
 \subsection{Which Calls are missing?}
+
+only detecting the type usages which are somewhat strange, is not enough
+we would also like to present the developer with some candiate suggestions, WHICH method call might be missing
+
+Intuition: look at all the almost similar type usages and the method call which they add
+then take the frequency of each methodcall they add and take this as suggestion likelihood
+[example!!! with a couple of tus and their methodcalls -> calculate the likelihood]
+
+formally:
+the calls to recommend are the calls that are present in the tus in A(x) but not in M(x)
+\begin{equation*}
+    R(x) = \bigcup_{z \in A(x)} M(z) \setminus M(x)
+\end{equation*}
+\todo{use this equation or the one in their paper (should be identical, which one is easier to follow?)}
+
 %--- how to decide which is the call which is missing most likely
+then for each of these methods m in R(x), we can calculate the likelihood as follows:
+\begin{equation*}
+    \phi(m, x) = \frac{}{}
+\end{equation*}
+--- CONTINUE!
 
 \subsection{Caveats}
 really include here or only in Evaluation section?
@@ -41,13 +165,19 @@ probably: most likely present in GUI systems
 \section{Extensions}
 -> My work
 theoretical explanation of the different approaches
-    load type usages in different ways
-        per class type usages / ignore context
-    look for different things (wrong method call, superfluous method)
 
-    naive bayesian learner as baseline?
-    something as of now unknown from anomaly detection
-    clustering approach (hypersphere)
+\subsection{Modifying the Input Data}
+stupid title, change it!
+
+load type usages in different ways
+    per class type usages / ignore context
     working with the inheritance hierarchy!
 
+\subsection{Other errors}
+    look for different things (wrong method call, superfluous method)
 
+\subsection{Better Anomaly Detection}
+    clustering approach (hypersphere)
+    something as of now unknown from anomaly detection
+
+    -> do I really need this section? maybe only in Implementation?
