@@ -59,7 +59,7 @@ This especially holds true for cutoff values around 50\%.
 In Chapter \ref{ch:eval} we are analyzing a large number of open source android applications.
 Thus, as a small overview of android related code smell detection consider the following papers.
 
-Hecht et al. presented an approach they call PAPRIKA which operates on compiled Android Apps, but tries to infer smells on the source code level.
+Hecht et al. \cite{hecht2015detecting} presented an approach they call PAPRIKA which operates on compiled Android Apps, but tries to infer smells on the source code level.
 From the byte-code analysis they build a graph model of the application and store it in a graph database.
 The nodes of the graph are entities such as the app itself, individual classes, methods and even attributes and variables.
 They are then further annotated with specific metrics relevant to the current abstraction level, e.g. ``Number of Classes'' for the app, ``Depth of Inheritance'' for a class or ``Number of Parameters'' for a method.
@@ -89,19 +89,22 @@ This is a great example of a case where hard-coded rules fail, because the are n
 As the results of the previous paper showed, it can be difficult and costly to keep hard coded detection rules up to date and relevant.
 Because of this, there has been a lot of interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
-\todo[inline]{
 [Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind),
 also mention some stuff about recommender systems in general (it is the official thesis topic after all\ldots)]
 
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
 
+Mention MUBench?!
+    -> useful classification of api misuses
+    Dataset of bugs related to API misuses
+    \ldots
+
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
 + check to read stuff\ldots
-+ for more information: check this summary paper
++ for more information: check this summary paper / the 2017 one? / both?
 
 Remember the general machine learning approaches which were not super successful, but at least learned a LOT
 especially like general code smells for example
-}
 
 \section{Previous work on detecting missing method calls / object usages}
 % -> api missuse detection
