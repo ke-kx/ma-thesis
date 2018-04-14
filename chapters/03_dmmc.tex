@@ -36,7 +36,7 @@ here: spoon = method call, ie extend the concept of the majority rule to type us
 %--- what is a type usage
 abstraction over analyzed code
 ignores order! / abstract away
-list of method calls on some object of a particular type occurring in body of some method
+list of method calls on an object of a particular/given type occurring in body of some method
 [Show example + describe!!!]
 important information which is saved: the list of methods, the calls being made, the context = method in which tu appears
 context = name of the method in which the tu appears + type of the parameters (i think the return type is ignored?)
@@ -48,6 +48,7 @@ the context C(x), which is whole method name in which the variable is used + typ
 and list of invoked Methods: $M(x) = {m_1, m_2, \dotsc, m_n}$ (within C on x)
 if there are two variables of the same type, this results in two type usages extracted (unless they refer to the same object)
 [again example: code + the corresponding values for T(x), C(x), M(x), maybe same figure as example above]
+maybe use the example from intro (button)?!
 
 \subsection{Exact and Almost Similarity}
 \todo[inline]{hate the title right now, ``equal and almost equal'' sounds better but is not as precise, what else?}
@@ -108,6 +109,9 @@ furthermore, it is possible to adapt the definition of almost similarity
 instead of looking for type usages which have the same method calls + one additional ones, we could also look at k additional ones
 then in the definition of A the last line changes as follows: $|M(y)| = |M(x)| + k, k\geq1$
 
+something about how expensive it is to compute these sets:
+given a codebase with n typeusages, we can compute the sets E(x) and A(x) in linear time O(n)
+
 \subsection{The Strangeness Score}
 
 assumption behind system:
@@ -122,14 +126,14 @@ it allows to order type usages, to identify the ``strangest'' TUs, which are mos
 %--- strangeness score calculation
 we define the S(trangeness)-Score as:
 \begin{equation*}
-    S-score(x) = 1 - \frac{|E(x)|}{|E(x)|+|A(x)|}
+    \mathnorm{S-score}(x) = 1 - \frac{|E(x)|}{|E(x)|+|A(x)|}
 \end{equation*}
 
 convince yourself that this definition correctly handles extreme cases:
-given one type usage a without any additional exactly similar or almost similar tus: $|E(a)| = 1, |A(a)|=0 \rightarrow S-score(a) = 1-\frac{1}{1} = 0$
+given one type usage a without any additional exactly similar or almost similar tus: $|E(a)| = 1, |A(a)|=0 \rightarrow \mathnorm{S-score}(a) = 1-\frac{1}{1} = 0$
 so: one unique type usage without any ``neighbors'' is totally normal and not strange
 
-given a type usage b with 99 almost similar and NO other exactly similar TUs: $|E(b)| = 1, |A(b)| = 99 \rightarrow S-score(b) = 1-\frac{1}{1+99} = 0.99$
+given a type usage b with 99 almost similar and NO other exactly similar TUs: $|E(b)| = 1, |A(b)| = 99 \rightarrow \mathnorm{S-score}(b) = 1-\frac{1}{1+99} = 0.99$
 by intuition such a type usage is very strange and the s score supports the intuition
 
 \subsection{Which Calls are missing?}
@@ -146,14 +150,17 @@ the calls to recommend are the calls that are present in the tus in A(x) but not
 \begin{equation*}
     R(x) = \bigcup_{z \in A(x)} M(z) \setminus M(x)
 \end{equation*}
-\todo{use this equation or the one in their paper (should be identical, which one is easier to follow?)}
+\todo[inline]{use this equation or the one in their paper (should be identical, which one is easier to follow?) + make sure about klammersetzung}
 
 %--- how to decide which is the call which is missing most likely
 then for each of these methods m in R(x), we can calculate the likelihood as follows:
 \begin{equation*}
-    \phi(m, x) = \frac{}{}
+\phi(m, x) = \frac{|\{z \mid z \in A(x) \land m \in M(z)\}|}{|A(x)|}
 \end{equation*}
---- CONTINUE!
+this is identical to the freuquency / share of almost similar TUS which use this method among all almost similar tus
+[consider the example + example explanation (a number tus, maybe of the Button example from introduction?)]
+
+observe: also works when M(x) = empty or x is this
 
 \subsection{Caveats}
 really include here or only in Evaluation section?
