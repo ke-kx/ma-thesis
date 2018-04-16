@@ -1,4 +1,4 @@
-\chapter{Introduction}\label{chapter:introduction}
+\chapter{Introduction}\label{ch:intro}
 
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
 Larger software systems often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
@@ -59,7 +59,7 @@ public class MyPage extends DialogPage {
 \end{lstlisting}
 Since nothing special was mentioned in the documentation of \code{DialogPage}, Alice simply creates the control by instantiating a \code{Composite} which contains all the widgets of \code{MyPage}.
 She knows she has to instantiate it with the parent as a constructor parameter:
-\begin{lstlisting}
+\begin{lstlisting}[language=java]
 public void createControl(Composite parent) {
     Composite mycomp = new Composite(parent);
     ....

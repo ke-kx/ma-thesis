@@ -1,90 +1,195 @@
 \chapter{Detecting Missing Method Calls}\label{ch:dmmc}
-\todo[inline]{
-INTRO WHAT? - why is it interesting to detect them + what method are we using oä?
-%--- quick intro again why it is interesting to detect them
-thinking back to example in introduction, it is easy to see that there are bugs out there which occur because of missing method calls
-additionally Monperrus et al. showed in their informal evaluation that real software systems have many bugs related to missing method calls
-}
+\todo[inline]{better intro\ldots}
+As mapped out in Section \ref{ch:intro} bugs related to missing method calls occur in real software systems.
+These bugs are often related to complicated APIs and frameworks, and we would like to detect them.
+The idea is to detect patterns in correct usages which will enable us to single out the faulty ones.
 
 %--- overview of this chapter
-In this chapter we will first give a proper explanation of the method proposed by Monperrus et al..
-This includes a proper qualification of the notions of type usages as well as their equality and almost equality, which have already been mentioned in the previous chapter.
-We will then explain how the strangeness score, which describes the amount a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
+In this chapter we will first give a proper explanation of the method proposed by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} based on the majority rule.
+This includes a proper qualification of the notions of type usages, as well as their equality and almost equality, which we already mentioned in the previous chapter.
+We will then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
 
 In the second section of this chapter, we explain some minor tweaks to the type usage notion, whose ability to detect missing method calls we explore further in Chapter \ref{ch:eval}.
-\todo{more details? -> when proper contents are decided}
+\todo[inline]{more details? -> when proper contents are decided + do not mention chapter 5}
 
 \section{The Majority Rule}
 %-> existing work
-\todo{make sure that chapter intro + this section intro work well together}
+\todo[inline]{make sure that chapter intro + this section intro work well together}
 
-The intuition behind the majority rule, is that a piece of code is likely to contain a defect, if there are none or very few equal instances, but a lot of slightly different instances.
-It then seems likely that the code which appears only a selected few times should be adapted in a way to match the majority of slightly different instances.
+The intuition behind the majority rule is that a piece of code is likely to contain a defect if there are none or very few equal instances, but a lot of slightly different instances.
+It then seems likely that the code which appears a selected few times only should be adapted in a way to match the majority of slightly different instances.
 
 An analogy which explains the idea well goes as follows.
 Imagine being the waiter preparing the tables in a restaurant.
-There are 100 seats and each of them is equipped with a plate, a knife on the right and a fork on the left.
-However, only 99 of them have a spoon above the plate, there is one seat $s$ which is missing the spoon.
-Then it is highly likely, that this one exception to the rule ``each seat should have a plate, a knife, a fork and a spoon'' is a mistake and you should add the spoon to the singular seat $s$ where it is missing.
+There are 100 seats, and each of them is equipped with a plate, a knife on the right and a fork on the left.
+However, of these seats only 99 have a spoon above the plate, and there is one seat $s$ which is missing the spoon.
+Then it is highly likely, that this one exception to the rule ``each seat should have a plate, a knife, a fork and a spoon'' is a mistake, and you should add the spoon to the single seat $s$ where it is missing.
 
-The remainder of this section extends this idea to object oriented software and formalizes the different notions required to implement a system detection such places.
-In this context each piece of cutlery (knife, spoon, fork) can be imagined as a method call, i.e. we extend the concept of the majority rule to type usages.
+The remainder of this section extends this idea to object-oriented software and formalizes the different notions required to implement a system detecting such places.
+In this context each piece of cutlery (knife, spoon, fork) can be imagined as a method call, i.e., we extend the concept of the majority rule to types and method calls.
 
 \subsection{Type Usages}
+\todo[inline]{make paragraphs instead of subsections?}
 
-Generally speaking type usages are an abstraction over analyzed code.
-They ignore the order of method calls and are only concerned which the list of method calls on an object of a particular type occurring in the body of some method.
-The important information which is associated with a type usage is thus as follows: the type of the object, the list of methods invoked and the context.
-The context is defined as the name of the method in which the type usage appears together with the type of its parameters.
-%todo i think the return type is ignored?
+Generally speaking, type usages are an abstraction over the analyzed code.
+They ignore the order of method calls and are only concerned with the list of method calls invoked on some object.
+The critical information which is associated with a type usage is thus as follows: the type of the object, the list of methods invoked on it and the context in which the object is used.
+We define the context as the name of the method in whose body the type usage appears together with the type of its parameters.
+%todo I think the return type is ignored?
 
-\todo[inline]{EXMAPLE!!! + description}
-
-%--- formalized -> read the papers again for inspiration
-Formalized, a type usage consists of the following:
-For each variable $x$, its type $T(x)$ and the context $C(x)$, which is the name of the method in which $x$ appears and the type of its parameters.
-Additionally, the list of methods which are invoked on $x$ within $C(x)$: $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
+%--- formalized -> reread the papers for inspiration
+Formalized, given some code the type usages are extracted as follows:
+For each variable $x$, note its type $T(x)$ and the context $C(x)$ in which it occurs.
+Additionally, save the list of methods which are invoked on $x$ within $C(x)$: $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
 If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object, more on this in Section \ref{sec:bytecode}).
 
-\todo[inline]{ again example: code + the corresponding values for T(x), C(x), M(x), maybe same figure as example above 
-maybe use the example from intro (button)?!
+\begin{figure}[h]
+    \begin{subfigure}[c]{0.5\textwidth}
+        \begin{lstlisting}[language=java, basicstyle=\small]
+class A extends Page {
+    Button b;
+
+    Button createButton() {
+        b = new Button();
+        b.setText("hello");
+        b.setColor(GREEN);
+        ... (other code)
+        Text t = new Text();
+        return b;
+    }
 }
+        \end{lstlisting}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.5\textwidth}
+        \begin{lstlisting}[basicstyle=\small]
+T(b) = 'Button'
+C(b) = 'Page.createButton()'
+M(b) = {<init>, setText, setColor}
+
+T(t) = 'Text'
+C(t) = 'Page.createButton()'
+M(t) = {<init>}
+        \end{lstlisting}
+    \end{subfigure}
+    \caption{Example illustrating the Extraction of Type Usages (taken from \cite{monperrus2013detecting})}
+    \label{fig:tu_example}
+\end{figure}
+
+As an example, consider the code in Figure \ref{fig:tu_example}.
+It contains two type usages, one of type \code{Button} and another one of type \code{Text}.
+The context for both is \code{createButton()}.
+The methods invoked on the \code{Button} object are initialization (\code{new}), \code{setText} and \code{setColor}.
+The \code{Text} object, on the other hand, is only initialized.
+Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$, $C(x)$ and $M(x)$ are shown on the right hand side.
 
 \subsection{Exact and Almost Similarity}
 
 %--- what are exactly equal and almost equal
 To detect type usages which are anomalous by the majority rule, we now need a notion what it means for two type usages to be exactly similar and only almost similar.
 \todo{some better explanation WHY we need this / add it in section intro?}
-Informally, we say that two type usages are exactly similar, iff they have the same type, the type usage appears in a similar method (i.e. the context is identical) and if their list of method calls is identical.
-We call these type usages ``similar'' instead of ``equal'', because several things are indeed not the same: Variable names, surrounding or interspersed code, method order and the location are all disregarded and might indeed be different.
+Informally, we say that two type usages are exactly similar, iff they have the same type, the type usage appears in a similar method (i.e., the context is identical) and if their list of method calls is identical.
+We call these type usages ``similar'' instead of ``equal'' because several things are indeed not the same: variable names, surrounding or interspersed code, method order and the concrete location (class) are all disregarded and might indeed differ.
 
-As an example, \ldots
-\todo[inline]{include examples + describe}
+The notion of almost similarity is also not far away.
+We say that a type usage $y$ is almost similar to a given type usage $x$, if they share the same type and context and the list of method calls of $y$ is the same as the method calls of $x$ plus one additional call.
 
-The notion of almost similarity is also not far away: We say that a type usage $y$ is almost similar to a given type usage $y$, if they share the same type and context and the list of method calls of $y$ is the same as the method calls of $x$ plus one additional call.
-\todo[inline]{again include + describe example, probably in same figure?}
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[c]{0.47\textwidth}
+        \begin{lstlisting}[language=java, frame=single, basicstyle=\footnotesize]
+class A extends Page {
+    Button createButton() {
+        Button b = new Button();
+        ... (interlaced code)
+        b.setText("hello");
+        ... (interlaced code)
+        b.setColor(BLUE);
+        return b;
+    }
+}
+        \end{lstlisting}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[c]{0.47\textwidth}
+        \begin{lstlisting}[language=java, frame=single, basicstyle=\footnotesize]
+class B extends Page {
+    Button createButton() {
+        ... (code before)
+        Button aBut = new Button();
+        ... (interlaced code)
+        aBut.setColor(RED);
+        aBut.setText("goodbye");
+        return b;
+    }
+}
+        \end{lstlisting}
+    \end{subfigure}
+    \\
+
+    \begin{subfigure}[c]{0.47\textwidth}
+        \begin{lstlisting}[language=java, frame=single, basicstyle=\footnotesize, showstringspaces=false]
+class C extends Page {
+    Button myBut;
+    Button createButton() {
+        Button myBut = new Button();
+        myBut.setColor(ORANGE);
+        myBut.setText("Great Company!");
+        myBut.setLink("https://www.cqse.eu");
+        ... (code after)
+        return b;
+    }
+}
+        \end{lstlisting}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[c]{0.47\textwidth}
+        \begin{lstlisting}[language=java, frame=single, basicstyle=\footnotesize, showstringspaces=false]
+class D extends Page {
+    Button createButton() {
+        Button tmp  = new Button();
+        tmp.setLink("https://slashdot.org/");
+        ... (interlaced code)
+        tmp.setText("All the news");
+        tmp.setColor(GREEN);
+        tmp.setTooltipText("Click me!");
+        return b;
+    }
+}
+        \end{lstlisting}
+    \end{subfigure}
+
+    \caption{Examples of similar and almost similar Type Usages (also inspired by \cite{monperrus2013detecting})}
+    \label{fig:sim_asim}
+\end{figure}
+
+Consider the example code snippets in Figure \ref{fig:sim_asim}.
+The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the same method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
+Observe that variable names and method parameter play no role in this.
+Additionally, neither the order of methods nor any additional code (which does not call a method on the \code{Button} objects) does have any influence on it.
+The type usage in class \code{C} (bottom left) is almost similar to the ones in \code{A} and \code{B}, because besides the two methods \code{setText} and \code{setColor} it also invokes one additional method: \code{setLink}.
+Finally, the type usage in class \code{D} (bottom right) invokes \textbf{two} additional methods in comparison to the ones in \code{A} or \code{B}, meaning that it is not almost similar to them.
+However, it is in fact almost similar to the type usage in class \code{C}, since it only invokes one additional method: \code{setTooltipText}.
 
 %--- formalized
 To formalize these notions, we define two binary relationships over type usages.
 The relationship for exact similarity is called $E$ and we say that two type usages $x$ and $y$ are exactly similar if and only if:
 \begin{align*}
-xEy \iff & T(x) = T(y) \: \land \\
-         & C(x) = C(y) \: \land \\
+xEy \iff & T(x) \: = T(y) \;\: \land \\
+         & C(x) \: = C(y) \;\: \land \\
          & M(x) = M(y)
 \end{align*}
-\todo{potentially change alignment to make look a bit nicer}
 
 Given this, the set of exactly similar type usages in relation to $x$ is defined as:
 \begin{equation*}
 E(x) = \{y \mid xEy \}
 \end{equation*}
-Observe that this relation holds true for the identity, i.e. $xEx$ is always true and $x \in E(x)$ (and thus $|E(x)| \geq 1$
+Observe that this relation holds true for the identity, i.e. $xEx$ is always true and $\forall x: x \in E(x)$ (and thus $|E(x)| \geq 1$).
 
-For almost similarity we define the relation $A$ which holds if two type usages are almost similar.
+For almost similarity, we define the relation $A$ which holds if two type usages are almost similar.
 A type usage $y$ is almost similar to a type usage $x$ iff:
 \begin{align*}
-xAy \iff & T(x) = T(y) \: \land \\
-         & C(x) = C(y) \: \land \\
+xAy \iff & T(x) \: = T(y) \;\; \land \\
+         & C(x) \: = C(y) \;\; \land \\
          & M(x) \subset M(y) \: \land \\
          & |M(y)| = |M(x)| + 1
 \end{align*}
@@ -101,12 +206,12 @@ Instead of looking for type usages which have the same method calls plus one add
 Then, in the definition of $A$ the last line changes as follows: $|M(y)| = |M(x)| + k, k\geq1$
 \todo{mention ignoring the context here?!}
 
-Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
+Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ for one given type usage $x$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
 
 \subsection{The Strangeness Score}
 
-Recall the assumption behind the majority rule: A type usage is abnormal, if a small number of type usages is exactly similar, but a large number are almost similar.
-Informally, this means a few places use this type in exactly the same way, but a big majority use it in a way which is slightly different (by exactly one method call).
+Recall the assumption behind the majority rule: A type usage is abnormal if a small number of type usages is exactly similar, but a large number are almost similar.
+Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by exactly one method call).
 Assuming the majority is correct, the type usage under scrutiny is deviant and potentially erroneous.
 
 To capture concretely how anomalous an object is, we need a measure of strangeness.
@@ -120,23 +225,21 @@ Formally, we define the S(trangeness)-Score as:
 \end{equation*}
 
 To see that this definition makes sense, consider the following extreme cases:
-Given one type usage $a$ without any additional exactly similar or almost similar type usages means $|E(a)| = 1$ and $|A(a)| = 0$.
-Then, we calculate the strangeness score: $\operatorname{S-score}(a) = 1-\frac{1}{1} = 0$.
-So one unique type usage without any ``neighbors'' to consider is totally normal and not strange.
+Given one type usage $a$ without any additional exactly similar or almost similar type usages, it will have $|E(a)| = 1$ and $|A(a)| = 0$.
+Then, we can calculate the strangeness score: $\operatorname{S-score}(a) = 1-\frac{1}{1} = 0$.
+So a unique type usage without any ``neighbors'' to consider is completely normal and not strange.
 On the other hand, given a type usage $b$ with $99$ almost similar and no other exactly similar type usages, we have $|E(b)| = 1$ and $|A(b)| = 99$.
 Which results in a strangeness score of $\operatorname{S-score}(b) = 1-\frac{1}{1+99} = 0.99$.
-Following intuition such a type usage is very strange and indeed, the S-score supports this.
+Following intuition, such a type usage is very strange, and indeed, the S-score supports this.
 
 \subsection{Which Calls are missing?}
 
-It is not enough to only detect those type usages which are somewhat strange.
+Only detecting the type usages which are outliers is not enough.
 We would also like to present the developer with some candidate suggestions, what might be the method call that is missing.
 
 The intuition for this is to look at all the almost similar type usages and the additional method call that they invoke.
 Then take the frequency of each unique method call among them and take this as the suggestion likelihood.
-\todo{don't like the formulation, improve!}
-
-\todo[inline]{example!!! with a couple of tus and their methodcalls -> calculate the likelihood}
+\todo{do not like the formulation, improve!}
 
 Formally, the calls we can recommend for a type usage $x$ are the calls that are present in the type usages in $A(x)$ but not in $M(x)$.
 The set of these methods shall be called $R(x)$ and is defined as follows:
@@ -154,7 +257,36 @@ Now for each of these methods $m$ in $R(x)$, we can calculate their likelihood a
 This is identical to the share of type usages which use this method among all the type usages which are almost similar to $x$.
 Observe that this definition also works when $M(x)$ is empty or $x$ is \code{this}.
 
-\todo[inline] {consider the example + example explanation (a number tus, maybe of the Button example from introduction?)}
+\begin{figure}[h]
+    \begin{subfigure}[c]{0.45\textwidth}
+        \begin{align*}
+& T(x) = \mathtt{Button} \\
+& M(x) = \{ \mathtt{<\!\!init\!\!>} \} \\
+& A(x) = \{ a, b, c, d, e \} \\
+& M(a) = \{ \mathtt{<\!\!init\!\!>},\, \mathtt{setText} \} \\
+& M(b) = \{ \mathtt{<\!\!init\!\!>},\, \mathtt{setText} \} \\
+& M(c) = \{ \mathtt{<\!\!init\!\!>},\, \mathtt{setText} \} \\
+& M(d) = \{ \mathtt{<\!\!init\!\!>},\, \mathtt{setText} \} \\
+& M(e) = \{ \mathtt{<\!\!init\!\!>},\, \mathtt{setFont} \}
+        \end{align*}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.45\textwidth}
+        \begin{align*}
+& R(x) = \{ \mathtt{setText},\, \mathtt{setFont} \} \\
+& \phi(setText, x) = \frac{4}{5} = 0.8 \\
+& \phi(setFont, x) = \frac{1}{5} = 0.2
+        \end{align*}
+    \end{subfigure}
+    \caption{Example for computing the Likelihood of missing Calls}
+    \label{fig:missing_calls}
+\end{figure}
+
+To illustrate these definitions, consider the example in Figure \ref{fig:missing_calls}.
+The type usage in question is denoted with $x$, operates on a \code{Button} object and the only method that is invoked is the initialization.
+There are five almost similar usages denoted as $a$, $b$, $c$, $d$ and $e$.
+Four of them ($a$ through $d$) have a call to \code{setText} after the initialization.
+The last one, $e$, has a call to \code{setFont} instead.
+Thus, we can recommend the methods \code{setText} and \code{setFont} with a likelihood of $4/5 = 80\%$ and $1/5 = 20\%$ respectively.
 
 \subsection{Caveats}
 really include here or only in Evaluation section?
