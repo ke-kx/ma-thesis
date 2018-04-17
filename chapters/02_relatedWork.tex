@@ -147,5 +147,18 @@ Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint
 
 \todo[inline]{mention more related work from detecting mmc paper?}
 
-% \section{Section on Anomaly Detection}
+\section{Other Ideas}
+\todo[inline]{change title}
 
+\cite{zhou2017analyzing}
+already mentioned problem of incorrect API documentation
+this often happens when a developer adapts or improves the code but forgets to change the documentation as well
+they propose an automated approach to detecting ``defects'' in the api documentation
+defect = two cases: either api is incomplete in describing some constraints
+or description exists, but does not match the situation in the code
+assumption: code is correct (has been extensively tested)
+
+too detailed?!
+technique: static analysis of the code, then pattern based natural language processing. the resulting first-order logic formula is fed into an SMT solver to detect inconsistencies
+
+--- continue in section 2 of paper
