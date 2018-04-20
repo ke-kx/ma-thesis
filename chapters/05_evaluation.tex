@@ -39,6 +39,8 @@ große frage: bringt das Verfahren etwas?
 
 for each question: explanation of question, then results + interprettation
 \subsection{Dataset Overview}
+rausziehen (extra section)
+
 what kind of dataset do we have? (how many apps, how big, how many TUs, how are the TUs split between the apps -> size of applications)
 what are typeusages in Android apps like? (length of method list, percentage on Android framework, percentage on other stuff, etc) 
 
@@ -49,6 +51,7 @@ look into and understand the type of data i have -> how often small inputs, how 
  tu method list sizes - also check their paper, q mas?
 
 \subsection{RQ1: Does the Strangeness Score behave as expected on Android Apps?}
+-> ist keine forschungsfrage, gehört zur vorherigen section!
 
 do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
     -> answer with graphs related to general score verteilung
@@ -56,7 +59,12 @@ do the general assumptions hold? (most tus have a low score, most apps have few 
     what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
 verteilung of strangeness scores, histogram of it
 
+Frage: Ist das ganze überhaupt schnell genug?
+-> JA!
+(auslesen kosten + )
+
 \subsection{RQ2: How ``useful'' is this technique?}
+wie relevant sind diese obtained results in der praxis (as determined by fp vs tp)
 \todo[inline]{change title\ldots}
 
 qualitative evaluation findings:
@@ -88,6 +96,8 @@ are the results better if we leave out the context / merge on a per class basis 
 \subsection{RQ4: How robust is this technique in the face of erroneous input data?}
 I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
 
+is robust auf 
+
 Robustness explanation
     wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
     what is needed for it to work (lines of code, feature richness, etc) 
@@ -103,6 +113,8 @@ ie: how big of a codebase do we need to be able to ``learn''. When can we apply 
 extremely hard to answer especially if the findings regarding benchmark validity are more or less negative.
 however, even if I cannot give experimental answers, I can at least give some lower bounds + thoughts
 (need at least 10 tus within the same ``category'' to even reach a score > 0.9, from practical results in qualitative analysis, that is probably not enough, blabla)
+
+\section{Discussion}
 
 \section{Threats to Validity}
 

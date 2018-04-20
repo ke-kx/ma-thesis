@@ -1,4 +1,10 @@
 \chapter{Detecting Missing Method Calls}\label{ch:dmmc}
+
+analogy: remove with waiter
+irgendwo erläutern PART 1 ist background (Foundation: Majority rule)
+3.2 = mein teil
+
+
 \todo[inline]{better intro\ldots}
 As mapped out in Section \ref{ch:intro} bugs related to missing method calls occur in real software systems.
 These bugs are often related to complicated APIs and frameworks, and we would like to detect them.
@@ -19,6 +25,7 @@ In the second section of this chapter, we explain some minor tweaks to the type 
 The intuition behind the majority rule is that a piece of code is likely to contain a defect if there are none or very few equal instances, but a lot of slightly different instances.
 It then seems likely that the code which appears a selected few times only should be adapted in a way to match the majority of slightly different instances.
 
+-> remove?! / use with methods!
 An analogy which explains the idea well goes as follows.
 Imagine being the waiter preparing the tables in a restaurant.
 There are 100 seats, and each of them is equipped with a plate, a knife on the right and a fork on the left.
@@ -83,6 +90,8 @@ The \code{Text} object, on the other hand, is only initialized.
 Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$, $C(x)$ and $M(x)$ are shown on the right hand side.
 
 \subsection{Exact and Almost Similarity}
+
+todo: explain better what a SIMILAR method is (if so mention what it is) + SAME method 
 
 %--- what are exactly equal and almost equal
 To detect type usages which are anomalous by the majority rule, we now need a notion what it means for two type usages to be exactly similar and only almost similar.
@@ -199,6 +208,8 @@ Similarly to $E(x)$ we define $A(x)$ as the set of type usages which are almost 
 A(x) = \{y \mid xAy \}
 \end{equation*}
 
+todo: mention it is NOT symmetric!
+
 In contrast to $E(x)$, $A(x)$ can be empty and $|A(x)|\geq0$.
 
 It is possible to further refine the definition of almost similarity.
@@ -280,6 +291,7 @@ Observe that this definition also works when $M(x)$ is empty or $x$ is \code{thi
     \caption{Example for computing the Likelihood of missing Calls}
     \label{fig:missing_calls}
 \end{figure}
+\todo[inline]{again reference source of this example!!!}
 
 To illustrate these definitions, consider the example in Figure \ref{fig:missing_calls}.
 The type usage in question is denoted with $x$, operates on a \code{Button} object and the only method that is invoked is the initialization.

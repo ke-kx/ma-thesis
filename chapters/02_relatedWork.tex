@@ -1,12 +1,12 @@
 \chapter{Related Work}\label{ch:relWork}
 %todo Position this here or just before conclusion? - right now here seems better though
 
-\todo{generally in this section: think about the tense I wanna use, present / past and if it works well!}
+\todo{generally in this section: think about the tense I wanna use, present / past and if it works well! + stick to it!}
 
 %todo somewhere difference between smell and bug herausarbeiten
 \todo[inline]{new ideas:
     mention code smells and their origin?, less focus on ``bugs'' per se (see aDoctor paper) -> while the thesis title is related to bugs, I think I can / want to use smell as well 
-    Reference die belegt, dass es eine Korrelation zwischen bugs und smells gibt
+    Reference die belegt, dass es eine Korrelation zwischen bugs und smells gibt look in fontana2016comparing, has references to this in introduction
 }
 
 %--- relevance of code smells and finding them
@@ -159,6 +159,21 @@ or description exists, but does not match the situation in the code
 assumption: code is correct (has been extensively tested)
 
 too detailed?!
-technique: static analysis of the code, then pattern based natural language processing. the resulting first-order logic formula is fed into an SMT solver to detect inconsistencies
+technique: static analysis of the code, then pattern based natural language processing -> first oder logic formula
+same for the api document: part of speech tagger (find specific parts which usually indicate some specific situation) + some heuristics -> restrictions and constraints -> FOL
+the resulting first-order logic formula is fed into an SMT (satifiablity modulo theories) solver \cite{barrett2009satisfiability} to detect inconsistencies (if fol of code <> fol of doc)
+is able to detect four classes of documentation defects
 
---- continue in section 2 of paper
+results:
+a prototype implementation applied to java.awt and java.swing finds 1419 defects of which 81.6\% are true positives (check by manual evaluation of some masters students)
++ applied to some other packages but with the heuristics extractd from the previous two, find 1188 defect of which 659 are TP (precision 55.5\%).
+-> lots of defects in a supposedly well documented JDK
+
+\cite{fontana2016comparing}
+different approach to code smells: machine learning
+-> use manually evaluated code + tagged at appropiated places to train machine learning system
+this work supports 4 basic smells (data class, large class, feature envy, long method)
+compares 16 different approaches, all have a good performance, J48 and random forest are best, support vector machines are worst
+[long enough? i think yes?]
+
+questionable: how useful is this? these smells are also detectable using ``normal'' techniques?
