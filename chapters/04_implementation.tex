@@ -1,19 +1,6 @@
 \chapter{Implementation}
 details about implementation and pitfalls that had to be overcome
-
-operates by statically analyzing a piece of software
-(not on the source code, but rather on the compiled byte code -> why: easier)
-
-\section{Bytecode Analysis}\label{sec:bytecode}
-maybe rename section?
-
-soot as analysis framework -> what is soot
-why bytecode over sourcecode
-\ldots
-
-inaccuracy about ``object'' vs ``variable'' of a particular type?
--> there is the option for some analysis but it is super  expensive + seems leaky -> not doing it
-but it will fix this (more or less)
+and of course things which didn't work out
 
 \section{Procedure}
 
@@ -25,7 +12,44 @@ but it will fix this (more or less)
     d) extract list of potentially missing calls
 3. output a list of tus, sorted by S score, the the ones with a score above XX are considered to be an anomaly + their missing calls
 
+\section{Bytecode Analysis}\label{sec:bytecode}
+maybe rename section?
+
+%-- general intro
+soot as analysis framework -> what is soot
+-> reference: \url{https://sable.github.io/soot/}
+originally java optimization framework
+wide range of usages, analyze, instrument, optimize and visualize java (and by extension android) applications
+provides call graph constructions, points-to analysis, def/use chains, inter and intra-procedural data-flow analysis,
+taint analysis
+we will use it for XY
+
+%-- why bytecode over sourcecode
+operates by statically analyzing a piece of software
+(not on the source code, but rather on the compiled byte code -> why: easier)
+in theory soot would support sourcecode analysis(?)
+easier for experiments
+more standardized (jvm byte code)
+[borrow smth from this one paper (don't remember which one\ldots)]
+
+%-- some more in depth info on how soot does what it does?
+transforms given programs into intermediate representation on which it operates
+there are four immediate representations (depending on use case)
+we use Jimple, the primary representation, typed 3-address intermediate rperesnetation (especially suitable for optimization, but also for our zweck)
+
+%-- exclude? / what?
+inaccuracy about ``object'' vs ``variable'' of a particular type?
+-> there is the option for some analysis but it is super  expensive + seems leaky -> not doing it
+but it will fix this (more or less)
+-> actually are doing this!
+
+%-- general / not sure where yet
+explain the changes I made to their code
+
 \section{Improvements}
+maybe merge this with procedure section?
++ some more on extraction!
+
 using a database + flexible python benchmarking / analysis
 -> proper overview of resulting system: java analysis -> db -> python
 -> somewhere a proper overview of the concrete steps that are taken + explanation of them?! (maybe in extra chapter BEFORE this one?) - similar to monperrus2010 p7

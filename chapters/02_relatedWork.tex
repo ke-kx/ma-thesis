@@ -150,24 +150,23 @@ Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint
 \section{Other Ideas}
 \todo[inline]{change title}
 
-\cite{zhou2017analyzing}
-already mentioned problem of incorrect API documentation
-this often happens when a developer adapts or improves the code but forgets to change the documentation as well
-they propose an automated approach to detecting ``defects'' in the api documentation
-defect = two cases: either api is incomplete in describing some constraints
-or description exists, but does not match the situation in the code
-assumption: code is correct (has been extensively tested)
+[too detailed?]
+As already mentioned, incorrect API documentation can be a big problem.
+It often occurs when an API developer changes or improves the code, but forgets to adapt the documentation accordingly.
+If a user of the API then relies on the documentation she can run into unforeseen bugs and even worse, the documentation will not only be unhelpful, it might even make matters worse.
+To alleviate this problem, Zhou et al.  \cite{zhou2017analyzing} propose an automated approach for detecting ``defects'' in the API documentation.
+They consider two situations: either the documentation is incomplete in describing the constraints at hand or the description exists, but it does not match the realities of the code.
+One important assumption they make is that the code is correct, because contrary to the documentation has been tested extensively.
 
-too detailed?!
-technique: static analysis of the code, then pattern based natural language processing -> first oder logic formula
-same for the api document: part of speech tagger (find specific parts which usually indicate some specific situation) + some heuristics -> restrictions and constraints -> FOL
-the resulting first-order logic formula is fed into an SMT (satifiablity modulo theories) solver \cite{barrett2009satisfiability} to detect inconsistencies (if fol of code <> fol of doc)
-is able to detect four classes of documentation defects
-
-results:
-a prototype implementation applied to java.awt and java.swing finds 1419 defects of which 81.6\% are true positives (check by manual evaluation of some masters students)
-+ applied to some other packages but with the heuristics extractd from the previous two, find 1188 defect of which 659 are TP (precision 55.5\%).
--> lots of defects in a supposedly well documented JDK
+Their approach analyzes the code statically and uses pattern-based natural language processing to build a first order logic formula of the constraints which are present.
+For the API documentation they use heuristics and a part-of-speech tagger to find the restrictions and constraints which are mentioned, before synthesizing them into another first oder logic formula.
+Finally the resulting formulas are fed into an SMT (satisfiability modulo theories) solver \cite{barrett2009satisfiability} to detect inconsistencies between them.
+Using this, they are able to detect four classes of documentation defects.
+\todo{mention them?}
+They apply their prototype implementation to the \code{java.awt} and \code{java.swing} packages and find 1419 defects, of which 81.6\% are true positives.
+Using the heuristics extracted from these packages they also apply the prototype to some other packages and find 1188 defects of which 659 are true positives (a precision of 55.5\%).
+Overall it is worrying (maybe not surprising), that there are so many inconsistencies in the JDK documentation, which has a reputation for being of rather high quality.
+Less well known APIs will probably have a inferior documentation and thus even further increase the risk of API usage relates bugs.
 
 \cite{fontana2016comparing}
 different approach to code smells: machine learning
