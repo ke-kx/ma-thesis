@@ -50,8 +50,15 @@ look into and understand the type of data i have -> how often small inputs, how 
 -> paint a bunch of graphs of the pkl results! (histogram of tu list sizes,  etc) (correctly bin histogram!)
  tu method list sizes - also check their paper, q mas?
 
+indea behind using android:
+    do real software systems actually behave in this way
+    ie: is it ``necessary'' to use classes in the same way
+    probably: most likely present in GUI systems
+    common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
+
 \subsection{RQ1: Does the Strangeness Score behave as expected on Android Apps?}
 -> ist keine forschungsfrage, gehört zur vorherigen section!
+(the behavior that I'm expecting is basically a mathematical necessity!)
 
 do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
     -> answer with graphs related to general score verteilung
@@ -86,6 +93,8 @@ only if time!
 reverse test: find actual missing call in bug database -> can I find it using the approach and is it among the top findings?
 
 \subsection{RQ3: How meaningful are the benchmarking results?}
+``meaningful'' not a good word, rather already describe what I'm doing (ie do the bnechmark results align with the results of the manual evaluation oä)
+
 does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
 -> comparison between manual evaluation of findings vs automatic benchmark over the different techniques used (context, no context, class merge, \ldots)
 
@@ -95,8 +104,7 @@ are the results better if we leave out the context / merge on a per class basis 
 
 \subsection{RQ4: How robust is this technique in the face of erroneous input data?}
 I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
-
-is robust auf 
+worauf is robustness bezogen? -> results quality or smth else?
 
 Robustness explanation
     wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
@@ -108,6 +116,7 @@ additional test:
     / instead of throwing away: introducing random errors in the related tus
 
 \subsection{RQ5: What are the requirements for the input size?}
+benny didn't like ``requirements''\ldots
 ie: how big of a codebase do we need to be able to ``learn''. When can we apply this to a project which does not rely on some well known open source framework (Android) where it is easy to gather additional data, but on for example an in-house-closed-source library oä.
 
 extremely hard to answer especially if the findings regarding benchmark validity are more or less negative.

@@ -1,12 +1,15 @@
 \chapter{Introduction}\label{ch:intro}
-
+\todo[inline]{
 insgesamt zu lang
-somewhere explain that ``framworks'' (libraries / plattforms) is all the same in this context and we will use THIS for now
+somewhere explain that ``framworks'' (libraries / plattforms) is all the same in this context and we will use THIS for now / use them all interchangeably
+    because basically developer using some classes which he might not be familiar with
+    this can also apply to classes nto from external but simply from within a big project where the dev doesn't know how to use it correctly
 zu viel repetition + remove the long example (Alice)
 kondensieren -> jemand der wissen will worums geht bekommt direkt und präzise einen überblick!
 max 2-3 seiten
+}
 
-\todo[inine]{add some personal anecdote somewhere?}
+\todo[inline]{add some personal anecdote somewhere?}
 
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
 -> reuse instead of outsource
@@ -15,11 +18,12 @@ Even if the designers of those APIs focus on making the interface as easy to use
 Especially more complex libraries cannot provide a trivial API if they want to enable the programmer to facilitate it in the way most appropriate for their specific use case.
 Thus, often a lot of knowledge is required to invoke the API correctly, even more so in the case of large frameworks or powerful libraries.
 This can be because of constraints or requirements which are not clear from the outset, but which have to be heeded to avoid serious bugs or complications, or because of an involved interplay between different parts of the library.
-In the worst case, even the documentation might not contain this knowledge.
+In the worst case, not even the documentation might contain this knowledge.
 
 %--- since it is often not trivial to use an API correctly, there will be ``wrong'' usages + examples?
 The fact that some APIs are not trivial and might have complex requirements makes it inevitable that there will be erroneous invocations of these APIs.
 \todo{include frameworks as well in some better way}
+[developer will make mistakes, \ldots]
 Such errors can relate to parameter choice, method order, or many other factors (e.g., some methods must be invoked in an extra thread, some specific precondition has to be satisfied, or some setup work must be performed).
 An example, which comes to mind in Java, is an iterator on which the programmer calls \texttt{next()} without first checking with \texttt{hasNext()} if it even contains another object.
 Another one might be a class which overrides \texttt{equals()} without ensuring that an invocation of \texttt{hashCode()} always produces the same output for two equal objects.
@@ -30,7 +34,7 @@ These patterns can take a lot of different forms and shapes, for example ``call 
 For the Java examples mentioned above they could take the form of ``an object which implements \texttt{equals()} must also implement \texttt{hashCode()}'', ``if object A equals object B, their \texttt{hashCode()} must also be equal'' or ``a call to \texttt{next()} on an iterator should be preceded by a call to \texttt{hasNext()} to ensure that it actually contains another object''.
 
 %--- if we can extract the patterns, hopefully, the wrong usages will stand out and enable us to detect bugs
-Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can be used to detect potential defects.
+Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can aid in detecting potential defects.
 If some code in a software project deviates (too much) from the usual patterns when using an API, this hints at a bug or problem or is at least a code smell which should probably be corrected.
 This makes it interesting to detect these unusual instances.
 %todo remove repetition of ``this''
@@ -45,6 +49,7 @@ In OOP software an object of a specific type is usually used by invoking some of
 Some types will then have underlying patterns such as: ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well`` or ''methods \code{X} and \code{Y} of type $T_2$ are always used together``.
 Given an object of this type $T_1$ on which only methods \code{A} and \code{B} are called, we can say that a call to \code{C} is missing, respectively if we have an object of type $T_2$ where only \code{X} or only \code{Y} is invoked, we can say that a call to the other is missing.
 
+\todo{absatz sehr lang\ldots}
 As an example consider a Button class in a GUI system.
 This button can either appear as a TextButton or as an ImageButton, where the first displays a word or short text regarding the button's functionality, while the second one only displays an image.
 Then one could imagine that the function \texttt{setText()} is usually called together with \texttt{setFont()}, whereas the function \texttt{setImage()} is called together with \texttt{setToolTipText()}.

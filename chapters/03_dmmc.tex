@@ -18,7 +18,7 @@ We will then explain how the strangeness score, which describes the degree to wh
 In the second section of this chapter, we explain some minor tweaks to the type usage notion, whose ability to detect missing method calls we explore further in Chapter \ref{ch:eval}.
 \todo[inline]{more details? -> when proper contents are decided + do not mention chapter 5}
 
-\section{The Majority Rule}
+\section{Foundation: The Majority Rule}
 %-> existing work
 \todo[inline]{make sure that chapter intro + this section intro work well together}
 
@@ -172,7 +172,7 @@ class D extends Page {
 \end{figure}
 
 Consider the example code snippets in Figure \ref{fig:sim_asim}.
-The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the same method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
+The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the similar method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
 Observe that variable names and method parameter play no role in this.
 Additionally, neither the order of methods nor any additional code (which does not call a method on the \code{Button} objects) does have any influence on it.
 The type usage in class \code{C} (bottom left) is almost similar to the ones in \code{A} and \code{B}, because besides the two methods \code{setText} and \code{setColor} it also invokes one additional method: \code{setLink}.
@@ -181,23 +181,23 @@ However, it is in fact almost similar to the type usage in class \code{C}, since
 
 %--- formalized
 To formalize these notions, we define two binary relationships over type usages.
-The relationship for exact similarity is called $E$ and we say that two type usages $x$ and $y$ are exactly similar if and only if:
+The relationship for exact similarity is called $E'$ and we say that two type usages $x$ and $y$ are exactly similar if and only if:
 \begin{align*}
-xEy \iff & T(x) \: = T(y) \;\: \land \\
+xE'y \iff & T(x) \: = T(y) \;\: \land \\
          & C(x) \: = C(y) \;\: \land \\
          & M(x) = M(y)
 \end{align*}
 
 Given this, the set of exactly similar type usages in relation to $x$ is defined as:
 \begin{equation*}
-E(x) = \{y \mid xEy \}
+E(x) = \{y \mid xE'y \}
 \end{equation*}
-Observe that this relation holds true for the identity, i.e. $xEx$ is always true and $\forall x: x \in E(x)$ (and thus $|E(x)| \geq 1$).
+Observe that this relation holds true for the identity, i.e. $xE'x$ is always true and $\forall x: x \in E(x)$ (and thus $|E(x)| \geq 1$).
 
-For almost similarity, we define the relation $A$ which holds if two type usages are almost similar.
+For almost similarity, we define the relation $A'$ which holds if two type usages are almost similar.
 A type usage $y$ is almost similar to a type usage $x$ iff:
 \begin{align*}
-xAy \iff & T(x) \: = T(y) \;\; \land \\
+xA'y \iff & T(x) \: = T(y) \;\; \land \\
          & C(x) \: = C(y) \;\; \land \\
          & M(x) \subset M(y) \: \land \\
          & |M(y)| = |M(x)| + 1
@@ -205,10 +205,10 @@ xAy \iff & T(x) \: = T(y) \;\; \land \\
 
 Similarly to $E(x)$ we define $A(x)$ as the set of type usages which are almost similar to $x$:
 \begin{equation*}
-A(x) = \{y \mid xAy \}
+A(x) = \{y \mid xA'y \}
 \end{equation*}
 
-todo: mention it is NOT symmetric!
+\todo{ mention it is NOT symmetric!}
 
 In contrast to $E(x)$, $A(x)$ can be empty and $|A(x)|\geq0$.
 
@@ -300,29 +300,130 @@ Four of them ($a$ through $d$) have a call to \code{setText} after the initializ
 The last one, $e$, has a call to \code{setFont} instead.
 Thus, we can recommend the methods \code{setText} and \code{setFont} with a likelihood of $4/5 = 80\%$ and $1/5 = 20\%$ respectively.
 
-\subsection{Caveats}
-really include here or only in Evaluation section?
-%--- caveats
-do real software systems actually behave in this way
-ie: is it ``necessary'' to use classes in the same way
-probably: most likely present in GUI systems
+\subsection{Ignoring the context}
+
+%--- why we use the context at all
+the idea behind using the context in the definition of similarity and almost similarity
+is that types might be used in different ways, depending on the method one is in
+an example would be FileInputStream which is rarely opened and closed in the same method
+Monperrus et al find that not using the context adds a lot of noise (not relevant items in E and A)
+and using it improves the precision of the precision of their experiments
+
+%-- why it might be better to exclude the context
+the context drastically reduces the number of type usages which are considered in the almost / similarity 
+this can facilitate that ``patterns'' appear, which in truth are only artefacts of randomness
+
+one might also question the general assumption behind using the context
+ARE types actually used in different ways depending on the name of the function they are used in?
+this assumption might hold for some types and some systems, but is it generally true?
+We will shed some more light on this in Section \ldots
+
+%--- formal description (necessary?)
+Formally this method shall be called $sub_noContext$
+definitions of E and A are changed as follows
+[include or not neccessary and just describe that the context equality definition is removed from them (i think this)]
+s score, phi stay the same, only that they now use the new relations $sub_noContext$
 
 \section{Extensions}
--> My work
+
+The previous section summarizes the ideas of Monperrus et al.
+In this section we will explore some possible modifications to their method (my work)
+in the evaluation we will explore if any of them performs better than their method
+
 theoretical explanation of the different approaches
 
-\subsection{Modifying the Input Data}
-stupid title, change it!
+\subsection{Class-based merge}
 
-load type usages in different ways
-    per class type usages / ignore context
-    working with the inheritance hierarchy!
+%--- idea behind this
+kind of following the ideas behind not using the context:
+does it make sense to look at type usages with a method granularity
+(observe: even if ignoring the context, the type usages will still be extrated on a per method basis! -> here or above or both?)
+who says that it doesn't make a lot more sense to look at CLASS granularity type usages
+often this already includes the whole lifetime of an object, but even if not, includes a way bigger window into the objects utilization
+if a method is missing from there, it is even more likely that it's completely missing and thus reveals an error
 
-\subsection{Other errors}
-    look for different things (wrong method call, superfluous method)
+%--- informal how it's done
+mine the type usages at method level as before
+but before calculating the strangeness score, merge all type usages which are of the same type and belong to one class
+note that this will merge them even if the original typeusages originate from different objects (following the object lifetime through the whole class would be too expensive)
+with the new tus, calculate strangeness score etc as before
 
-\subsection{Better Anomaly Detection}
-    clustering approach (hypersphere)
-    something as of now unknown from anomaly detection
+%-- formalized
 
-    -> do I really need this section? maybe only in Implementation?
+let $Cls(x)$ be the class from which a type usage was extracted.
+Then the new set of type usages is made up as follows:
+$x_0, \dots x_n = all tus where T(x_0) = T(x_1) = \dots = T(x_n) and Cls(x_0) = Cls(x_1) = \dots = Cls(x_n)$
+then the new resulting tu will be:
+$x' -> T(x') = T(x_0), C(x') = Union(C(x_i)) and M(x') = Union(M(x_i))$
+
+for almost / exact similarity we will choose the version which ignores the context, so C(x') is not actually that important
+mention some effects (such as much smaller dataset, blabla?)
+
+\subsection{Investigate different Anomalies}
+
+While a missing method call might be the error type taht comes first to mind
+and probably the most frequent one
+this general technique (majority rule!) can also easily adapted to look for two different anomalies, related to method calls
+
+namely, it can investigate if there is a superfluous method call somewhere (would expect this not too work too well\ldots)
+or simple the WRONG method call, that is instead of calling method X the developer is erroneously calling method Y
+
+\subsubsection{Superfluous Method}
+
+%-- informal description
+basically the reverse of the method proposed by monperrus et al
+check if something is calle dwhich should not be called
+
+%-- idea behind this
+unclear, why would we even wanna do this?
+I feel like it will mostly find outliers which are outliers INTENTIONAlly
+maybe best rationalization: it is there
+before trying it we don't actually know if its bad, could be that this is actually a type of error which has some impact
+
+(somewhere example?)
+
+%-- formalized description
+Adapting the system to do this is rather simple
+only need to adapt the definition of A(x)
+
+new equation:
+\begin{equation*}
+    A_{\mathnormal{superfluous}}(x) = \{x | yA'x \}
+\end{equation*}
+
+recall that the almost similar relation is not symmetric
+observe that here x and y are flipped in the application of $A'$
+
+this definition of almost similarity considers all those type usages which call one method LESS than the input type usage to be almost similar
+the definition of the S-score can stay the same, as can the definition of phi
+only difference is that now it indicates which method is most likely to be TOO much
+
+\subsubsection{Wrong Method}
+
+%-- informal description
+Further extending the idea in the previous section, and thinking consequently
+Developers might MISS a method call, the might ADD a useless one, but of course, they could also simply choose the WRONG one
+
+example? maybe some sort of conversion bug?
+
+%-- WHY though?!
+especially if the developer is not all too familiar with a given framework
+bad methodnames / documentation -> simply pick the wrong method for the job
+
+of course can be that this results in noticable bugs / errors  much faster then missing method calls, but again we don't know (do i even wanna mention this?)
+
+%-- formalized
+again need to change the definition of almost similarity
+as follows:
+xA'y <> T(x) = T(y) and
+        C(x) = C(y) and
+        |M(x)| = |M(y)| and
+        exists a set Sub(x, y), such that |Sub(x,y)| = |M(x)| - 1, and Sub(x,y) subset of M(x) and M(y)
+-> can I define this a bit better or not?
++ what kind of description?
+Type and context again are the same
+require that all but one methods of M(x) and M(y) are identical
+
+\subsection{Working with the Inheritance Hierarchy}
+
+I guess keep this until very last (somehow doubt I'll have the time to look into this)
