@@ -91,7 +91,7 @@ Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$
 
 \subsection{Exact and Almost Similarity}
 
-todo: explain better what a SIMILAR method is (if so mention what it is) + SAME method 
+\todo{ explain better what a SIMILAR method is (if so mention what it is) + SAME method }
 
 %--- what are exactly equal and almost equal
 To detect type usages which are anomalous by the majority rule, we now need a notion what it means for two type usages to be exactly similar and only almost similar.
@@ -301,129 +301,136 @@ The last one, $e$, has a call to \code{setFont} instead.
 Thus, we can recommend the methods \code{setText} and \code{setFont} with a likelihood of $4/5 = 80\%$ and $1/5 = 20\%$ respectively.
 
 \subsection{Ignoring the context}
+\todo[inline]{move this section down below extensions, but state explicitly, that they DID do this, only the rest is mine?}
 
 %--- why we use the context at all
-the idea behind using the context in the definition of similarity and almost similarity
-is that types might be used in different ways, depending on the method one is in
-an example would be FileInputStream which is rarely opened and closed in the same method
-Monperrus et al find that not using the context adds a lot of noise (not relevant items in E and A)
-and using it improves the precision of the precision of their experiments
-
+The reason for integrating the context into the definition of similarity and almost similarity is the idea that a type might be used in different ways depending on the situation it is used in.
+An example would be the class \code{FileInputStream} which is rarely opened and closed in the same method.
+Monperrus et al. \cite{monperrus2013detecting} find in their evaluation that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and ultimately using it improves the precision of their experiments.
 %-- why it might be better to exclude the context
-the context drastically reduces the number of type usages which are considered in the almost / similarity 
-this can facilitate that ``patterns'' appear, which in truth are only artefacts of randomness
+However, one might question the general assumption behind using the context.
+The idea that types are used in different ways seems reasonable, but is the name of the function that they are used in a good separator between those use cases?
+Furthermore, using the context might work well for some types and some systems, but does it make sense generally?
+One problem with using the context is that it drastically reduces the number of type usages which are even considered for (almost) similarity.
+In smaller datasets this makes it much more likely that ``patterns'' appear, which in truth are only artefacts of randomness.
 
-one might also question the general assumption behind using the context
-ARE types actually used in different ways depending on the name of the function they are used in?
-this assumption might hold for some types and some systems, but is it generally true?
-We will shed some more light on this in Section \ldots
+All in all, it is not clear that using the context necessarily improves the performance of the system.
+\todo{how to call it?}
+Because of this, next to the standard variant $\mathnormal{DMMC}$, we also define a variant called $\mathnormal{DMMC}_{\mathnormal{noContext}}$, which does not take the context into account.
+It uses adapted measures for similarity and almost similarity, $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$ which are defined in the same manner as $E'$ and $A'$, except that they do not require the context of the type usages to be identical.
+The definitions of $E$, $A$, $\operatorname{S-score}$ and $\phi$ stay the same, besides that they now make use of the newly defined relations.
 
-%--- formal description (necessary?)
-Formally this method shall be called $sub_noContext$
-definitions of E and A are changed as follows
-[include or not neccessary and just describe that the context equality definition is removed from them (i think this)]
-s score, phi stay the same, only that they now use the new relations $sub_noContext$
+We will shed some more light on the relative performance of the different variants in Chapter \ref{ch:eval}.
 
 \section{Extensions}
 
-The previous section summarizes the ideas of Monperrus et al.
-In this section we will explore some possible modifications to their method (my work)
-in the evaluation we will explore if any of them performs better than their method
+\todo[inline]{more clearly state that this here is my work?}
+In the previous section we summarized the work of Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting}, in this one we will explore some possible modifications to their method.
+For instance, it might be possible to leverage the majority rule not only for detecting missing method calls, but also to identify superfluous or flat out wrong method invocations.
+Additionally, there are different ways of organizing the type usage data, which could yield better results.
 
-theoretical explanation of the different approaches
+In this section we will give the motivation and theoretical background for those modifications, in Chapter \ref{ch:eval} we will explore further if they actually outperform the original.
 
 \subsection{Class-based merge}
 
+\todo[inline]{basically the claass based merge is kinda the same as the inheritance relation right? (different split to dataset, either method/not methodlevel (context) or compelte class, or smth which inherits from X?)}
+\todo{question another assumption behind the std variant}
+
 %--- idea behind this
-kind of following the ideas behind not using the context:
-does it make sense to look at type usages with a method granularity
-(observe: even if ignoring the context, the type usages will still be extrated on a per method basis! -> here or above or both?)
-who says that it doesn't make a lot more sense to look at CLASS granularity type usages
-often this already includes the whole lifetime of an object, but even if not, includes a way bigger window into the objects utilization
-if a method is missing from there, it is even more likely that it's completely missing and thus reveals an error
+The $\mathnormal{DMMC}_{\mathnormal{noContext}}$ variant seeks to answer the question, if it makes sense to differentiate the type usages based on the method they appear in.
+Following this line of thought, it is also possible to ask, if it is optimal to collect the type usages with method granularity.
+Even when ignoring the context, the type usages will still be extracted on a per method basis, that is those methods invoked in one method body will belong to one type usage.
+It is possible though, that grouping method calls with class granularity yields much better results.
+Often the methods invoked on one object within a specific class include many if not all of the methods invoked on it in its whole lifetime.
+Even if its not all of them, a class based type usage offers a much bigger window into the objects utilization and potentially this makes it easier to detect if some method is missing.
 
 %--- informal how it's done
-mine the type usages at method level as before
-but before calculating the strangeness score, merge all type usages which are of the same type and belong to one class
-note that this will merge them even if the original typeusages originate from different objects (following the object lifetime through the whole class would be too expensive)
-with the new tus, calculate strangeness score etc as before
+We will denote this variant as $\mathnormal{DMMC}_{\mathnormal{class}}$.
+To obtain the class-based type usages, we extract the type usages at method level, exactly as before.
+However, before calculating the strangeness score, we merge all those type usages which are of the same type and originate from the same class.
+Note that this will merge them even if the original type usages came from different objects, because tracing each objects life through the whole class would be too expensive.
+With these newly produced type usages we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
 
 %-- formalized
+To formalize $\mathnormal{DMMC}_{\mathnormal{class}}$, we need the new operator $\operatorname{Cls}(x)$ which denotes the class from which a type usage was extracted.
+The set of type usages with the same type and class as $x$ is defined as:
+\begin{equation*}
+    TC(x) = \{ x_i \mid T(x) = T(x_i) \land Cls(x) = Cls(x_i) \}
+\end{equation*}
+Then we can calculate the set of new type usages as follows:
+\begin{align*}
+    \{ x' \mid \;  & T(x') = T(x_0),\\
+                & C(x') = \bigcup{C(x_i)},\\
+                & M(x') = \bigcup{M(x_i)},\\
+                & \mathnormal{with} \quad x_i \in TC(x_0) \}
+\end{align*}
+\todo{not super clean, what is $x_0$ :/, smth like rotate through all the tus until all of them have been used?}
 
-let $Cls(x)$ be the class from which a type usage was extracted.
-Then the new set of type usages is made up as follows:
-$x_0, \dots x_n = all tus where T(x_0) = T(x_1) = \dots = T(x_n) and Cls(x_0) = Cls(x_1) = \dots = Cls(x_n)$
-then the new resulting tu will be:
-$x' -> T(x') = T(x_0), C(x') = Union(C(x_i)) and M(x') = Union(M(x_i))$
-
-for almost / exact similarity we will choose the version which ignores the context, so C(x') is not actually that important
-mention some effects (such as much smaller dataset, blabla?)
+Recall that for exact and almost similarity we will use the version which ignores the context, so $C(x')$ is not actually that important.
+\todo[inline]{ mention some effects (such as much smaller dataset, blabla?) or somewhere else? }
 
 \subsection{Investigate different Anomalies}
 
-While a missing method call might be the error type taht comes first to mind
-and probably the most frequent one
-this general technique (majority rule!) can also easily adapted to look for two different anomalies, related to method calls
+While a \emph{missing} method call might be the first error type that comes to mind and also potentially the most frequent one, the general technique of the majority rule can also be easily adapted to look for two different anomalies related to method calls.
+First off, it is possible to simply flip around the notion of almost similarity and investigate if there exists a superfluous method call somewhere.
+Additionally, one can envision a developer to simply make the \emph{wrong} call, rather than forgetting one or adding one too many.
 
-namely, it can investigate if there is a superfluous method call somewhere (would expect this not too work too well\ldots)
-or simple the WRONG method call, that is instead of calling method X the developer is erroneously calling method Y
+\todo[inline]{some more? (example), just words\ldots
+namely, it can investigate if there is a superfluous method call somewhere (would expect this not too work too well\ldots) -
+or simple the WRONG method call, that is instead of calling method X the developer is erroneously calling method Y}
 
 \subsubsection{Superfluous Method}
 
 %-- informal description
-basically the reverse of the method proposed by monperrus et al
-check if something is calle dwhich should not be called
-
+The idea behind $\mathnormal{DMMC}_{\mathnormal{superfluous}}$ is basically the inverse of the method proposed by Monperrus et al..
+Instead of checking if a lot of other type usages are calling an additional method and the current one is thus missing a call, here we check if a lot of other type usages are making \emph{fewer} calls and the current one is doing something extra which it should not.
 %-- idea behind this
-unclear, why would we even wanna do this?
-I feel like it will mostly find outliers which are outliers INTENTIONAlly
-maybe best rationalization: it is there
-before trying it we don't actually know if its bad, could be that this is actually a type of error which has some impact
+It is not intuitively clear what kind of errors this procedure will discover or indeed if there will be any.
+Furthermore, it is possible that it will only find outliers which are intentional outliers, be it to handle a special case, to work around a bug or for any other reason.
+Nonetheless, it seems reasonable to investigate this idea and only dismiss it if it actually does not yield any interesting results.
 
-(somewhere example?)
+\todo[inline]{ maybe best rationalization: it is there, before trying it we don't actually know if its bad, could be that this is actually a type of error which has some impact}
+\todo[inline]{include some example? (either for use case or for formalization?)}
 
 %-- formalized description
-Adapting the system to do this is rather simple
-only need to adapt the definition of A(x)
-
-new equation:
+Adapting the normal system to detect this type of outlier is rather simple.
+We only need to adapt the definition of $A(x)$ to:
 \begin{equation*}
-    A_{\mathnormal{superfluous}}(x) = \{x | yA'x \}
+    A_{\mathnormal{superfluous}}(x) = \{x \mid yA'x \}
 \end{equation*}
 
-recall that the almost similar relation is not symmetric
-observe that here x and y are flipped in the application of $A'$
-
-this definition of almost similarity considers all those type usages which call one method LESS than the input type usage to be almost similar
-the definition of the S-score can stay the same, as can the definition of phi
-only difference is that now it indicates which method is most likely to be TOO much
+Recall that the almost similar relation $A'$ is not actually symmetric and observe that in comparison to $A(x)$, here $x$ and $y$ are flipped in the application of $A'$. 
+Thus, this definition of almost similarity considers all those type usages which call one method less than the input type usage to be almost similar.
+With the definition of $\operatorname{S-score}$ and $\phi$ as above, the scores will now indicate which type usage is calling anomalously many methods and which method might be the one that is too much.
 
 \subsubsection{Wrong Method}
 
-%-- informal description
-Further extending the idea in the previous section, and thinking consequently
-Developers might MISS a method call, the might ADD a useless one, but of course, they could also simply choose the WRONG one
+%-- informal description + why though
+Further extending the idea of the previous section and thinking consequently, developers might \emph{miss} a method call, they might \emph{add} a useless one but, of course, they could also simply choose the \emph{wrong} one.
+Especially if the developer is not all too familiar with a given framework or there is some ambiguity in the method names or documentation, it is quite possible that she chooses the wrong method for a given task.
+Of course, it is possible that this type of error results in noticeable bugs much faster than a missing call, but again we do not know this before investigating.
+\todo{do i even wanna mention this?}
 
-example? maybe some sort of conversion bug?
-
-%-- WHY though?!
-especially if the developer is not all too familiar with a given framework
-bad methodnames / documentation -> simply pick the wrong method for the job
-
-of course can be that this results in noticable bugs / errors  much faster then missing method calls, but again we don't know (do i even wanna mention this?)
+\todo[inline]{example? maybe some sort of conversion bug?}
 
 %-- formalized
-again need to change the definition of almost similarity
-as follows:
-xA'y <> T(x) = T(y) and
-        C(x) = C(y) and
-        |M(x)| = |M(y)| and
-        exists a set Sub(x, y), such that |Sub(x,y)| = |M(x)| - 1, and Sub(x,y) subset of M(x) and M(y)
--> can I define this a bit better or not?
-+ what kind of description?
-Type and context again are the same
-require that all but one methods of M(x) and M(y) are identical
+To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for invocations of a wrong method, we again need only change the definition of almost similarity.
+This time we define a new relation $A'_{\mathnormal{wrong}}$ as follows:
+\begin{align*}
+xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
+                                & C(x) \: = C(y) \;\; \land \\
+                                & M(x) \: \neq M(y) \;\; \land \\
+                                & |M(x)| \:  = |M(y)| \;\; \land \\
+                                & \exists S . |S| = |M(x)| - 1 \land S \subset M(x) \land S \subset M(y)
+\end{align*}
+\todo{can I define this a bit better or not?}
 
-\subsection{Working with the Inheritance Hierarchy}
+For this relation to hold, again the type and the context of both type usages have to be the same.
+Furthermore, it requires that all but one method of $M(x)$ and $M(y)$ are identical, that is, the sets of method calls they make differ but only by exactly one method.
 
-I guess keep this until very last (somehow doubt I'll have the time to look into this)
+\todo[inline]{anything more here?, better description?}
+
+%\subsection{Working with the Inheritance Hierarchy}
+
+%todo leave this out\ldots
+% I guess keep this until very last (somehow doubt I'll have the time to look into this)

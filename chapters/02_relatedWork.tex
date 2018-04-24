@@ -106,6 +106,10 @@ General: read the summary paper \cite{robillard2013automated} again and check wh
 Remember the general machine learning approaches which were not super successful, but at least learned a LOT
 especially like general code smells for example
 
+In a more general attempt Fontana et al. \cite{fontana2016comparing} compare 16 different machine learning techniques for code smell detection.
+As their training data they manually evaluated a large body of code and tagged four basic smells (data class, large class, feature envy and long method).
+All of the different approaches show good performance, however J48 and random forest have the best results, while support vector machines fare the worst.
+
 \section{Previous work on detecting missing method calls / object usages}
 % -> api missuse detection
 
@@ -168,11 +172,4 @@ Using the heuristics extracted from these packages they also apply the prototype
 Overall it is worrying (maybe not surprising), that there are so many inconsistencies in the JDK documentation, which has a reputation for being of rather high quality.
 Less well known APIs will probably have a inferior documentation and thus even further increase the risk of API usage relates bugs.
 
-\cite{fontana2016comparing}
-different approach to code smells: machine learning
--> use manually evaluated code + tagged at appropiated places to train machine learning system
-this work supports 4 basic smells (data class, large class, feature envy, long method)
-compares 16 different approaches, all have a good performance, J48 and random forest are best, support vector machines are worst
-[long enough? i think yes?]
 
-questionable: how useful is this? these smells are also detectable using ``normal'' techniques?
