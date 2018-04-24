@@ -12,7 +12,7 @@ The idea is to detect patterns in correct usages which will enable us to single 
 
 %--- overview of this chapter
 In this chapter we will first give a proper explanation of the method proposed by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} based on the majority rule.
-This includes a proper qualification of the notions of type usages, as well as their equality and almost equality, which we already mentioned in the previous chapter.
+This includes a proper qualification of the notions of type usage, as well as their equality and almost equality, which we already mentioned in the previous chapter.
 We will then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
 
 In the second section of this chapter, we explain some minor tweaks to the type usage notion, whose ability to detect missing method calls we explore further in Chapter \ref{ch:eval}.
@@ -242,6 +242,8 @@ So a unique type usage without any ``neighbors'' to consider is completely norma
 On the other hand, given a type usage $b$ with $99$ almost similar and no other exactly similar type usages, we have $|E(b)| = 1$ and $|A(b)| = 99$.
 Which results in a strangeness score of $\operatorname{S-score}(b) = 1-\frac{1}{1+99} = 0.99$.
 Following intuition, such a type usage is very strange, and indeed, the S-score supports this.
+
+\todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
 
 \subsection{Which Calls are missing?}
 

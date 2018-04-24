@@ -1,19 +1,108 @@
 \chapter{Implementation}
-details about implementation and pitfalls that had to be overcome
+
+\todo[inline]{Generally: don't make this section too long I'd say!}
+
+after laying out the theoretical foundation of the dmmc method we examine (in this thesis) in the last chatper
+this chapter focusses on the implementation side
+details about decisions taken, pitfalls that had to be overcome and tradeoffs to be made
 and of course things which didn't work out
+
+the first section focusses on the internal workings of the system we developed.
+explain the steps from program (code) to list of potential anomalies
+smth smth
+The second one revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility
 
 \section{Procedure}
 
-1. extract tus from software
-2. for every tu:
-    a) search for tus which are EXACTLY similar
-    b) search for TUs which are almost similar
-    c) compute the strangeness score
-    d) extract list of potentially missing calls
-3. output a list of tus, sorted by S score, the the ones with a score above XX are considered to be an anomaly + their missing calls
+our system is (primarily) a system for detecting missing method calls
+it works by statically analyzing some software application, extracting the type usages which are present
+and finally determining if any of them is anomalous by the Majority rule as described in Section + ref
+The end result should be a list of places which are potentially missing a method call
 
-\section{Bytecode Analysis}\label{sec:bytecode}
+Given a software system, which shall be tested for missing method calls, 
+conceptually this needs to be done:
+
+\begin{enumerate}
+    \item Extract all type usages from the software
+    \item For each type usage $x$ among them:
+    \begin{enumerate}
+        \item Search for type usages which are exactly similar to $x$ (i.e. calculate $E(x)$)
+        \item Search for type usages which are almost similar to $x$ (that is determine $A(x)$)
+        \item Calculate the strangeness score of $x$
+        \item Extract the list of potentially missing calls and their likelihood $\phi$
+    \end{enumerate}
+    \item Output a list of anomalous type usages, sorted by their $\operatorname{S-score}$, together with the calls they are potentially missing
+\end{enumerate}
+
+(the ones with a score above XX are considered to be an anomaly)
+
+%-- why this simple outline is not actually enough
+
+using a database + flexible python benchmarking / analysis
+-> proper overview of resulting system: java analysis -> db -> python
+-> somewhere a proper overview of the concrete steps that are taken + explanation of them?! - similar to monperrus2010 p7
+
+%-- description of system
+these considerations give rise to the system design which is displayed in figure + ref
+actual practical implementation:
+first a java applications reads the byte code of the application and then iterates over all method definitions to extract the type usages which are present
+those type usages are then persisted in a database
+the actual anomaly detection is handled by relatively simple python program
+it requests the currently relevant set of tus (more on that in +ref) and calculates their strangeness score
+after iterating through all sets of an application it can output the results
+
+%-- image of system
+nice image:
+java part - db part - python part
+1. bytecode einlesen + type usages extracten
+2. type usages abspeichern und nach anfrage rausgeben
+3. tus anfragen und sets ausrechnen
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+    \tikzset{vertex/.style={draw,rounded corners,align=center}}
+    \tikzset{edge/.style = {->,> = latex'}}
+
+    % start dot
+    \node[fill=white] (startTxt) {Application};
+    \node[fill=black,circle,inner sep=2pt] (start) [below = 0.25cm of startTxt] {};
+
+    % java + db
+    \node[vertex] (j1) [right = 1.5cm of start] {Read\\bytecode};
+    \node[vertex] (j2) [right = 0.5cm of j1] {Extract\\type usages};
+    \node[vertex] (db1) [right = 0.5cm of j2] {Persist\\type usages};
+
+    \draw[edge] (start) to (j1);
+    \draw[edge] (j1) to (j2);
+    \draw[edge] (j2) to (db1);
+
+    % py + db + end
+    \node[vertex] (db2) [below = 0.25cm of db1] {Answer\\query};
+    \node[vertex] (py1) [below left = 0.5cm of db2] {Request\\current set};
+    \node[vertex] (py2) [below right = 0.5cm of db2] {Calculate\\ $\operatorname{S-score}$};
+    \node[fill=black,circle,inner sep=2pt] (end) [right = 1.5cm of py2] {};
+    \node[fill=white,align=center] (endTxt) [above = 0.25cm of end] {List of\\anomalies};
+
+    \draw[edge] (py1) to (db2);
+    \draw[edge] (db2) to (py2);
+    \draw[edge] (py2) to (end);
+
+    % big dashed boxes
+    \node[label=above left:{Java}, draw=black, thick, dashed, inner sep=0.25em, fit=(j1) (j2)] {};
+    \node[label=right:{Database}, draw=black, thick, dashed, inner sep=0.25em, fit=(db1) (db2)] {};
+    \node[label=left:{Python}, draw=black, thick, dashed, inner sep=0.25em, fit=(py1) (py2)] {};
+
+\end{tikzpicture}
+\caption{System overview}
+\label{fig:overview}
+\end{figure}
+\todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels}
+% https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
+
+\subsection{Bytecode Analysis}\label{sec:bytecode}
 maybe rename section?
+somewhere: if necessary: compile program, then analyze!
 
 %-- general intro
 soot as analysis framework -> what is soot
@@ -46,20 +135,39 @@ but it will fix this (more or less)
 %-- general / not sure where yet
 explain the changes I made to their code
 
-\section{Improvements}
-maybe merge this with procedure section?
-+ some more on extraction!
+\subsection{Extracting Type Usages}
 
-using a database + flexible python benchmarking / analysis
--> proper overview of resulting system: java analysis -> db -> python
--> somewhere a proper overview of the concrete steps that are taken + explanation of them?! (maybe in extra chapter BEFORE this one?) - similar to monperrus2010 p7
+some more on extraction!
+the algorithm!
+some information on what kind of further analysis is attempted (local must alias, bla)
+
+\subsection{Storing Type Usages}
+
+which database system
+database layout + some of the considerations made (x. normalenform, sowas?)
+
+somewhere mention, that it is not only possible but even SMART to not only incoorperate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
++ explain why obviously
+
+\subsection{Anomaly Detection}
+only part affected by the different variants presented in chapter 3
+retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
+-> explain a bit the python class structure I developed?
+
+maybe another img or flow chart for python ablauf (or too much detail?)
+
+\subsection{Improvements and Dead Ends}
+\todo{should this be a section or a subsection?}
 
 explaining all the work i did
     first reading their code, coming across a couple of discrepancies between code and paper, later check if everthing still works (evaluation)
     refactoring everything + saving stuff to database
     building python infrastructure for analysis
 
-\section{Dead Ends}
+evaluation of other db system + why it didn't work (basically pure db stupidity)
+
+some changes that had to be made to the analysis framework for android analysis
+
 why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)
@@ -68,8 +176,9 @@ static functions evaluation!
 something to fix the dotchaining problems
 
 \section{Benchmark}
+some more subsections? (different ways for degrading type usages?)
+
+this only to be about the automatic benchmark stuff!
 
 building benchmarking infrastructure
-downloading + automatically analyzing android apps (in evaluation section?)
-
-some changes that had to be made to the analysis framework for android analysis
+flexibility with python class setup
