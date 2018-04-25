@@ -100,6 +100,10 @@ java part - db part - python part
 \todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels}
 % https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
 
+%summary of rest
+The following sections give more in depth information on the separate steps.
+smth mroe?
+
 \subsection{Bytecode Analysis}\label{sec:bytecode}
 maybe rename section?
 somewhere: if necessary: compile program, then analyze!
@@ -116,7 +120,7 @@ we will use it for XY
 %-- why bytecode over sourcecode
 operates by statically analyzing a piece of software
 (not on the source code, but rather on the compiled byte code -> why: easier)
-in theory soot would support sourcecode analysis(?)
+in theory soot would support sourcecode analysis(?), but actually the bytecode analysis is recommended (source?)
 easier for experiments
 more standardized (jvm byte code)
 [borrow smth from this one paper (don't remember which one\ldots)]
@@ -126,28 +130,95 @@ transforms given programs into intermediate representation on which it operates
 there are four immediate representations (depending on use case)
 we use Jimple, the primary representation, typed 3-address intermediate rperesnetation (especially suitable for optimization, but also for our zweck)
 
-%-- exclude? / what?
-inaccuracy about ``object'' vs ``variable'' of a particular type?
--> there is the option for some analysis but it is super  expensive + seems leaky -> not doing it
-but it will fix this (more or less)
--> actually are doing this!
+%-- soot startup and settings?
+soot is very powerful and one can customize it to carter to your specialized needs
+Mostly we will analyze android apps and the settings we are using reflect this
+-> table with settings + explanation?
+\begin{tabular}[h]{c|c|c}
+Option & Parameter(s) & Explanation \\ \hline
+\code{-app } & - & Run in application mode \\ \hline
+\code{-keep-line-number} & - & Keep line number tables \\ \hline
+\code{-output-format} & none & Set output format for Soot \\ \hline
+\code{-allow-phantom-refs } & - & Allow unresolved classes \\ \hline
+\code{-src-prec} & apk-c-j (apk-class-jimple) & Sets source precedence to format files \\ \hline
+\code{-process-multiple-dex} & - & Process all DEX files found in APK \\ \hline
+\code{-android-jars} & [path] & Use \textit{path} as the path for finding the android.jar file \\ \hline
+\end{tabular}
 
 %-- general / not sure where yet
 explain the changes I made to their code
 
 \subsection{Extracting Type Usages}
 
-some more on extraction!
-the algorithm!
+some more on extraction! + the algorithm!
 some information on what kind of further analysis is attempted (local must alias, bla)
+
+%-- general ablauf
+where is it registered in soot and what does that mean?
+soots execution divided into a number of phases
+each phase has a specific task like for example the aggregation of local variables
+Phases are further grouped into Packs and the registered packs are applied succesevely during the analysis
+we can register custom parts which will apply some work in the specified phase
+register custom \code{BodyTransformer} with soot.
+in Pack: jtp -> stands for Jimple Transformation Pack  and is simply applied to every method under analysis (unmodified soot has no transformations in this pack)
+
+%--- what is the transformer doing?
+generally: applied to each method body
+first iterates through all statements and checks if they are a method call, if so remember them (aka extract list of method calls happening in this method)
+given this list of method call, iterate through it and group them to type usages
+this is done by checking first on which VARIABLE the call was made
+additionally, check if other locals point to the same underlying object -> group the calls made on these locals into one tu
+then group the calls which were made on the same object and be happy
+(more details necessary? I don't really think so)
+
+%-- local must alias analysis
+% https://soot-build.cs.uni-paderborn.de/public/origin/develop/soot/soot-develop/jdoc/soot/jimple/toolkits/pointer/LocalMustAliasAnalysis.html
+inaccuracy about ``object'' vs ``variable'' of a particular type?
+``LocalMustAliasAnalysis attempts to determine if two local variables (at two potentially different program points) must point to the same object. The underlying abstraction is based on global value numbering'' -> this is a soot feature
+checking if two locals point to the same object can be expensive + seems a little bit leaky
+in test runs on big applications this has let memory requirements explode, thus we made it optional
+however for android was fine (even mention this?)
+
+%-- ignoring some classes
+for android we chose to exclude some classes from analysis (do not step into them!, still record type usages!)
+because not the real code -> not really interested 
+also performance reasons (quite important actualy)
+in theory soot has a mechanism for this, but it isn't working correctly
+packages thusly excluded are:
+\code{java.*}, \code{sun.*}, \code{android.*}, \code{org.apache.*}, \code{org.eclipse.*}, \code{soot.*}, \code{javax.*}
+(probably only mention java, javax and android?)
 
 \subsection{Storing Type Usages}
 
-which database system
-database layout + some of the considerations made (x. normalenform, sowas?)
+%intro / übergang + general info
+after the transformer has analyzed and extracted a list of type usages form the current method body, they are persisted into a database
+using hsqldb -> link
+SQL relational database written in Java
+Provides small, multithreaded and transactional database engine
+in memory and disk based tables 
+reasons for using this one?
+easy setup, small, fast
+permissive license, lots of features
++ we also invested some time into exploring the posibility to use postgres, however it turned out that the performance was worse -> see section (dead ends)
 
-somewhere mention, that it is not only possible but even SMART to not only incoorperate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
+%- why are we using a database at all?
+monperrus et all saved data in a text based format
+however there are a couple of disadvantages to this
+-> need to parse again for analysis, slow, large data storage
+using a database has many positive ramifications
+flexibility, future extensibility, easier to prototype fast (use python for analyis eg)
+queries! -> much better, need not hold everything in memory, especially for bigger datasets, can access data selectively
+also speed
+
+somewhere(here?) mention, that it is not only possible but even SMART to not only incorporate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
 + explain why obviously
+    of course it's useful to ALSO analyse tus over classes which are private to my application (if there is enough data)
+    however, mostly interesting are the framework classes which are used by many applications
+    when analyzing the usages of framework etc classes, we want to have as much information as possible
+
+%-- database layout + some of the considerations made (x. normalenform, sowas?)
+-> some sort of sql graphic? -> use the one I get from Intellij!
++ describe obviously (+ what was made how why)
 
 \subsection{Anomaly Detection}
 only part affected by the different variants presented in chapter 3
@@ -159,7 +230,7 @@ maybe another img or flow chart for python ablauf (or too much detail?)
 \subsection{Improvements and Dead Ends}
 \todo{should this be a section or a subsection?}
 
-explaining all the work i did
+explaining all the work i did + what was already there
     first reading their code, coming across a couple of discrepancies between code and paper, later check if everthing still works (evaluation)
     refactoring everything + saving stuff to database
     building python infrastructure for analysis
