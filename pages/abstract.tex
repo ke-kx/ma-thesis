@@ -1,23 +1,17 @@
 \chapter{\abstractname}
 
-\todo[inline]{shorten! + mention software reuse?}
-Software reuse is a central pillar of computer science (\ldots)
-it enables large sytesm to rely on \ldots to do the core tasks while focussing on the specifics of their use case
--> way too long
+Software reuse is a central pillar of software development, enabling developers to rely on frameworks and libraries to do the main work.
+Because of the great complexity and functionality provided by current frameworks, often their application programming interface (API) cannot be trivial.
+This and the fact that their documentation is often not kept up to date can led to errors when developers invoke these APIs. 
 
-Large software systems rely on frameworks and libraries to do the core work.
-The application programming interface (API) they provide should be designed to be as easy to use as possible.
-However, because of the great complexity and functionality provided by current frameworks, their APIs cannot be trivial.
-This and the fact that their documentation is often not kept up to date leads to errors in invoking the APIs.
-
-In the context of object-oriented programming, one of these errors related to API usages are missing method calls.
+In the context of object-oriented programming, one of the errors related to API usages are missing method calls.
 They occur when a developer correctly instantiates some object but forgets to call one or more of the necessary methods.
 We study a new method for detecting missing method calls in Java applications which was proposed by Monperrus et al. \cite{monperrus2010detecting}.
 The main goal is to understand how good this method is at detecting code smells and true bugs when applied to a large software system.
 \todo{more concrete research question}
 
-To investigate this, we analyze a large body of open source android applications.
-Besides manual evaluation of the findings in X randomly selected apps, we also apply an automatic benchmark which relies on artificially degrading existing code.
+To investigate this, we analyze more than 600 open source android applications.
+We manually evaluate the proposed findings of X randomly selected apps and also use an automatic benchmark which relies on artificially degrading existing code.
 \todo{describe results + concrete numbers}
 % maybe not mention the degrading part?
 We compare the originally proposed technique to some slight variations of it and find [\ldots].
