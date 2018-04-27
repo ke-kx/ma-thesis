@@ -1,4 +1,4 @@
-\chapter{Implementation}
+\chapter{Implementation}\label{ch:impl}
 
 \todo[inline]{Generally: don't make this section too long I'd say!}
 
@@ -134,8 +134,9 @@ we use Jimple, the primary representation, typed 3-address intermediate rperesne
 soot is very powerful and one can customize it to carter to your specialized needs
 Mostly we will analyze android apps and the settings we are using reflect this
 -> table with settings + explanation?
+
 \begin{tabular}[h]{c|c|c}
-Option & Parameter(s) & Explanation \\ \hline
+Option & Parameter & Explanation \\ \hline
 \code{-app } & - & Run in application mode \\ \hline
 \code{-keep-line-number} & - & Keep line number tables \\ \hline
 \code{-output-format} & none & Set output format for Soot \\ \hline
