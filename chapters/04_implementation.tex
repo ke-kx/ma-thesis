@@ -2,25 +2,21 @@
 
 \todo[inline]{Generally: don't make this section too long I'd say!}
 
-after laying out the theoretical foundation of the dmmc method we examine (in this thesis) in the last chatper
-this chapter focusses on the implementation side
-details about decisions taken, pitfalls that had to be overcome and tradeoffs to be made
-and of course things which didn't work out
+After laying out the theoretical foundations of the majority rule method in the last chapter, this chapter focusses on the practical side.
+\todo{rephrase a bit}
+We give details about design decisions taken and the reasons for them, pitfalls that had to be overcome and the trade-offs that had to be accepted.
+Additionally, we explore some of the mistakes made and dead ends that we encountered.
 
-the first section focusses on the internal workings of the system we developed.
-explain the steps from program (code) to list of potential anomalies
-smth smth
-The second one revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility
+The first section focusses on the internal workings of the system we developed.
+We explain the steps from receiving the input program to outputting a list of anomalies which hint at potentially missing method calls.
+The second section revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility.
 
 \section{Procedure}
 
-our system is (primarily) a system for detecting missing method calls
-it works by statically analyzing some software application, extracting the type usages which are present
-and finally determining if any of them is anomalous by the Majority rule as described in Section + ref
-The end result should be a list of places which are potentially missing a method call
-
-Given a software system, which shall be tested for missing method calls, 
-conceptually this needs to be done:
+Our system is (primarily) a system for detecting missing method calls.
+It works by statically analyzing a given software application, extracting the type usages which it contains and finally determining if any of them are anomalous by the Majority rule as described in Section \ref{sec:majority}.
+The end result should be a list of locations which are potentially missing a method call.
+Given a software system, which shall be tested for anomalies, conceptually the following steps have to be realized:
 
 \begin{enumerate}
     \item Extract all type usages from the software
@@ -34,29 +30,20 @@ conceptually this needs to be done:
     \item Output a list of anomalous type usages, sorted by their $\operatorname{S-score}$, together with the calls they are potentially missing
 \end{enumerate}
 
-(the ones with a score above XX are considered to be an anomaly)
-
-%-- why this simple outline is not actually enough
-
-using a database + flexible python benchmarking / analysis
--> proper overview of resulting system: java analysis -> db -> python
--> somewhere a proper overview of the concrete steps that are taken + explanation of them?! - similar to monperrus2010 p7
+\todo{(the ones with a score above XX are considered to be an anomaly)}
 
 %-- description of system
-these considerations give rise to the system design which is displayed in figure + ref
-actual practical implementation:
-first a java applications reads the byte code of the application and then iterates over all method definitions to extract the type usages which are present
-those type usages are then persisted in a database
-the actual anomaly detection is handled by relatively simple python program
-it requests the currently relevant set of tus (more on that in +ref) and calculates their strangeness score
-after iterating through all sets of an application it can output the results
+However, this simple outline does not represent the actual realities of the system.
+Instead of a singular process with [flat / not branching / \ldots] flow, it is split into three different parts which are laid out in Figure \ref{fig:overview}.
+First, a java application reads the byte code of the program under analysis and iterates over all method definitions to extract the type usages which are present.
+The extracted type usages are then persisted in a database to ensure flexibility and high performance in the following analysis phase.
+For the actual anomaly detection we use a relatively simple python program to enable fast prototyping and again flexibility.
+It goes through all sets of type usages (more on those sets in Section \ref{sec:anomaly}), requests the type usages in the set and calculates their strangeness score.
+After iterating through all the sets of the application it finally outputs the results.
 
-%-- image of system
-nice image:
-java part - db part - python part
-1. bytecode einlesen + type usages extracten
-2. type usages abspeichern und nach anfrage rausgeben
-3. tus anfragen und sets ausrechnen
+%summary of rest
+The following sections give a more in depth explanation of the separate steps.
+\todo{smth more? + move figure ABOVE the paragraph explaining it?}
 
 \begin{figure}[h]
 \centering
@@ -97,15 +84,11 @@ java part - db part - python part
 \caption{System overview}
 \label{fig:overview}
 \end{figure}
-\todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels}
+\todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels | POTENTIALLY add the retrieve sets step to python?}
 % https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
 
-%summary of rest
-The following sections give more in depth information on the separate steps.
-smth mroe?
-
 \subsection{Bytecode Analysis}\label{sec:bytecode}
-maybe rename section?
+\todo[inline]{maybe rename section?}
 somewhere: if necessary: compile program, then analyze!
 
 %-- general intro
@@ -221,12 +204,14 @@ somewhere(here?) mention, that it is not only possible but even SMART to not onl
 -> some sort of sql graphic? -> use the one I get from Intellij!
 + describe obviously (+ what was made how why)
 
-\subsection{Anomaly Detection}
+\subsection{Anomaly Detection}\label{sec:anomaly}
 only part affected by the different variants presented in chapter 3
 retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
 -> explain a bit the python class structure I developed?
 
-maybe another img or flow chart for python ablauf (or too much detail?)
+maybe another img or flow chart for python ablauf (or too much detail?)o
+
+somewhere explain the ``sets of tus'' + peformance issues before (ref db dead end)
 
 \subsection{Improvements and Dead Ends}
 \todo{should this be a section or a subsection?}

@@ -52,7 +52,7 @@ In their evaluation on three open source applications (Tomcat, AspectJ and Axis)
 Using cutoffs at 10\%, 20\%, 30\%, \ldots of the total findings, they achieve precision and recall systematically better than the default ranking.
 This especially holds true for cutoff values around 50\%.
 
-\todo[inline]{ Which other papers?! -> should be some which are NOT about findbugs -> present alterantives, maybe work in a slightly different manner }
+\todo[inline]{ Which other papers?! -> should be some which are NOT about findbugs -> present alterantives, maybe work in a slightly different manner, or just some sort of overview paper for static code smell detection oä! }
 
 \section{Android specific Smell Detection}
 
@@ -88,31 +88,53 @@ This is a great example of a case where hard-coded rules fail, because the are n
 
 \section{Inferring Properties from the Code at Hand}
 
+\todo[inline]{
+General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
++ check to read stuff\ldots
++ for more information: check this summary paper / the 2017 one? / both?
+}
+
 As the results of the previous paper showed, it can be difficult and costly to keep hard coded detection rules up to date and relevant.
 Because of this, there has been a lot of interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
 [Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)]
 
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
+``finding what's incorrect without knowing what's correct`` -> contradiction and common behavior
+static analysis to infer what programmers believe about the system state
+these believes can be about a number of things (null pointers, \ldots)
 
-Mention MUBench?!
-    -> useful classification of api misuses
-    Dataset of bugs related to API misuses
-    \ldots
 
-General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
-+ check to read stuff\ldots
-+ for more information: check this summary paper / the 2017 one? / both?
+-> keep relatively short!
+\cite{pradel2011detecting}: 
+observation: in statically typed languages the compiler aids the programmer with passing method arguments in the correct order
+however this does not help for methods with equally typed arguments (such as setEndPoints(int high, int low)) oder ähnlich dummes beispiel)
+If the programmer accidentially switches the arguments this can cause unforseen and hard to detect errors
+idea: detect these instances using information in the source code, namely variable and parameter names
+look for inconsistencies in the naming of method parameters vs variable names
+-> extract those names and compare the ones from the call site to the implementation using string similarity metrics
+if reordering the arguments fits significantly better report an anomaly
+only input necessary: source code
+evaluation on 12 java programs from DaCapo Benchmark suits (link?) (more than 1.5 Million lines of code)
+with seeded (ie ``faked'') anomalies reach precision of 72\% and recall of 38\%
+on real code they found 29 anomalies of which 22 revealed true problems (76\%)
 
-Remember the general machine learning approaches which were not super successful, but at least learned a LOT
-especially like general code smells for example
 
-In a more general attempt Fontana et al. \cite{fontana2016comparing} compare 16 different machine learning techniques for code smell detection.
+\todo{Remember the general machine learning approaches which were not super successful, but at least learned a LOT, especially like general code smells for example}
+
+In a more general attempt Fontana et al. \cite{fontana2013code}\cite{fontana2016comparing} compare 16 different machine learning techniques for code smell detection.
 As their training data they manually evaluate a large body of code and tagged four basic smells (data class, large class, feature envy and long method).
 All of the different approaches show good performance, however J48 and random forest have the best results, while support vector machines fare the worst.
 
 \section{Focus on Object Usages}
+\todo[inline] {title sucks?! -> api misuses? }
 % -> api missuse detection
+
+\todo[inline]{Mention MUBench?!
+    -> useful classification of api misuses
+    Dataset of bugs related to API misuses
+    \ldots
+}
 
 There have been a number of works concerned with finding patterns in object usages and using those to find potential bugs.
 Most relevant for this work and its primary inspiration are two papers by Monperrus et al.\cite{monperrus2010detecting}\cite{monperrus2013detecting} which introduce the notions of type usages and their almost similarity.
