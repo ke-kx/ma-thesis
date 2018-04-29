@@ -118,16 +118,21 @@ soot is very powerful and one can customize it to carter to your specialized nee
 Mostly we will analyze android apps and the settings we are using reflect this
 -> table with settings + explanation?
 
-\begin{tabular}[h]{c|c|c}
-Option & Parameter & Explanation \\ \hline
-\code{-app } & - & Run in application mode \\ \hline
-\code{-keep-line-number} & - & Keep line number tables \\ \hline
-\code{-output-format} & none & Set output format for Soot \\ \hline
-\code{-allow-phantom-refs } & - & Allow unresolved classes \\ \hline
-\code{-src-prec} & apk-c-j (apk-class-jimple) & Sets source precedence to format files \\ \hline
-\code{-process-multiple-dex} & - & Process all DEX files found in APK \\ \hline
-\code{-android-jars} & [path] & Use \textit{path} as the path for finding the android.jar file \\ \hline
-\end{tabular}
+\begin{figure}[h]
+    \centering
+    \begin{tabular}[h]{c|c|c}
+    Option & Parameter & Explanation \\ \hline
+    \code{-app } & - & Run in application mode \\ \hline
+    \code{-keep-line-number} & - & Keep line number tables \\ \hline
+    \code{-output-format} & none & Set output format for Soot \\ \hline
+    \code{-allow-phantom-refs } & - & Allow unresolved classes \\ \hline
+    \code{-src-prec} & apk-class-jimple & Sets source precedence to format files \\ \hline
+    \code{-process-multiple-dex} & - & Process all DEX files found in APK \\ \hline
+    \code{-android-jars} & [path] & The path for finding the android.jar file \\ \hline
+    \end{tabular}
+    \label{fig:sootparam}
+    \caption{The parameters passed to Soot}
+\end{figure}
 
 %-- general / not sure where yet
 explain the changes I made to their code

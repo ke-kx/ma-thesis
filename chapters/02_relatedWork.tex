@@ -99,26 +99,21 @@ Because of this, there has been a lot of interest in approaches which adapt auto
 
 [Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)]
 
+\todo[inline]{
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using static predefined rules
 ``finding what's incorrect without knowing what's correct`` -> contradiction and common behavior
 static analysis to infer what programmers believe about the system state
 these believes can be about a number of things (null pointers, \ldots)
+}
 
-
--> keep relatively short!
-\cite{pradel2011detecting}: 
-observation: in statically typed languages the compiler aids the programmer with passing method arguments in the correct order
-however this does not help for methods with equally typed arguments (such as setEndPoints(int high, int low)) oder ähnlich dummes beispiel)
-If the programmer accidentially switches the arguments this can cause unforseen and hard to detect errors
-idea: detect these instances using information in the source code, namely variable and parameter names
-look for inconsistencies in the naming of method parameters vs variable names
--> extract those names and compare the ones from the call site to the implementation using string similarity metrics
-if reordering the arguments fits significantly better report an anomaly
-only input necessary: source code
-evaluation on 12 java programs from DaCapo Benchmark suits (link?) (more than 1.5 Million lines of code)
-with seeded (ie ``faked'') anomalies reach precision of 72\% and recall of 38\%
-on real code they found 29 anomalies of which 22 revealed true problems (76\%)
-
+Pradel et al. \cite{pradel2011detecting} noticed that in statically typed languages the compiler helps the programmer with passing method arguments in the correct order.
+However, the compiler cannot ensure the correct order of equally typed arguments (such as \code{setEndPoints(int low, int high)}, which can cause unforeseen and hard to detect errors.
+Their idea is to detect switched method arguments using only semantic information in the source code, namely variable and parameter names.
+They extract these names and compare the ones found at the call sites to the ones from the implementation body using string similarity metrics. 
+If a reordering of the arguments fits significantly better they can report an anomaly.
+In their evaluation on 12 Java programs from the DaCapo Benchmark suite (more than 1.5 Million lines of code) they reach a precision of 72\% and recall of 38\% on seeded (i.e. ``faked'') anomalies.
+\todo{link?}
+In real code they found 29 anomalies of which 22 revealed true problems (76\%).
 
 \todo{Remember the general machine learning approaches which were not super successful, but at least learned a LOT, especially like general code smells for example}
 
