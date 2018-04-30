@@ -7,6 +7,7 @@
 \todo[inline]{new ideas:
     mention code smells and their origin?, less focus on ``bugs'' per se (see aDoctor paper) -> while the thesis title is related to bugs, I think I can / want to use smell as well 
     Reference die belegt, dass es eine Korrelation zwischen bugs und smells gibt look in fontana2016comparing, has references to this in introduction
+    + adoctor as well
 }
 
 %--- relevance of code smells and finding them
@@ -59,12 +60,21 @@ This especially holds true for cutoff values around 50\%.
 
 \todo[inline]{ Which other papers?! -> should be some which are NOT about findbugs -> present alterantives, maybe work in a slightly different manner, or just some sort of overview paper for static code smell detection oä! }
 
+Other tools for detecting code smells are Decor\cite{moha2010decor} and iPlasma\cite{Marinescu2005iPlasmaAI}.
+\todo{some more info?}
+
 \section{Android specific Smell Detection}
 
 \todo[inline]{smth more here?!}
 
 %In Chapter \ref{ch:eval} we are analyzing a large number of open source android applications.
 %Thus, as a small overview of android related code smell detection consider the following papers.
+
+While not investigating Android specific smells,
+Verloop \cite{verloop2013code} used Java refactoring tools (e.g. PMD and JDEODORANT) to detect basic code smells like large class or long method.
+interesting finding: classes inheriting from the Android framework smells can appear at different frequencies
+example: long method detected 2times as much in these classes
+\ldots -> some more info? + references for pmd and jdeodorant
 
 Hecht et al. \cite{hecht2015detecting} present an approach they call PAPRIKA which operates on compiled Android applications but tries to infer smells on the source code level.
 From the byte-code analysis, it builds a graph model of the application and stores it in a graph database.
@@ -109,10 +119,17 @@ some more übergang\ldots
 }
 
 \todo[inline]{
+    -> not perfectly happy with this summary, but we shall see
 Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using predefined static rules
 ``finding what's incorrect without knowing what's correct`` -> contradiction and common behavior
-static analysis to infer what programmers believe about the system state
-these believes can be about a number of things (null pointers, \ldots)
+
+static analysis to infer what programmers believe about the system state, then check them for contradictions
+they provide several ``templates'' for believes a programmer must or may hold 
+use these to extract rules from the code
+these believes can be about a number of things (a pointer not being null, a lock being unlocked, etc), each template is cartered for a specific type of believe
+can also look for common behavior and exceptions to them
+
+results: evaluation on linux and openbsd finds hundereds of bugs related to the different bug types their templates can find
 }
 
 Pradel et al. \cite{pradel2011detecting} noticed that in statically typed languages the compiler helps the programmer with passing method arguments in the correct order.
@@ -138,6 +155,16 @@ All of the different approaches show good performance, but J48 and random forest
     Dataset of bugs related to API misuses
     \ldots
 }
+
+API methods are often complex and thus hard to use, additonalyl might be badly documented
+to allivieate this, the workflow of developers often includes searching for examples of how to use an particular api
+\cite{zhong2009mapo} built 
+primarily a SEARch tool for code snippets explaining how tu use a particular API
+but to search over API usages, one has to extract them!
+Their tool MAPO extracts API usage patterns which describe how in a certain scenario some API methods are frequently called together and if the usage follows any sequential rules
+-> this tool doesn't look for any anomalies or code smells, but it is important as it extracts information similar to the one we are interested in.
+uses clustering to group the extracted api usages into patterns (+ frequent subsequences miner)
+since they focus more on the code search aspect their evaluation is a user study investigating the quality of produced code (with / w/o their tool), but this is intresting anyways\ldots
 
 \todo[inline]{rework this!
     remove explanation of the technique and only explain the point: to find missing method calls

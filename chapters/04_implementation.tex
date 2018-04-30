@@ -185,17 +185,18 @@ First off, retrieving data from a database is fast and we can access the data se
 Additionally, we gain a lot of flexibility and it becomes easier to extend both, the stored data and the analysis itself.
 This enabled us to quickly build several prototypes of the analysis using Python.
 
+% --- Continue write out!
 % main advantage: big db possible
-% ---- CONTINUE HERE!!!
+somewhere(here?) mention, that it is not only possible but even SMART to not only incorporate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
 Finally, storing the type usages in a database is the first step for eventually building a large dataset of type usages.
 While it can be useful to analyse only those type usages which occur in one application, 
-
-
-somewhere(here?) mention, that it is not only possible but even SMART to not only incorporate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
-+ explain why obviously
-    of course it's useful to ALSO analyse tus over classes which are private to my application (if there is enough data)
-    however, mostly interesting are the framework classes which are used by many applications
-    when analyzing the usages of framework etc classes, we want to have as much information as possible
+% OR:
+its already useful to analyze one application in separation
+but we really care about the framework / library classes which are used by more than one application
+on these classes we can build a large dataset of type usages -> have much more information to determine if a tu is an anomaly or not
+-> having a database really helps with that (can hold a lot of data + can selectively query it are the main points i think?)
+of course it's useful to ALSO analyse tus over classes which are private to my application (if there is enough data)
+    but the framework thing is just a) easier to get the info and b) kind the point of this thingy?
 
 %-- database layout + some of the considerations made (x. normalenform, sowas?)
 -> some sort of sql graphic? -> use the one I get from Intellij!
