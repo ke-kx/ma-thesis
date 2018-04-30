@@ -2,13 +2,12 @@
 
 \todo[inline]{Generally: don't make this section too long I'd say!}
 
-After laying out the theoretical foundations of the majority rule method in the last chapter, this chapter focusses on the practical side.
-\todo{rephrase a bit}
-We give details about design decisions taken and the reasons for them, pitfalls that had to be overcome and the trade-offs that had to be accepted.
+After laying out the theoretical foundations of detecting missing method calls using the majority rule in the last chapter, this chapter focusses on the practical side.
+We give details about design decisions taken and the reasoning behind them, pitfalls that had to be overcome and the trade-offs that had to be accepted.
 Additionally, we explore some of the mistakes made and dead ends that we encountered.
 
 The first section focusses on the internal workings of the system we developed.
-We explain the steps from receiving the input program to outputting a list of anomalies which hint at potentially missing method calls.
+It explains the steps from receiving the input program to outputting a list of anomalies which hint at potentially missing method calls.
 The second section revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility.
 
 \section{Procedure}
@@ -29,21 +28,6 @@ Given a software system, which shall be tested for anomalies, conceptually the f
     \end{enumerate}
     \item Output a list of anomalous type usages, sorted by their $\operatorname{S-score}$, together with the calls they are potentially missing
 \end{enumerate}
-
-\todo{(the ones with a score above XX are considered to be an anomaly)}
-
-%-- description of system
-However, this simple outline does not represent the actual realities of the system.
-Instead of a singular process with [flat / not branching / \ldots] flow, it is split into three different parts which are laid out in Figure \ref{fig:overview}.
-First, a java application reads the byte code of the program under analysis and iterates over all method definitions to extract the type usages which are present.
-The extracted type usages are then persisted in a database to ensure flexibility and high performance in the following analysis phase.
-For the actual anomaly detection we use a relatively simple python program to enable fast prototyping and again flexibility.
-It goes through all sets of type usages (more on those sets in Section \ref{sec:anomaly}), requests the type usages in the set and calculates their strangeness score.
-After iterating through all the sets of the application it finally outputs the results.
-
-%summary of rest
-The following sections give a more in depth explanation of the separate steps.
-\todo{smth more? + move figure ABOVE the paragraph explaining it?}
 
 \begin{figure}[h]
 \centering
@@ -87,36 +71,46 @@ The following sections give a more in depth explanation of the separate steps.
 \todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels | POTENTIALLY add the retrieve sets step to python?}
 % https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
 
+%-- description of system
+However, this simple outline does not represent the actual realities of the system.
+Instead of a singular process with [flat / not branching / \ldots] flow, it is split into three different parts which are laid out in Figure \ref{fig:overview}.
+First, a java application reads the byte code of the program under analysis and iterates over all method definitions to extract the type usages which are present.
+The extracted type usages are then persisted in a database to ensure flexibility and high performance in the following analysis phase.
+For the actual anomaly detection we use a relatively simple python program to enable fast prototyping and again flexibility.
+It goes through all sets of type usages (more on those sets in Section \ref{sec:anomaly}), requests the type usages in the set and calculates their strangeness score.
+After iterating through all the sets of the application it finally outputs the results.
+
+%summary of rest
+The following sections give a more in depth explanation of the separate steps.
+\todo{smth more?}
+
 \subsection{Bytecode Analysis}\label{sec:bytecode}
 \todo[inline]{maybe rename section?}
-somewhere: if necessary: compile program, then analyze!
 
 %-- general intro
-soot as analysis framework -> what is soot
--> reference: \url{https://sable.github.io/soot/}
-originally java optimization framework
-wide range of usages, analyze, instrument, optimize and visualize java (and by extension android) applications
-provides call graph constructions, points-to analysis, def/use chains, inter and intra-procedural data-flow analysis,
-taint analysis
-we will use it for XY
+We use Soot \footnote{\url{https://sable.github.io/soot/}} for the bytecode analysis.
+Soot was originally a Java optimization framework but has since evolved to support a wide range of usages.
+One can use it to analyse, instrument, optimize and visualize Java and Android applications.
+For this purpose it provides call graph construction, points-to analysis, def or use chains, inter and intra-procedural data-flow analysis and taint analysis.
+We do not need most of it's functionality, but simply use it to statically extract type usages from the input application.
 
 %-- why bytecode over sourcecode
-operates by statically analyzing a piece of software
-(not on the source code, but rather on the compiled byte code -> why: easier)
-in theory soot would support sourcecode analysis(?), but actually the bytecode analysis is recommended (source?)
-easier for experiments
-more standardized (jvm byte code)
-[borrow smth from this one paper (don't remember which one\ldots)]
+It would be possible to extract type usages from the source code, but extracting them from compiled code has some advantages.
+The JVM byte code is very standardized and so is the Dalvik byte code found in Android applications, which facilitates the analysis.
+While Soot supports source code analysis in theory, it only works up to Java 7 and byte code analysis is the recommended approach.
+Besides that, using compiled applications simplifies our experimental setup and as a marginally useful side-effect, it also helps with analyzing obfuscated applications.
+Finally, there are no real disadvantages to this approach, if the program is only available as source code we can simply compile it before analyzing it.
 
 %-- some more in depth info on how soot does what it does?
-transforms given programs into intermediate representation on which it operates
-there are four immediate representations (depending on use case)
-we use Jimple, the primary representation, typed 3-address intermediate rperesnetation (especially suitable for optimization, but also for our zweck)
+Soot operates by transforming the given program into intermediate representations which can then be optimized or analysed.
+It provides four intermediate representations with different use cases, we use Jimple, Soot's primary representation.
+Jimple is a typed 3-address representation, which is especially suited for optimization, but also suffices for our purpose.
 
 %-- soot startup and settings?
-soot is very powerful and one can customize it to carter to your specialized needs
-Mostly we will analyze android apps and the settings we are using reflect this
--> table with settings + explanation?
+Soot is a very powerful framework and one can customize it to carter quite specialized requirements.
+We will mostly analyze Android applications and the settings we are using reflect this.
+In Figure \ref{fig:sootparam} we have listed the most important settings we are using to configure Soot.
+\todo[inline]{more detailed description of settings? i think not}
 
 \begin{figure}[h]
     \centering
@@ -134,70 +128,68 @@ Mostly we will analyze android apps and the settings we are using reflect this
     \caption{The parameters passed to Soot}
 \end{figure}
 
-%-- general / not sure where yet
-explain the changes I made to their code
-
 \subsection{Extracting Type Usages}
 
+\todo[inline]{
 some more on extraction! + the algorithm!
 some information on what kind of further analysis is attempted (local must alias, bla)
+general / not sure where yet: 
+explain the changes I made to their code ie proper refactoring, etc
+}
 
 %-- general ablauf
-where is it registered in soot and what does that mean?
-soots execution divided into a number of phases
-each phase has a specific task like for example the aggregation of local variables
-Phases are further grouped into Packs and the registered packs are applied succesevely during the analysis
-we can register custom parts which will apply some work in the specified phase
-register custom \code{BodyTransformer} with soot.
-in Pack: jtp -> stands for Jimple Transformation Pack  and is simply applied to every method under analysis (unmodified soot has no transformations in this pack)
+The Soot execution is divided into a number of 'phases' each of which has a specific task like for example the aggregation of local variables.
+The actual work is done by so called transformations, which are able to modify the input they receive but are not required to do so.
+The phases are further grouped into 'packs' and the registered packs are applied successively during the execution.
+We register a custom piece of code in the Jimple transformation pack, which is applied to every method in the analysed program.
 
 %--- what is the transformer doing?
-generally: applied to each method body
-first iterates through all statements and checks if they are a method call, if so remember them (aka extract list of method calls happening in this method)
-given this list of method call, iterate through it and group them to type usages
-this is done by checking first on which VARIABLE the call was made
-additionally, check if other locals point to the same underlying object -> group the calls made on these locals into one tu
-then group the calls which were made on the same object and be happy
-(more details necessary? I don't really think so)
+This custom transformation receives as input a Jimple representation of the method body it is currently analyzing.
+To extract the type usages, it iterates through all the statements in the method and marks those which are invoking a method.
+In the end it has extracted a list of all method calls that are happening in this method.
+It now iterates through this list of method calls and groups them into type usages.
+To do so, it first checks on which variable or object the current call was invoked and checks if there is already a type usage for this object.
+If there is, it adds the call to the type usage and advances to the next method call in the list.
+If there is no type usage for the object so far, it creates a new one.
+After completing this process for all method invocations in the method body the analysis is complete and it returns the list of type usages it extracted.
 
 %-- local must alias analysis
-% https://soot-build.cs.uni-paderborn.de/public/origin/develop/soot/soot-develop/jdoc/soot/jimple/toolkits/pointer/LocalMustAliasAnalysis.html
-inaccuracy about ``object'' vs ``variable'' of a particular type?
-``LocalMustAliasAnalysis attempts to determine if two local variables (at two potentially different program points) must point to the same object. The underlying abstraction is based on global value numbering'' -> this is a soot feature
-checking if two locals point to the same object can be expensive + seems a little bit leaky
-in test runs on big applications this has let memory requirements explode, thus we made it optional
-however for android was fine (even mention this?)
+One important step of this analysis is the 'LocalMustAliasAnalysis', which attempts to determine if two local variables (at potentially different program points) must point to the same object.
+This is necessary to decide if the calls made on these locals should be grouped into one type usage.
+The underlying abstraction is based on global variable numbering and follows the ideas presented by Lapowsky et al. \cite{lapkowski1998extended} with some minor adaptions.
+This analysis is a Soot feature and in test runs on big applications we noticed that it can be very expensive.
+Because of this we made it optional, however for our benchmarks and evaluation we were able to use it.
 
 %-- ignoring some classes
-for android we chose to exclude some classes from analysis (do not step into them!, still record type usages!)
-because not the real code -> not really interested 
-also performance reasons (quite important actualy)
-in theory soot has a mechanism for this, but it isn't working correctly
-packages thusly excluded are:
-\code{java.*}, \code{sun.*}, \code{android.*}, \code{org.apache.*}, \code{org.eclipse.*}, \code{soot.*}, \code{javax.*}
-(probably only mention java, javax and android?)
+One additional detail is that we are excluding some classes from the Android analysis for performance reasons.
+The packages we exclude in this manner are \code{java.*}, \code{android.*}, \code{soot.*} and  \code{javax.*}.
+These are all framework classes and we are primarily interested in the type usages occurring in the application itself not in the framework.
+This means that we do not store type usages that occur \emph{inside} of those classes, we do, however, still record usages of them.
+\todo{explain a bit better that these classes are kind of exactly what we are most interested in as far as type usages go, but we don't want too step ITNO them}
 
 \subsection{Storing Type Usages}
 
 %intro / übergang + general info
-after the transformer has analyzed and extracted a list of type usages form the current method body, they are persisted into a database
-using hsqldb -> link
-SQL relational database written in Java
-Provides small, multithreaded and transactional database engine
-in memory and disk based tables 
-reasons for using this one?
-easy setup, small, fast
-permissive license, lots of features
-+ we also invested some time into exploring the posibility to use postgres, however it turned out that the performance was worse -> see section (dead ends)
+After the transformer has analyzed the current method body and extracted a list of type usages from it, we persist them into a database.
+We are using HSQLDB\footnote{\url{http://hsqldb.org/}}, a SQL relational database written in Java.
+It provides a small, multithreaded and transactional database engine with in memory or disk based tables.
+We chose HSQLDB because it is small and has good performance as well as an easy setup.
+Additional arguments where its permissive license and the large number of features it supports.
+We also invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but as explained in Section \ref{sec:deadends} it turned out that its performance was inferior.
 
 %- why are we using a database at all?
-monperrus et all saved data in a text based format
-however there are a couple of disadvantages to this
--> need to parse again for analysis, slow, large data storage
-using a database has many positive ramifications
-flexibility, future extensibility, easier to prototype fast (use python for analyis eg)
-queries! -> much better, need not hold everything in memory, especially for bigger datasets, can access data selectively
-also speed
+In their work, Monperrus et al. save all data in a text based format, but this means they need to parse everything again for the analysis, which can be slow and require a lot of memory for large inputs.
+Additionally, the data takes up a lot of storage space when persisted to disk.
+In contrast, using a database has many positive ramifications.
+First off, retrieving data from a database is fast and we can access the data selectively based on changing criteria.
+Additionally, we gain a lot of flexibility and it becomes easier to extend both, the stored data and the analysis itself.
+This enabled us to quickly build several prototypes of the analysis using Python.
+
+% main advantage: big db possible
+% ---- CONTINUE HERE!!!
+Finally, storing the type usages in a database is the first step for eventually building a large dataset of type usages.
+While it can be useful to analyse only those type usages which occur in one application, 
+
 
 somewhere(here?) mention, that it is not only possible but even SMART to not only incorporate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
 + explain why obviously
@@ -220,7 +212,7 @@ somewhere explain the ``sets of tus'' + peformance issues before (ref db dead en
 
 \todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
 
-\subsection{Improvements and Dead Ends}
+\subsection{Improvements and Dead Ends}\label{sec:deadends}
 \todo{should this be a section or a subsection?}
 
 explaining all the work i did + what was already there
