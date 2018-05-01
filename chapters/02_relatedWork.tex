@@ -156,6 +156,7 @@ All of the different approaches show good performance, but J48 and random forest
     \ldots
 }
 
+---
 API methods are often complex and thus hard to use, additonalyl might be badly documented
 to allivieate this, the workflow of developers often includes searching for examples of how to use an particular api
 \cite{zhong2009mapo} built 
@@ -166,25 +167,33 @@ Their tool MAPO extracts API usage patterns which describe how in a certain scen
 uses clustering to group the extracted api usages into patterns (+ frequent subsequences miner)
 since they focus more on the code search aspect their evaluation is a user study investigating the quality of produced code (with / w/o their tool), but this is intresting anyways\ldots
 
-\todo[inline]{rework this!
-    remove explanation of the technique and only explain the point: to find missing method calls
-    the refer to the next chapter for explanation in depth
-    + the results!
-    
-    what are object usages?! explain somewhere?
-}
+\cite{monperrus2010detecting}\cite{monperrus2013detecting} 
 There have been some works concerned with finding patterns in object usages and using those to find potential bugs.
-Most relevant for this work and its primary inspiration are two papers by Monperrus et al.\cite{monperrus2010detecting}\cite{monperrus2013detecting} which introduce the notions of type usages and their almost similarity.
-They define a type usage as the invocation of methods on an object of a particular type in a particular context.
-Here, the context is the name of the method in which the type usage occurs together with its signature (the types of the method parameters).
-After mining a list of all the type usages present in a code base, they relate the number of exactly equal type usages to the number of very similar ones.
+    what are object usages?! explain somewhere?
+Most relevant for this work and its primary inspiration are two papers by Monperrus et al. who propose technique for detecting missing method calls
+it is based on the intuition that
+types are often used in particular ways
 If a type usage has a large number of very similar type usages but a small number of exactly similar ones, it is likely that it is missing a method call.
-\todo{explaantion needs to be improved -> more general + start with purpose instead of ending with it?}
-This technique is explained in detail in Chapter \ref{ch:dmmc}.
+They call this the ``majority rule'', it is explained in detail in Chapter \ref{ch:dmmc}.
 
-\todo[inline]{
-results of monperrus et al.:
-}
+first, Evaluation based on a simulation which creates defects by degrading real software
+that is it removes singular method calls from the code and sees if their method detects these known missing calls
+this on several software packages: eclipse userinterface + two other packages, derby and tomcat
+    -> result: system can answer 54 to 76 percent of the queries
+    of the queries it answers, 73 - 89 percent of the answers contain the actually missing call (not necessary as the first recommendation)
+    all in all it reaches precision between 59 and 83 and recall of 41 to 68
+however, questionable how relevant these numbers are b/c its not clear that real bugs will share characteristics with the artificially created cases
+
+for this reason:
+additionally qualitative eval: throw the developed tool onto eclipse, derby and tomcat
+and manually analyze 30 very anomalous cases reported by it
+they find that there can be different reasons for a TU to be anomalous (did i explain tu so far? / use oject usage?)
+ideal case: method call is actually missing (they reported 17 issues and got 9 patches accepted!)
+it's just a smell ie situation could be rewritten or refactored for more clarity
+sometimes it's just related to software aging: outdated usage related to old version of API for example
+however, also negative results, where the anomaly is just that: an outlier, which is correct, even if a majority of other usages are different
+or simply related to dead code which isn't used anymore anyways
+---
 
 Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of method calls.
 First, they extract usage models from Java code by building a finite state automaton for each method.
