@@ -267,24 +267,40 @@ with that realization go on to next step of the analysis: actually detecting ano
 
 \section{Anomaly Detection}\label{sec:anomaly}
 
-% continue here!
 -> look at python code and thinks about what needs to be said + suitable structure
 
-
-only part affected by the different variants presented in chapter 3
-retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
--> explain a bit the python class structure I developed?
-        building python infrastructure for analysis
-
+% overview of process
+need another picture? or fine without? i'm not sure i need that much detail\ldotsw
 maybe another img or flow chart for python ablauf (or too much detail?)o
 
+% partitions + analysis
 somewhere explain the ``sets of tus'' + peformance issues before (ref db dead end)
+depending on the variant we partition by types or by combinations of types+context
+outer loop: iterate through all the partitions in the dataset + belonging to the current partition lvl
+-> observe: using the database it is very simple to obtain the possible partitons (+query?)
+and additionally it is super easy to get the corresponding TUs (+query) -> here the index on [column] really helps
+-> this is exactly what a db is made for, it is fast and seamless
+% analysis
+then iterating through all the tus in the current partition
+comparing the methods being invoked (sets -> does not count number of invocations)
+comparison each with each only once -> upper triangle matrix, saves nearly half again
+% tear down / result
+-> for each tu calculate the score + save the list of results for further analysis / evaluation by expert / hand
 
+% other variants: loading
+this only part affected by the different variants presented in chapter 3
+already talked about context vs no context
+the class merge variant is performed by simply inserting some preprocessing after loading the data with type partition
+-> merge those tus which belong to the same class -> done
+retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
 
+% other variants: anomalies
+-> detection of superfluous or wrong method can use exactly the same setup, only need to change the implementation of the almost equal check
 mention in the end that i tried a 
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)
-    but all in all it didnt work out
+    but all in all it didnt work out / not enough time
+    + vermutungen warum es nicht funktioniert -> dataset exploration + size of method and typeusage lists per partition!
 
 \section{Other Ideas / Problems}
 \todo[inline]{not sure i need this section + what should be included}
