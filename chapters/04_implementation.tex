@@ -108,9 +108,10 @@ Jimple is a typed 3-address representation, which is especially suited for optim
 Soot is a very powerful framework and one can customize it to carter quite specialized requirements.
 We will mostly analyze Android applications and the settings we are using reflect this.
 In Figure \ref{fig:sootparam} we have listed the most important settings we are using to configure Soot.
+
 \todo[inline]{more detailed description of settings? i think not}
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \begin{tabular}[h]{c|c|c}
     Option & Parameter & Explanation \\ \hline
@@ -122,8 +123,8 @@ In Figure \ref{fig:sootparam} we have listed the most important settings we are 
     \code{-process-multiple-dex} & - & Process all DEX files found in APK \\ \hline
     \code{-android-jars} & [path] & The path for finding the android.jar file \\ \hline
     \end{tabular}
-    \label{fig:sootparam}
     \caption{The parameters passed to Soot}
+    \label{fig:sootparam}
 \end{figure}
 
 \section{Extracting Type Usages}
@@ -198,8 +199,8 @@ of course it's useful to ALSO analyse tus over classes which are private to my a
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{figures/database_layout-light}
-    \label{fig:db_layout}
     \caption{Overview of Database Tables}
+    \label{fig:db_layout}
 \end{figure}
 \todo[inline]{
     REMOVE the xfiles watermark
