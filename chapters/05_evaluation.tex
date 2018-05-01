@@ -2,6 +2,8 @@
 roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
 take their method + analyze it on a qualitative + quantitative basis on a big android dataset
 
+The XXX section revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility.
+
 % http://libguides.usc.edu/writingguide/methodology
 
 \todo[inline]{does this order make sense or rather split by research question?}
@@ -13,9 +15,14 @@ manual review of top 50 findings for each ``method''
 -> which are the different methods?
 
 downloading + automatically analyzing android apps (in evaluation section?)
+\todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
 
 \subsection{Automated Benchmark}
+
+building benchmarking infrastructure
+flexibility with python class setup
 degrading type usages + checking if they will be detected
+    some more subsections? (different ways for degrading type usages?)
 
 sometimes in even further degraded settings (degrade more than one)
 
@@ -44,6 +51,7 @@ for each question: explanation of question, then results + interprettation
 rausziehen (extra section)
 
 what kind of dataset do we have? (how many apps, how big, how many TUs, how are the TUs split between the apps -> size of applications)
+number of partitions (types+context / types) and their sizes!
 what are typeusages in Android apps like? (length of method list, percentage on Android framework, percentage on other stuff, etc) 
 
 general data about avg tus related to different settings etc -> what does our dataset even consist of?

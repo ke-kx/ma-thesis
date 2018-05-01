@@ -2,15 +2,12 @@
 
 \todo[inline]{Generally: don't make this section too long I'd say!}
 
-After laying out the theoretical foundations of detecting missing method calls using the majority rule in the last chapter, this chapter focusses on the practical side.
+After laying out the theoretical foundations of detecting missing method calls using the majority rule in the last chapter, this chapter focusses on the practical side and on the internal workings of the system we developed.
+It explains the steps from receiving the input program to outputting a list of anomalies which hint at potentially missing method calls.
 We give details about design decisions taken and the reasoning behind them, pitfalls that had to be overcome and the trade-offs that had to be accepted.
 Additionally, we explore some of the mistakes made and dead ends that we encountered.
 
-The first section focusses on the internal workings of the system we developed.
-It explains the steps from receiving the input program to outputting a list of anomalies which hint at potentially missing method calls.
-The second section revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility.
-
-\section{Procedure}
+\section{Overview}
 
 Our system is (primarily) a system for detecting missing method calls.
 It works by statically analyzing a given software application, extracting the type usages which it contains and finally determining if any of them are anomalous by the Majority rule as described in Section \ref{sec:majority}.
@@ -78,13 +75,14 @@ First, a java application reads the byte code of the program under analysis and 
 The extracted type usages are then persisted in a database to ensure flexibility and high performance in the following analysis phase.
 For the actual anomaly detection we use a relatively simple python program to enable fast prototyping and again flexibility.
 It goes through all sets of type usages (more on those sets in Section \ref{sec:anomaly}), requests the type usages in the set and calculates their strangeness score.
+\todo{partitions instead of sets?}
 After iterating through all the sets of the application it finally outputs the results.
 
 %summary of rest
 The following sections give a more in depth explanation of the separate steps.
 \todo{smth more?}
 
-\subsection{Bytecode Analysis}\label{sec:bytecode}
+\section{Bytecode Analysis}\label{sec:bytecode}
 \todo[inline]{maybe rename section?}
 
 %-- general intro
@@ -128,7 +126,7 @@ In Figure \ref{fig:sootparam} we have listed the most important settings we are 
     \caption{The parameters passed to Soot}
 \end{figure}
 
-\subsection{Extracting Type Usages}
+\section{Extracting Type Usages}
 
 \todo[inline]{
 some more on extraction! + the algorithm!
@@ -165,17 +163,19 @@ One additional detail is that we are excluding some classes from the Android ana
 The packages we exclude in this manner are \code{java.*}, \code{android.*}, \code{soot.*} and  \code{javax.*}.
 These are all framework classes and we are primarily interested in the type usages occurring in the application itself not in the framework.
 This means that we do not store type usages that occur \emph{inside} of those classes, we do, however, still record usages of them.
-\todo{explain a bit better that these classes are kind of exactly what we are most interested in as far as type usages go, but we don't want too step ITNO them}
+\todo[inline]{
+explain a bit better that these classes are kind of exactly what we are most interested in as far as type usages go, but we don't want too step ITNO them
++ make sure this works good together with coresponding paragraph in the next section
+}
+\todo{some changes that had to be made to the analysis framework for android analysis?}
 
-\subsection{Storing Type Usages}
+\section{Storing Type Usages}
 
 %intro / übergang + general info
 After the transformer has analyzed the current method body and extracted a list of type usages from it, we persist them into a database.
-We are using HSQLDB\footnote{\url{http://hsqldb.org/}}, a SQL relational database written in Java.
-It provides a small, multithreaded and transactional database engine with in memory or disk based tables.
+For this, we are using HSQLDB\footnote{\url{http://hsqldb.org/}}, a SQL relational database written in Java, which provides a multithreaded and transactional database engine with in memory or disk based tables.
 We chose HSQLDB because it is small and has good performance as well as an easy setup.
 Additional arguments where its permissive license and the large number of features it supports.
-We also invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but as explained in Section \ref{sec:deadends} it turned out that its performance was inferior.
 
 %- why are we using a database at all?
 In their work, Monperrus et al. save all data in a text based format, but this means they need to parse everything again for the analysis, which can be slow and require a lot of memory for large inputs.
@@ -183,59 +183,112 @@ Additionally, the data takes up a lot of storage space when persisted to disk.
 In contrast, using a database has many positive ramifications.
 First off, retrieving data from a database is fast and we can access the data selectively based on changing criteria.
 Additionally, we gain a lot of flexibility and it becomes easier to extend both, the stored data and the analysis itself.
-This enabled us to quickly build several prototypes of the analysis using Python.
+(This enables us to quickly build several prototypes of the analysis using Python.))
 
-% --- Continue write out!
-% main advantage: big db possible
-somewhere(here?) mention, that it is not only possible but even SMART to not only incorporate the type usages of ONE application into the analysis but if at all possible, all of the software which uses the same kind of framework/library
-Finally, storing the type usages in a database is the first step for eventually building a large dataset of type usages.
-While it can be useful to analyse only those type usages which occur in one application, 
-% OR:
+% --- continue writeout here ---
+% what we really wanna do: build big database collecting ALL tus -> better analysis
 its already useful to analyze one application in separation
 but we really care about the framework / library classes which are used by more than one application
+analyze a lot of applications using the same framework/library
 on these classes we can build a large dataset of type usages -> have much more information to determine if a tu is an anomaly or not
 -> having a database really helps with that (can hold a lot of data + can selectively query it are the main points i think?)
 of course it's useful to ALSO analyse tus over classes which are private to my application (if there is enough data)
     but the framework thing is just a) easier to get the info and b) kind the point of this thingy?
 
-%-- database layout + some of the considerations made (x. normalenform, sowas?)
--> some sort of sql graphic? -> use the one I get from Intellij!
-+ describe obviously (+ what was made how why)
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{figures/database_layout-light}
+    \label{fig:db_layout}
+    \caption{Overview of Database Tables}
+\end{figure}
+\todo[inline]{
+    REMOVE the xfiles watermark
+}
 
-\subsection{Anomaly Detection}\label{sec:anomaly}
+%-- explain database layout 
++ describe obviously (+ what was made how why)
+Figure ref depicts the database layout
+(how in depth? explain every field? I'm not so sure\ldots maybe for now a rough overview )
+the central piece is of course the type usage table, holds information related to one particular type usage
+the class it was recorded in (fully qualified pck name), if possible the line of code in which the object was first encountered and its context, that is the name of the method in which it was found + the method parameters.
+additionally it holds references to the ``project'' it belongs to, which in our setup is the Android application it was taken from, and the type it belongs to, that is what type the object of the tu is an instance of (rephrase\ldots)
+
+Each type holds a reference to it's parent (if one exists) to enable rebuilding the inheritance hierarchy if so desired
+additionally the methods that can be invoked on a type are stored in the ``method'' table (basically just their (full) name).
+
+Finally the calllist table holds the information which of the method calls that COULD be invoked on a type are actually called on the typeusage in question
+
++ some of the considerations made (x. normalenform, sowas?)
+-> ask torben? -> is there a problem with class and context (potentially duplicate information!, should actually belong to a class table i guess?)
+
+\section{Improvements and Dead Ends}\label{sec:deadends}
+\todo[inline]{
+    should this be a section or a subsection?
+    if this is before anomaly detection we can kind of explain why we are using the python + it's kinda the process from one to the other?
+    db -> too slow -> \ldots
+}
+
+% general plan:
+explaining all the work i did + what was already there
+why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
+
+% there exists code from monperrus et al., I took it and improved it
+Monperrus et al. released their code and data + link
+to understand it better we refactored it extensively and implementd the database backend connection
+(mention or rather not?) during the refactoring process discovered small discrepancies between what's described in the paper and the code
+-> namely calculation of almost similarity does a double intersection i think? (recheck this!)
+which means that cases where the method calls are as follows + example where it gives the wrong results
+was there some other bug? - i think not
++ however we fixed this and reworked their analysis, the results didn't change in a significant way
+
+% include the queries for the strangeness score calculation here? I am mostly thinking no
+
+% attempt purely db solution -> db too slow
+idea: use database to calculate strangeness scores, cause the data is already there
+hindsight: not the best idea
+std query: view with merge over many tables -> quite slow even on small test dataset
+lots of attempted improvements to the query with better indices, smart cached subtables etc
+but all in all futile, it remained slow or memory intensive or both (on a application of medium size -> mention LOC of teamcale, resulting in one dataset with about X typeusages)
+also tried postgresql which is supposed to be faster for some applications, but results disappointing
+evaluation of other db system + why it didn't work (basically pure db stupidity)
+We also invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but as explained in Section \ref{sec:deadends} it turned out that its performance was inferior. (change, this is the deadends section xD)
+
+\todo[inline]{not sure if this here or in next section?}
+% Better problem description + way to solution
+biggest problem: nxn comparison of so many TUS (-> N2 laufzeit)
+it seems db not able to unrevel this with my unsuited instruction oä
+however thinking about what happens:
+for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext)
+only if that's the case go and compare the methods
+this gives rise to natural subsections / partitions of the dataset, namely those sets of tus with the same type(+context)
+only those have to be compared to each other
+partition of dataset -> makes sense anyways and db is perfectly prepared for that
+with that realization go on to next step of the analysis: actually detecting anomalies
+
+\section{Anomaly Detection}\label{sec:anomaly}
+
+% continue here!
+-> look at python code and thinks about what needs to be said + suitable structure
+
+
 only part affected by the different variants presented in chapter 3
 retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
 -> explain a bit the python class structure I developed?
+        building python infrastructure for analysis
 
 maybe another img or flow chart for python ablauf (or too much detail?)o
 
 somewhere explain the ``sets of tus'' + peformance issues before (ref db dead end)
 
-\todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
 
-\subsection{Improvements and Dead Ends}\label{sec:deadends}
-\todo{should this be a section or a subsection?}
-
-explaining all the work i did + what was already there
-    first reading their code, coming across a couple of discrepancies between code and paper, later check if everthing still works (evaluation)
-    refactoring everything + saving stuff to database
-    building python infrastructure for analysis
-
-evaluation of other db system + why it didn't work (basically pure db stupidity)
-
-some changes that had to be made to the analysis framework for android analysis
-
-why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
+mention in the end that i tried a 
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)
+    but all in all it didnt work out
+
+\section{Other Ideas / Problems}
+\todo[inline]{not sure i need this section + what should be included}
 
 static functions evaluation!
 something to fix the dotchaining problems
-
-\section{Benchmark}
-some more subsections? (different ways for degrading type usages?)
-
-this only to be about the automatic benchmark stuff!
-
-building benchmarking infrastructure
-flexibility with python class setup
+-> for both basically I'm just saying that i looked into it and it was too much work / impossible?
