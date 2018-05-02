@@ -1,7 +1,7 @@
 \chapter{Related Work}\label{ch:relWork}
 %todo Position this here or just before conclusion? - right now here seems better though
 
-\todo[inline]{generally in this section: think about the tense I wanna use, present / past and if it works well! + stick to it! -> right now vote for present!}
+\todo[inline]{ensure that everything is in present or only rarely past tense}
 
 %todo somewhere difference between smell and bug herausarbeiten
 \todo[inline]{new ideas:
@@ -67,14 +67,9 @@ Other tools for detecting code smells are Decor\cite{moha2010decor} and iPlasma\
 
 \todo[inline]{smth more here?!}
 
-%In Chapter \ref{ch:eval} we are analyzing a large number of open source android applications.
-%Thus, as a small overview of android related code smell detection consider the following papers.
-
-While not investigating Android specific smells,
-Verloop \cite{verloop2013code} used Java refactoring tools (e.g. PMD and JDEODORANT) to detect basic code smells like large class or long method.
-interesting finding: classes inheriting from the Android framework smells can appear at different frequencies
-example: long method detected 2times as much in these classes
-\ldots -> some more info? + references for pmd and jdeodorant
+While not investigating Android specific code smells, Verloop \cite{verloop2013code} used Java refactoring tools (e.g. PMD and JDeodorant) to detect basic code smells like large class or long method in mobile applications.
+An especially interesting finding is that smells can appear at different frequencies in classes inheriting from the Android framework than in other classes, for example the long method smell was detected nearly two times as often in classes which do inherit from the framework.
+\todo{some more info? + references for pmd and jdeodorant}
 
 Hecht et al. \cite{hecht2015detecting} present an approach they call PAPRIKA which operates on compiled Android applications but tries to infer smells on the source code level.
 From the byte-code analysis, it builds a graph model of the application and stores it in a graph database.
@@ -107,30 +102,25 @@ This is an excellent example of a case where hard-coded rules fail because they 
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
 + check to read stuff\ldots
 + for more information: check this summary paper / the 2017 one? / both?
++ what other papers here?
 }
 
 As the results of the previous paper showed, it can be difficult and costly to keep hard-coded detection rules up to date and relevant.
 Because of this, there has been interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
-\todo{
-[Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)]
-some more übergang\ldots
-+ what other papers here?
-}
-
 \todo[inline]{
-    -> not perfectly happy with this summary, but we shall see
-Mention \cite{engler2001bugs} as probably the first paper which proposed the general idea behind DMMC -> learning from the code at hand, instead of using predefined static rules
-``finding what's incorrect without knowing what's correct`` -> contradiction and common behavior
-
-static analysis to infer what programmers believe about the system state, then check them for contradictions
-they provide several ``templates'' for believes a programmer must or may hold 
-use these to extract rules from the code
-these believes can be about a number of things (a pointer not being null, a lock being unlocked, etc), each template is cartered for a specific type of believe
-can also look for common behavior and exceptions to them
-
-results: evaluation on linux and openbsd finds hundereds of bugs related to the different bug types their templates can find
+Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
+some more übergang?!
 }
+
+Engler et al. \cite{engler2001bugs} were probably the first to propose the general idea of learning from the code at hand instead of using predefined static rules.
+\todo{is that true? or just the ``general idea behind dmmc''? + kinda sort sentences below better\ldots}
+In their paper they rely on contradiction and common behavior to ``find what is incorrect without knowing what is correct''.
+To do this, they use static analysis to infer what a programmer believes about the system state and then check these beliefs for contradictions.
+They provide several ``templates'' for beliefs the programmer must or may hold.
+Each template is catered for a specific type of belief, they can be about a wide range of things (a pointer being null or not being null, a lock being unlocked, etc).
+Among the beliefs they extract in this manner they look for common behavior or outright contradictions and use this to flag potential anomalies.
+In their evaluation on Linux and OpenBSD they find hundreds of bugs related to the different bug types that their templates can discover.
 
 Pradel et al. \cite{pradel2011detecting} noticed that in statically typed languages the compiler helps the programmer with passing method arguments in the correct order.
 However, the compiler cannot ensure the correct order of equally typed arguments (such as \code{setEndPoints(int low, int high)}.
@@ -156,44 +146,33 @@ All of the different approaches show good performance, but J48 and random forest
     \ldots
 }
 
----
-API methods are often complex and thus hard to use, additonalyl might be badly documented
-to allivieate this, the workflow of developers often includes searching for examples of how to use an particular api
-\cite{zhong2009mapo} built 
-primarily a SEARch tool for code snippets explaining how tu use a particular API
-but to search over API usages, one has to extract them!
-Their tool MAPO extracts API usage patterns which describe how in a certain scenario some API methods are frequently called together and if the usage follows any sequential rules
--> this tool doesn't look for any anomalies or code smells, but it is important as it extracts information similar to the one we are interested in.
-uses clustering to group the extracted api usages into patterns (+ frequent subsequences miner)
-since they focus more on the code search aspect their evaluation is a user study investigating the quality of produced code (with / w/o their tool), but this is intresting anyways\ldots
+It is often difficult to correctly invoke API methods, not only because of their complexity, but also because of bad documentation.
+To circumvent this problem, developers often search for examples of how to use a particular API.
+To aid with this search, Zhong et al. \cite{zhong2009mapo} built a search tool for example code snippets.
+Their tool, MAPO, extracts API usages which describe how in certain scenarios some API methods are frequently called together and if the usage follows any sequential order.
+Using clustering and frequent subsequences mining it then groups the extracted usages into usage patterns over which the search operates.
+While the tool does not look for any anomalies or code smells, it extracts exactly the type of information that is interesting if one wants to detect anomalies.
 
-\cite{monperrus2010detecting}\cite{monperrus2013detecting} 
-There have been some works concerned with finding patterns in object usages and using those to find potential bugs.
-    what are object usages?! explain somewhere?
-Most relevant for this work and its primary inspiration are two papers by Monperrus et al. who propose technique for detecting missing method calls
-it is based on the intuition that
-types are often used in particular ways
-If a type usage has a large number of very similar type usages but a small number of exactly similar ones, it is likely that it is missing a method call.
-They call this the ``majority rule'', it is explained in detail in Chapter \ref{ch:dmmc}.
+There have been some works concerned with finding patterns in objects usages and using those to find potential bugs.
+\todo{explain object usages somewhere? + cite some related work from monperrus here (just citation)?}
+Most relevant for this work and its primary inspiration are two papers by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} that propose a technique for detecting missing method calls.
+It is based on the intuition that an instance is probably an anomaly if it is alone in a large number of instances which do something similar but not exactly the same.
+They call this the ``majority rulw'' and we explain it in detail in Chapter \ref{ch:dmmc}.
 
-first, Evaluation based on a simulation which creates defects by degrading real software
-that is it removes singular method calls from the code and sees if their method detects these known missing calls
-this on several software packages: eclipse userinterface + two other packages, derby and tomcat
-    -> result: system can answer 54 to 76 percent of the queries
-    of the queries it answers, 73 - 89 percent of the answers contain the actually missing call (not necessary as the first recommendation)
-    all in all it reaches precision between 59 and 83 and recall of 41 to 68
-however, questionable how relevant these numbers are b/c its not clear that real bugs will share characteristics with the artificially created cases
+The evaluation they present is split into two parts.
+The first is based on a simulation which creates defects by degrading real software.
+For the simulation they remove singular method calls from the code and check if they can detect these known missing calls.
+They apply this simulation to several software packages, among them the Eclipse user interface, Apache derby and Apache tomcat.
+\todo{link?}
+Their system can answer between 54\% and 76\% of these simulated queries (depending on the package) and of the queries it answers 73\% to 89\% of the answers contain the actually missing call, albeit not necessarily as the first recommendation.
+All in all, it reaches precision between 59\% and 83\% and recall of 41\% to 68\%.
+However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with artificially created cases.
 
-for this reason:
-additionally qualitative eval: throw the developed tool onto eclipse, derby and tomcat
-and manually analyze 30 very anomalous cases reported by it
-they find that there can be different reasons for a TU to be anomalous (did i explain tu so far? / use oject usage?)
-ideal case: method call is actually missing (they reported 17 issues and got 9 patches accepted!)
-it's just a smell ie situation could be rewritten or refactored for more clarity
-sometimes it's just related to software aging: outdated usage related to old version of API for example
-however, also negative results, where the anomaly is just that: an outlier, which is correct, even if a majority of other usages are different
-or simply related to dead code which isn't used anymore anyways
----
+For this reason, they also perform an additional, qualitative evaluation.
+They apply their tool onto Eclipse, derby and tomcat and manually analyze 30 very anomalous cases reported by it.
+They find that there are different reasons for an instance to be anomalous, not all of them actually indicate a missing call.
+It can also be just a code smell, i.e., a situation which could be rewritten or refactored for more clarity, or related to software aging, for example code using an old version of the API.
+While they reported 17 issues and got 9 patches accepted, there are also some negative results, where the anomaly is just that: an outlier, which is totally correct, even if a majority of other usages behave differently.
 
 Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of method calls.
 First, they extract usage models from Java code by building a finite state automaton for each method.
