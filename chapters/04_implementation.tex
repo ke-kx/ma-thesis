@@ -193,7 +193,7 @@ By analyzing a lot of applications which use the same framework, we can build a 
 Having a database backend really helps with building such a large dataset because it can store a lot of data and we can later query it selectively.
 Of course, it is still useful to analyze the type usages of classes which are private to some application (if there is enough data), but the framework classes are our main focus.
 
-\begin{figure}[h]
+\begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{figures/database_layout-light}
     \caption{Overview of Database Tables}
@@ -220,48 +220,41 @@ Finally, the \code{CALLLIST} table connects type usages and method calls and hol
 }
 
 \section{Improvements and Dead Ends}\label{sec:deadends}
-\todo[inline]{
-    should this be a section or a subsection?
-    if this is before anomaly detection we can kind of explain why we are using the python + it's kinda the process from one to the other?
-    db -> too slow -> \ldots
-}
 
-% general plan:
-explaining all the work i did + what was already there
-why some solutions where discarded (eg pure database / could be revisited if it turns out to be the best anyways - performance)
+% general plan: explaining all the work i did + what was already there + why some solutions where discarded
 
 % there exists code from monperrus et al., I took it and improved it
-Monperrus et al. released their code and data + link
-to understand it better we refactored it extensively and implementd the database backend connection
-(mention or rather not?) during the refactoring process discovered small discrepancies between what's described in the paper and the code
--> namely calculation of almost similarity does a double intersection i think? (recheck this!)
-which means that cases where the method calls are as follows + example where it gives the wrong results
-was there some other bug? - i think not
-+ however we fixed this and reworked their analysis, the results didn't change in a significant way
-
-% include the queries for the strangeness score calculation here? I am mostly thinking no
+Monperrus et al. released their code and data on GitHub\footnote{\url{https://github.com/stg-tud/typeusage}}.
+We took their implementation and refactored it extensively to understand it better and to facilitate slight improvements like the database backend connection.
+\todo{add link to my code!}
+During the refactoring process, we discovered small discrepancies between what they describe in the paper and how their code behaves.
+For their calculation of almost similarity between two type usages $x$ and $y$ the code only checks that the size of $M(y) \setminus M(x)$ is equal to one without ensuring that $M(x)$ does not include any additional methods.
+As such in the situation that $M(x) =\{A, B, C\}$ and $M(y) = \{A, B, Z\}$, the code considers $y$ to be almost similar to $x$ because it calls the additional method $Z$, even though they clearly do not fulfill the formal definition of almost similarity.
+However, we reran their experiments after correcting this small inaccuracy and the results did not change in any significant manner.
 
 % attempt purely db solution -> db too slow
-idea: use database to calculate strangeness scores, cause the data is already there
-hindsight: not the best idea
-std query: view with merge over many tables -> quite slow even on small test dataset
-lots of attempted improvements to the query with better indices, smart cached subtables etc
-but all in all futile, it remained slow or memory intensive or both (on a application of medium size -> mention LOC of teamcale, resulting in one dataset with about X typeusages)
-also tried postgresql which is supposed to be faster for some applications, but results disappointing
-evaluation of other db system + why it didn't work (basically pure db stupidity)
-We also invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but as explained in Section \ref{sec:deadends} it turned out that its performance was inferior. (change, this is the deadends section xD)
+After refactoring the code and adding the database backend, all of the type usage data was already in the database.
+For this reason, we thought it would be smart to calculate the strangeness scores in the database as well and only query it for the finished results.
+In hindsight, this was not the best idea.
+The first query we designed for calculating the strangeness score was quite complicated with many joins over views containing many joins.
+Even on a small test dataset it was quite slow.
+We attempted many improvements to the query, including better indices, smart cached subtables, etc. but all in all the query remained slow and memory intensive.
+\todo{(on a application of medium size -> mention LOC of teamcale, resulting in one dataset with about X typeusages)}
+We even invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but the results were disappointing.
+\todo[inline]{include the db queries for the strangeness score calculation here? I am mostly thinking no}
 
 \todo[inline]{not sure if this here or in next section?}
 % Better problem description + way to solution
-biggest problem: nxn comparison of so many TUS (-> N2 laufzeit)
-it seems db not able to unrevel this with my unsuited instruction oä
-however thinking about what happens:
-for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext)
-only if that's the case go and compare the methods
-this gives rise to natural subsections / partitions of the dataset, namely those sets of tus with the same type(+context)
-only those have to be compared to each other
-partition of dataset -> makes sense anyways and db is perfectly prepared for that
-with that realization go on to next step of the analysis: actually detecting anomalies
+Careful analysis revealed that the biggest problem was the one-by-one comparison of each type usage with all other type usages to determine their [almost / exact] similarity, resulting in a runtime in $O(n^2)$ for $n$ type usages.
+It seemed that the database was not able to unravel these numerous comparisons with our insufficient instruction.
+However, if one thinks carefully about the process of determining the exact and almost similar type usages, something stands out: it is not actually necessary to compare all of the type usages one by one.
+The only type usages that are candidates for exact or almost similarity are those type usages that have the same type and context as the type usage we are currently investigating.
+\todo{change to more active way of description?}
+%%however thinking about what happens - for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext) - only if that's the case go and compare the methods
+This gives rise to natural partitions of the dataset, namely those sets of type usages which share the same type and context (or just the same type for the variant $\mathnormal{DMMC}_\mathnormal{noContext}$).
+Within these partition we need to compare each type usage with all of the others but it will be much fewer type usages to compare.
+Additionally, the database is already perfectly suited for obtaining these subsets.
+With this realization we can finally continue to the next step of the analysis: actually detecting anomalies.
 
 \section{Anomaly Detection}\label{sec:anomaly}
 
