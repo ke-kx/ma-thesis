@@ -258,40 +258,45 @@ With this realization we can finally continue to the next step of the analysis: 
 
 \section{Anomaly Detection}\label{sec:anomaly}
 
--> look at python code and thinks about what needs to be said + suitable structure
+% -> look at python code and thinks about what needs to be said + suitable structure
 
 % overview of process
+\todo[inline]{
 need another picture? or fine without? i'm not sure i need that much detail\ldots
 maybe another img or flow chart for python ablauf (or too much detail?)o
+somewhere explain the ``sets of tus'' + peformance issues before
+}
 
+\todo[inline]{this paragraph seems terrible?}
 % partitions + analysis
-somewhere explain the ``sets of tus'' + peformance issues before (ref db dead end)
-depending on the variant we partition by types or by combinations of types+context
-outer loop: iterate through all the partitions in the dataset + belonging to the current partition lvl
--> observe: using the database it is very simple to obtain the possible partitons (+query?)
-and additionally it is super easy to get the corresponding TUs (+query) -> here the index on [column] really helps
--> this is exactly what a db is made for, it is fast and seamless
+The actual anomaly detection is handled by some relatively simple python scripts.
+The first step is to obtain the possible partitions of the dataset, that is depending on the variant all types in the dataset or all valid combinations of type and context.
+Observe that the database makes it very simple to obtain these partitions with a simple query.
+\todo{include actual query? - i think yes, all of them in one figure?}
+In its outer loop, the script iterates through all partitions and retrieves the type usages belonging to the current partition.
+Again, querying the database for these type usages is simple and also quite fast because of an index on [column].
+\todo{refer to query + which column?}
 % analysis
-then iterating through all the tus in the current partition
-comparing the methods being invoked (sets -> does not count number of invocations)
-comparison each with each only once -> upper triangle matrix, saves nearly half again
+In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
+By comparing each type usage with each other type usage only once similar to filling an upper triangle matrix, we can again save nearly half of the comparisons.
 % tear down / result
--> for each tu calculate the score + save the list of results for further analysis / evaluation by expert / hand
+After determining the number of exactly and almost similar neighbors for each type usage in this manner, it is easy to calculate the strangeness score for all of them.
+We also save a list of the results for further analysis and evaluation by an expert.
 
 % other variants: loading
-this only part affected by the different variants presented in chapter 3
-already talked about context vs no context
-the class merge variant is performed by simply inserting some preprocessing after loading the data with type partition
--> merge those tus which belong to the same class -> done
-retrieving relevant type usages for the current variant + potentially modifying them + throwing them into the detector
-
+The anomaly detection is the only part that of the implementation that is affected by the different variants presented in Chapter \ref{ch:dmmc}.
+We already mentioned the differences between including the context or not.
+For the class merge variant, we perform some simple preprocessing after loading the data with type partition and merge those type usages which originated in the same class before starting the analysis.
 % other variants: anomalies
--> detection of superfluous or wrong method can use exactly the same setup, only need to change the implementation of the almost equal check
+For the detection of superfluous or wrong method calls, we can use exactly the same setup and only need to change the almost equal check to the new variant.
+
+\todo[inline]{
 mention in the end that i tried a 
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)
     but all in all it didnt work out / not enough time
     + vermutungen warum es nicht funktioniert -> dataset exploration + size of method and typeusage lists per partition!
+}
 
 \section{Other Ideas / Problems}
 \todo[inline]{not sure i need this section + what should be included}
