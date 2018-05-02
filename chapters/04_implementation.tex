@@ -176,7 +176,7 @@ explain a bit better that these classes are kind of exactly what we are most int
 After the transformer has analyzed the current method body and extracted a list of type usages from it, we persist them into a database.
 For this, we are using HSQLDB\footnote{\url{http://hsqldb.org/}}, a SQL relational database written in Java, which provides a multithreaded and transactional database engine with in memory or disk based tables.
 We chose HSQLDB because it is small and has good performance as well as an easy setup.
-Additional arguments where its permissive license and the large number of features it supports.
+Additional arguments were its permissive license and the large number of features it supports.
 
 %- why are we using a database at all?
 In their work, Monperrus et al. save all data in a text based format, but this means they need to parse everything again for the analysis, which can be slow and require a lot of memory for large inputs.
@@ -184,17 +184,14 @@ Additionally, the data takes up a lot of storage space when persisted to disk.
 In contrast, using a database has many positive ramifications.
 First off, retrieving data from a database is fast and we can access the data selectively based on changing criteria.
 Additionally, we gain a lot of flexibility and it becomes easier to extend both, the stored data and the analysis itself.
-(This enables us to quickly build several prototypes of the analysis using Python.))
+%(This enables us to quickly build several prototypes of the analysis using Python.)
 
-% --- continue writeout here ---
 % what we really wanna do: build big database collecting ALL tus -> better analysis
-its already useful to analyze one application in separation
-but we really care about the framework / library classes which are used by more than one application
-analyze a lot of applications using the same framework/library
-on these classes we can build a large dataset of type usages -> have much more information to determine if a tu is an anomaly or not
--> having a database really helps with that (can hold a lot of data + can selectively query it are the main points i think?)
-of course it's useful to ALSO analyse tus over classes which are private to my application (if there is enough data)
-    but the framework thing is just a) easier to get the info and b) kind the point of this thingy?
+Analyzing one application for missing method calls in separation can already yield useful results, especially if it is a large application.
+However, what we are really interested in are the framework and library classes that are used in many applications.
+By analyzing a lot of applications which use the same framework, we can build a large dataset of type usages on these classes and incorporate much more information into the decision if a type usage is an anomaly or not.
+Having a database backend really helps with building such a large dataset because it can store a lot of data and we can later query it selectively.
+Of course, it is still useful to analyze the type usages of classes which are private to some application (if there is enough data), but the framework classes are our main focus.
 
 \begin{figure}[h]
     \centering
@@ -207,20 +204,20 @@ of course it's useful to ALSO analyse tus over classes which are private to my a
 }
 
 %-- explain database layout 
-+ describe obviously (+ what was made how why)
-Figure ref depicts the database layout
-(how in depth? explain every field? I'm not so sure\ldots maybe for now a rough overview )
-the central piece is of course the type usage table, holds information related to one particular type usage
-the class it was recorded in (fully qualified pck name), if possible the line of code in which the object was first encountered and its context, that is the name of the method in which it was found + the method parameters.
-additionally it holds references to the ``project'' it belongs to, which in our setup is the Android application it was taken from, and the type it belongs to, that is what type the object of the tu is an instance of (rephrase\ldots)
+Figure \ref{fig:db_layout} depicts the layout of our database.
+The central piece is the \code{TYPEUSAGE} table whose rows store the information related to one particular type usage.
+This includes the class (complete with fully qualified package name) and the context in which the type usage occurred and, if possible, the line of code in which the object was first encountered.
+Additionally, it references two other tables, \code{PROJECT} and \code{TYPE}.
+In our setup, the \code{PROJECT} table describes the Android application from which the type usage was extracted together with the time it took to analyse this application.
 
-Each type holds a reference to it's parent (if one exists) to enable rebuilding the inheritance hierarchy if so desired
-additionally the methods that can be invoked on a type are stored in the ``method'' table (basically just their (full) name).
+The \code{TYPE} reference specifies what type the type usage belongs to. Each type holds a reference to its parent type (if one exists) to enable rebuilding the inheritance hierarchy if so desired.
+Additionally, the methods that can be invoked on a type are stored in the \code{METHOD} table.
+Finally, the \code{CALLLIST} table connects type usages and method calls and holds the information which of the method calls that \emph{could} be invoked on the type are actually called on the type usage in question.
 
-Finally the calllist table holds the information which of the method calls that COULD be invoked on a type are actually called on the typeusage in question
-
+\todo[inline]{
 + some of the considerations made (x. normalenform, sowas?)
 -> ask torben? -> is there a problem with class and context (potentially duplicate information!, should actually belong to a class table i guess?)
+}
 
 \section{Improvements and Dead Ends}\label{sec:deadends}
 \todo[inline]{
