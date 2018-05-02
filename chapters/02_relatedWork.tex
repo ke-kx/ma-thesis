@@ -65,7 +65,10 @@ Other tools for detecting code smells are Decor\cite{moha2010decor} and iPlasma\
 
 \section{Android specific Smell Detection}
 
-\todo[inline]{smth more here?!}
+\todo[inline]{
+smth more here?
+some bayesian stuff that actually works on android \cite{murali2017bayesian}
+}
 
 While not investigating Android specific code smells, Verloop \cite{verloop2013code} used Java refactoring tools (e.g. PMD and JDeodorant) to detect basic code smells like large class or long method in mobile applications.
 An especially interesting finding is that smells can appear at different frequencies in classes inheriting from the Android framework than in other classes, for example the long method smell was detected nearly two times as often in classes which do inherit from the framework.
@@ -100,9 +103,12 @@ This is an excellent example of a case where hard-coded rules fail because they 
 
 \todo[inline]{
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
-+ check to read stuff\ldots
 + for more information: check this summary paper / the 2017 one? / both?
-+ what other papers here?
++ do i want to merge this section and the next one?! (+ the engler paper kinda obviously belongs to the other section?)
+
+not necessary only learning from the code at hand: \cite{hanam2016discovering}
+    unsupervised machine learning over bug FIXES?!
+
 }
 
 As the results of the previous paper showed, it can be difficult and costly to keep hard-coded detection rules up to date and relevant.
@@ -140,10 +146,17 @@ All of the different approaches show good performance, but J48 and random forest
 \todo[inline] {title sucks?! -> api misuses? }
 % -> api missuse detection
 
-\todo[inline]{Mention MUBench?!
+\todo[inline]{
+Mention MUBench?! \cite{amann2016mubench}
     -> useful classification of api misuses
     Dataset of bugs related to API misuses
-    \ldots
+
+stuff related to ``usage diversity'' of classes \cite{mendez2013empirical}, again monperrus involved though\ldots
+
+uses n-grams so intersting cause different approach? \cite{wang2016bugram}
+    + check related work section for some stuff that could be important!
+
+also mention overview paper \cite{amann2017systematic}
 }
 
 It is often difficult to correctly invoke API methods, not only because of their complexity, but also because of bad documentation.
@@ -198,10 +211,17 @@ Here an anomaly is also classified as a ``rare'' violation of a pattern, i.e., i
 In an evaluation case study the authors find 64 defects in 9 open source software systems which they classify as 5 true defects, 8 smells and 11 hints, equalling a false positive rate of 62.5\%.
 Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint.
 
-\todo[inline]{mention more related work from detecting mmc paper?}
+\todo[inline] {
+more work on temporal properties \cite{gruska2010learning}
+mention more related work from detecting mmc paper?
+}
 
 \section{Other Approaches}
 \todo[inline]{change title?}
+\todo[inline]{
+    include this \cite{rice2017detecting} (at all / in this section?)
+    generally rethink the section structure\ldots
+}
 
 As already mentioned, incorrect API documentation can be a big problem.
 It often occurs when an API developer changes the code but forgets to adapt the documentation accordingly.
