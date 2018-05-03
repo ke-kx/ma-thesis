@@ -1,81 +1,77 @@
 \chapter{Introduction}\label{ch:intro}
 
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
-%-> reuse instead of outsourcing
 Developers often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 These APIs would ideally be simple and easy to use, but there is always a trade-off between usability and flexibility.
-Especially more powerful frameworks cannot provide a trivial API without limiting developers ability to use their functionality in the way most appropriate for the use case at hand.
-As a result, invoking an API correctly often requires a lot of knowledge about it.
-It can be of constraints or requirements which are not clear from the outset, but which have to be heeded to avoid serious bugs or complications, or about an involved interplay between different parts of the library.
-In the worst case, this knowledge might not even be contained in the API documentation.
+More powerful frameworks in particular struggle to provide a trivial API without limiting developers' ability to take greatest advantage of their functionality.
+Correctly invoking an API often requires that a developer know it well; not considering specific constraints and requirements or an involved interplay between different parts of the library can lead to serious bugs or complications.
 
 %--- since it is often not trivial to use an API correctly, there will be ``wrong'' usages + examples?
-Even if the documentation is of high quality, the complexity of some libraries makes it inevitable that there will be erroneous invocations of their APIs.
-The mistakes can relate to parameter choice, method order, or many other factors (e.g., some methods must be invoked in an extra thread, some specific precondition has to be satisfied, or some setup work must be performed).
-Examples, which come to mind in Java, are a programmer calling \code{next()} on an iterator without first checking with \code{hasNext()} if it even contains another object, or a class which overrides \code{equals()} without ensuring that an invocation of \code{hashCode()} always produces the same output for two equal objects.
+Sometimes, these problems could have been avoided if the developer had paid better attention to the API's documentation.
+But documentation is often vague or incomplete leading to misinterpretations or oversights.
+And even if it is of high quality, the complexities of some libraries make it inevitable that there will be erroneous invocations of their APIs.
+Regardless of their origin, mistakes can relate to parameter choice, method order, or a range of other factors (some methods may need to be invoked in an extra thread, a specific precondition may have to be satisfied, setup work may need to be performed).
 
+Examples, which come to mind in Java, are a programmer calling \code{next()} on an iterator without first checking with \code{hasNext()} if it even contains another object, or a class which overrides \code{equals()} without ensuring that an invocation of \code{hashCode()} always produces the same output for two equal objects.
 %--- correct usages of an API often share some underlying patterns + examples of them
-Despite the fact that there might be numerous appropriate ways to use an API, there are underlying patterns which the correct invocations have in common.
-These patterns can take a lot of different forms and shapes, for example ``call method \code{foo} before calling method \code{bar}'', ``if an object of type \code{Foobar} is used as a parameter to method \code{baz}, condition X has to be fulfilled'', ``never call method \code{qux} in the GUI thread'', etc.
+Despite the fact that there might be numerous appropriate ways to use an API, there are underlying patterns that the correct invocations have in common.
+% These patterns can take a lot of different forms and shapes, for example ``call method \code{foo} before calling method \code{bar}'', ``if an object of type \code{Foobar} is used as a parameter to method \code{baz}, condition X has to be fulfilled'', ``never call method \code{qux} in the GUI thread'', etc.
 For the Java examples mentioned above they could take the form of ``an object which implements \code{equals()} must also implement \code{hashCode()}'', ``if object A equals object B, their \code{hashCode()} must also be equal'' or ``a call to \code{next()} on an iterator should be preceded by a call to \code{hasNext()} to ensure that it actually contains another object''.
 
 %--- if we can extract the patterns, hopefully, the wrong usages will stand out and enable us to detect bugs
-Patterns like these are also called API usage patterns \cite{robillard2013automated} and they can aid in detecting potential defects.
-If some code in a software project deviates (too much) from the usual patterns when using an API, this can hint at a bug or is at least a code smell which should probably be corrected.
-Because of this, it is interesting to detect these unusual instances.
+API usage patterns \cite{robillard2013automated} can aid in detecting these kind of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
+The challenge here is twofold.
+First, it is extracting and recognizing the patterns.
+Second, it is understanding when a deviation from a pattern actually signifies a code smell or an error that should be corrected.
 
-\section{Motivation}
+\section{Missing Method Calls}
 % Motivating the research aka which problem are we trying to solve, general description of the problem
 
-\todo[inline]{consider the structure suggested by Williams: prelude, shared context, problem, solution, not yet 100 percent happy}
-
 %--- we will focus on MMCs + top-level view of missing method calls + example
-As already mentioned above, there are many subtle mistakes a developer can make when invoking an API.
-In this work, we focus on one specific type of API usage problem, namely missing method calls, which can occur in the context of Object Oriented Programming (OOP).
-In OOP software, an object of a specific type is usually used by invoking some of its methods.
-Types will then have underlying patterns such as: ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well`` or ''methods \code{X} and \code{Y} of type $T_2$ are always used together``.
-Given an object of this type $T_1$ on which only methods \code{A} and \code{B} are called, we can say that a call to \code{C} is missing.
-Respectively if we have an object of type $T_2$ where only \code{X} or only \code{Y} is invoked, we can say that a call to the other is missing.
+Of the many subtle mistakes a developer can make when invoking an API, this work focuses on one specific type: missing method calls, which occur in the context of Object Oriented Programming (OOP).
+In OOP software, an object of a specific type is almost always used by invoking some of its methods.
+Types will then have underlying patterns, such as ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well`` or ''methods \code{X} and \code{Y} of type $T_2$ are always used together``.
+Given an object of type $T_1$ on which only methods \code{A} and \code{B} are called, we can say that a call to \code{C} is missing.
+Similarly, if we have an object of type $T_2$ where only \code{X} is invoked, we can say that a call to \code{Y} is missing.
 
-%-- not clear what's the point of this one\ldots
-%todo sharpen this paragraph
-Developers will fail to make important method calls when they are using classes with which they are not very familiar.
-As this can happen whether they are working with a new library, an extensive framework or even a whole platform (e.g., Android), we will use these words interchangeably through this work.
-These unfamiliar classes can be from an external source, but this is not a necessity.
-In large software projects it is common that one developer does not know the whole codebase, and thus, they will often encounter classes which they do not know how to use correctly.
-Altogether it seems simple to make an error related to missing method calls. 
+%-- not clear what's the point of this one
+Developers often fail to make important method calls when using classes with which they are not deeply familiar.
+As this can occur with a new library, an extensive framework, or even a whole platform (e.g., Android), we use these terms interchangeably.
+Lack of familiarity may also arise not just when using code from an external source, but also when working on a big codebase.
+In large software projects it is common that one developer does not know all of the code, and thus, they will often encounter classes which they do not know how to use correctly.
 
 %--- Monperrus et al. also showed that the bugs sometimes DO get into the code, all in all, we want to be able to detect them
-We can also confirm this intuition with hard data.
+Studies have confirmed the intuition that missing method calls are common pitfalls across a range of applications and even in mature code bases.
 In an informal review, Monperrus et al. found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many newsgroups, bug trackers, and forums.
-The issues range from runtime exceptions\footnote{\url{https://issues.apache.org/jira/browse/TORQUE-42}} to problems in some limit cases, but generally reveal at least a code smell if not worse.
-In addition to the informal review, Monperrus et al. \cite{monperrus2013detecting} also did an extensive analysis of the Eclipse bug repository.
-First, they searched for syntactic patterns which they deemed related to missing method calls, such as: ``should call'', ``does not call'', ``is not called'' or ``should be called''.
-Manual inspection then confirmed 117 of the 211 (55\%) obtained bug reports as indeed related to a missing method call.
+The issues range from runtime exceptions\footnote{\url{https://issues.apache.org/jira/browse/TORQUE-42}} to problems in some limit cases, but generally reveal at least a code smell, if not worse.
+They also performed an extensive analysis\cite{monperrus2013detecting} of the Eclipse bug repository,
+searching for syntactic patterns that they deemed related to missing method calls, such as: ``should call'', ``does not call'', ``is not called'', or ``should be called''.
+Manual inspection confirmed that more than half (117 of 211) of the bug reports located in this manner were indeed related to a missing method call.
 
-These results show that even mature code bases can contain many bugs related to missing method calls, especially considering that this number is a lower bound on the total number of related bugs in the repository.
-After all, they might have missed some syntactic patterns and bugs which have not even have been discovered yet.
-Together, this makes it highly desirable to be able to automatically detect missing method calls in production code, not only to save developer time but also to make maintenance cheaper and more manageable.
+This number is if anything an underestimation of the total number of missing method call bugs in the code base.
+After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
+Given these numbers, it seems clear that automatically detecting missing method calls in production code would not only save developer time but als make maintenance cheaper and more manageable.
 
 \subsection{Detection - but how?}
 
 % General idea why we want to use Recommender Systems / Learning!
 %--- the first idea for detection: static rules, but the problem: very time/cost intensive
-A simple and straightforward approach for detecting missing method calls would be to build a set of hard-coded rules, such as:
+A simple and straightforward approach to detecting missing method calls would be to build a set of hard-coded rules, such as:
 \begin{itemize}
     \item ``always call \code{setControl()} after instantiating a \code{TextView}''
     \item ``in Method \code{onCreate()} of classes extending \code{AppCompatActivity} always call \code{setContentView()}''
-    \item ``when calling \code{foo()} also call \code{bar()}''
+    %\item ``when calling \code{foo()} also call \code{bar()}''
     \item ``when calling \code{next()} on an Iterator always call \code{hasNext()} (before)''
 \end{itemize}
-Well-crafted and thought-out rules along these lines could facilitate a very high precision in detecting missing method calls and contribute to better, more bug-free code.
-However, creating and maintaining a list of rules like this would require a tremendous investment of time and money, especially in a world where software is changing continually.
-While the necessary effort might be justified for large and important libraries, it multiplies with the size of the library until it becomes completely infeasible.
+Well-crafted and -reasoned rules along these lines could facilitate precise detection of missing method calls and contribute to better, less buggy code.
+However, creating and maintaining a list of rules like this is a manual effort and would require tremendous amounts of time and money, especially in a world where software is changing continually.
+While the effort might even be justified for large and important libraries, it multiplies with the size of the library until becoming completely infeasible.
 
 %11 solution: automatic detection, even if it has some drawbacks
-To circumvent this problem, we would like to automatically detect locations in a code base where a method call is potentially missing using only the code itself as input.
-Such an approach would adapt to changes without requiring additional work from a developer and could also be applied to proprietary code which is closed to the public.
-While the discovered locations will probably not be as accurate as those discovered by a hand-crafted list of rules, they could then be examined by an expert who would determine the severity of the finding and issue a fix if necessary.
+Instead, we propose automatically detecting locations in a code base where a method call is potentially missing, using only the code itself as input.
+Such an approach would adapt to changes without requiring additional work from a developer and could also be applied to proprietary code, which is closed to the public.
+The locations this method pinpoints might not be as accurate as those discovered by a hand-crated list of rules, bug a second step could address this problem: manual examination by an expert, who would determine the severity of the problem and, if necessary, issue a fix.
+Whether this actually proves to save time and money hinges of the accuracy of the approach.
 
 %--- additional advantages to automatic detection: continuous integration, adaptability, can be used on closed software, etc
 %\todo[inline]{additional advantages to automatic detection: continuous integration, adaptability, can be used for closed software
@@ -88,12 +84,13 @@ While the discovered locations will probably not be as accurate as those discove
 
 \section{Contribution}
 
-In this thesis, we present a re-evaluation of the type usage characterization first introduced by Monperrus et al. \cite{monperrus2010detecting} and further refined in a follow-up publication \cite{monperrus2013detecting}.
+To understand and tackle the missing method call problem, Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the idea of type usages.
 A type usage is the list of method calls which are invoked on an object of some type and occur in the body of some method.
-The general idea behind the technique by Monperrus et al. is to check for outliers among the type usages by using the majority rule:
-If a type is used in one particular way many, many times (that is, in the majority of cases) and differently only one (or a few) times, this probably indicates a bug.
+The idea behind the technique by Monperrus et al. is to check for outliers among the type usages by using the majority rule:
+If a type is used in one particular way many, many times (that is, in the majority of cases) and differently only once (or a few times), this probably indicates a bug.
+% This thesis builds on their work, re-evaluating the characterization of type usages and anomalies among them.
 
-We evaluate this concept by applying it to a data set of more than 600 open source android applications and performing a manual evaluation of the results.
+We evaluate this concept by applying it to a dataset of more than 600 open source Android applications and performing a manual evaluation of the results.
 We further experiment with small changes to their initial idea and put them under the scrutiny of an automated benchmark.
 Additionally, we compare the results of the manual evaluation against those of the automated one and consider what this means for future research.
 \todo{mention some results!}
