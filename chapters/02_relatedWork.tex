@@ -3,7 +3,10 @@
 
 \todo[inline]{ensure that everything is in present or only rarely past tense}
 
-\todo[inline]{WICHITG: alles abgrenzen vs das was ich mache!!!}
+\todo[inline]{WICHITG: alles abgrenzen vs das was ich mache!!!
+    I have to change the structure, but not super clear how
+    nearly enough, just reshuffle and mention some papers in passing
+}
 
 %todo somewhere difference between smell and bug herausarbeiten
 \todo[inline]{new ideas:
@@ -14,14 +17,15 @@
 
 %--- relevance of code smells and finding them
 It is difficult and time-consuming to fix bugs in software.
-This is because the maintainer has to realize that there is a bug, identify its cause and understand the steps necessary to remove it.
+The maintainer has to realize that there is a bug, identify its cause and understand the steps necessary to remove it.
 Especially for larger software systems automatically detecting low-quality code and improving it can contribute significantly to the maintainability of the code and prevent bugs in the future.
+\todo{here citation for codesmells are useful?}
 Because of this, there has been a lot of interest in approaches for automatically detecting bugs, or even just smells in code.
 
 %--- section summary
 In this chapter, we present a number of different approaches for smell and bug detection.
 We start with some ``conventional'' methods which mostly rely on hard-coded rules and patterns.
-Since we are applying the method studied in this thesis to some Android apps in Chapter \ref{ch:eval}, we then give a quick overview of smell detection related explicitly to android applications.
+Since we are applying the method studied in this thesis to some Android apps in Chapter \ref{ch:eval}, we then give a quick overview of smell detection related explicitly to Android applications.
 Finally, we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which their developers defined a priori.
 These automated techniques need fewer changes when the system under analysis evolves, but they might not be as accurate.
 
@@ -34,11 +38,11 @@ It reports around 400 bug patterns and can be extended using a plugin architectu
 Each bug pattern has a specific detector, which uses some special, sometimes quite elaborate detection mechanism.
 These detectors are mostly built starting from a real bug, first attempting to find the bug in question and then all similar ones automatically as well.
 
-In their work Ayewah et al. \cite{ayewah2007evaluating} apply it to several large open source applications
+In their work Ayewah et al. \cite{ayewah2007evaluating} apply Findbugs to several large open source applications
 (Sun's JRE\footnote{Version 1.6.0 (different builds) \url{http://www.oracle.com/technetwork/java/javase/downloads/java-archive-downloads-javase6-419409.html}}
 and Glassfish J2EE server\footnote{v2 \url{http://www.oracle.com/technetwork/java/javaee/downloads/java-archive-downloads\%2Dglassfish-419424.html}})
 and portions of Google's Java codebase.
-Their premise is, that static analysis often finds true but trivial bugs, in the sense that these bugs do not actually cause a defect in the software.
+Their premise is that static analysis often finds true but trivial bugs, in the sense that these bugs do not actually cause a defect in the software.
 This can be because they are deliberate errors, occur at locations which are unreachable or in situations from which recovery is not possible.
 In their analysis Findbugs detects 379 medium and high priority warnings which they classify as follows:
 \begin{itemize}
@@ -52,7 +56,7 @@ Their main takeaway is that this kind of static analysis can find a lot of true 
 To alleviate the problem of a high false positive rate among the findings reported by Findbugs, Shen et al. \cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less important warnings.
 It is based on a principle they call ``defect likelihood'', which is essentially the probability that a finding is a real finding.
 They calculate this probability using the findings of a large project (in this case the JDK), each of which they manually flag as either a true or a false positive.
-It can not only be calculated for one specific bug pattern but also across categories and types with variance as a tiebreaker.
+The defect likelihood can not only be calculated for one specific bug pattern but also across categories and types with variance as a tiebreaker.
 The resulting ranking can be refined with user feedback when it is applied to a specific project.
 In their evaluation on three open source applications
 (Tomcat\footnote{Version 6.0.18 \url{http://tomcat.apache.org/}}, AspectJ\footnote{Version 1.6.4 \url{http://eclipse.org/aspectj/}} and Axis\footnote{Version 1.4 \url{http://jlint.sourceforge.net/}})
@@ -72,9 +76,10 @@ smth more here?
 some bayesian stuff that actually works on android \cite{murali2017bayesian}
 }
 
-While not investigating Android specific code smells, Verloop \cite{verloop2013code} used Java refactoring tools (e.g. PMD and JDeodorant) to detect basic code smells like large class or long method in mobile applications.
-An especially interesting finding is that smells can appear at different frequencies in classes inheriting from the Android framework than in other classes, for example the long method smell was detected nearly two times as often in classes which do inherit from the framework.
-\todo{some more info? + references for pmd and jdeodorant}
+Verloop \cite{verloop2013code} uses Java refactoring tools (e.g. PMD and JDeodorant) to detect basic code smells like large class or long method in mobile applications.
+\todo{links!}
+A noticeable finding is that smells can appear at different frequencies in classes inheriting from the Android framework than in other classes, for example
+they detect the ``long method'' smell nearly twice as often in classes that inherit from the framework than in those that do not.
 
 Hecht et al. \cite{hecht2015detecting} present an approach they call PAPRIKA which operates on compiled Android applications but tries to infer smells on the source code level.
 From the byte-code analysis, it builds a graph model of the application and stores it in a graph database.
@@ -89,19 +94,20 @@ Further, they apply their tool to a number of free Android apps in the playstore
 One finding to emphasize is that some antipatterns, especially those related to memory leaks, appear in up to 39\% of applications, even ``big'' ones like Facebook or Skype.
 
 After Reimann et al. \cite{reimann2014tool} presented a catalog of 30 Android specific code smells, Palomba et al. \cite{palomba2017lightweight} developed a tool to detect 15 of them.
-It works on the abstract syntax tree of the source code and uses specifically constructed rules to detect each of the smells.
-For the evaluation of their approach, they analyze 18 Android applications and compare the results of their tool against a manually built oracle.
-The oracle was created by having two Masters students study the code of the applications in depth and manually flag offending locations.
+It operates on the abstract syntax tree of the source code and uses specifically constructed rules to detect each of the smells.
+The authors analyze 18 Android applications and compare the results of their tool against a manually built oracle,
+an oracle that was created by having two Masters students study the code of the applications in depth and manually flag offending locations.
 While they reach an average precision and recall of 98\%, there are some cases in which their tool fails or yields false positives.
 
-One especially interesting case is the smell of 'missing compression'.
+One especially interesting failure is the smell of 'missing compression'.
 It advises to compress the data when making external requests in order to save bandwidth.
-To detect places in the code where a request is made, but compression is missing, their hard-coded rule check if the developer used one of two popular compression libraries.
+To detect places in the code where a request is made, but compression is missing, their hard-coded rule checks if the developer used one of two popular compression libraries.
 However, recently a competing compression library has been gaining in popularity.
 Their rule does not include it and, thus, falsely flags the usage of this library as the ``missing compression'' smell.
 This is an excellent example of a case where hard-coded rules fail because they are not kept up to date (new library becomes popular, interface changes, \ldots), do not consider a special case or conditions change in some other way.
 
 \section{Inferring Properties from the Code at Hand}
+\todo[inline]{title: automated techniques? / learning smth? / .. merge with something for sure}
 
 \todo[inline]{
 General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
@@ -116,19 +122,15 @@ not necessary only learning from the code at hand: \cite{hanam2016discovering}
 As the results of the previous paper showed, it can be difficult and costly to keep hard-coded detection rules up to date and relevant.
 Because of this, there has been interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
-\todo[inline]{
-Why is this potentially better than other approaches (actually learning an api vs static rules comes to mind)
-some more übergang?!
-}
-
 Engler et al. \cite{engler2001bugs} were probably the first to propose the general idea of learning from the code at hand instead of using predefined static rules.
 \todo{is that true? or just the ``general idea behind dmmc''? + kinda sort sentences below better\ldots}
 In their paper they rely on contradiction and common behavior to ``find what is incorrect without knowing what is correct''.
 To do this, they use static analysis to infer what a programmer believes about the system state and then check these beliefs for contradictions.
 They provide several ``templates'' for beliefs the programmer must or may hold.
-Each template is catered for a specific type of belief, they can be about a wide range of things (a pointer being null or not being null, a lock being unlocked, etc).
+Each template is catered for a specific type of belief and can concern wide range of things (a pointer being null or not being null, a lock being locked or unlocked, etc).
 Among the beliefs they extract in this manner they look for common behavior or outright contradictions and use this to flag potential anomalies.
 In their evaluation on Linux and OpenBSD they find hundreds of bugs related to the different bug types that their templates can discover.
+\todo{difference from what I'm doing? -> check monperrus}
 
 Pradel et al. \cite{pradel2011detecting} noticed that in statically typed languages the compiler helps the programmer with passing method arguments in the correct order.
 However, the compiler cannot ensure the correct order of equally typed arguments (such as \code{setEndPoints(int low, int high)}.
@@ -138,14 +140,16 @@ They extract these and compare the names found at the call sites to the names fr
 If reordering the names yields a significantly better similarity score, they report an anomaly.
 In their evaluation on 12 Java programs from the DaCapo Benchmark suite \cite{blackburn2006dacapo} (more than 1.5 Million lines of code), they reach a precision of 72\% and recall of 38\% on seeded (i.e. ``faked'') anomalies.
 In real code, they found 29 anomalies of which 22 revealed true problems (76\%).
+\todo{difference: other errortype}
 
 In a more general attempt Fontana et al. \cite{fontana2013code}\cite{fontana2016comparing} compare 16 different machine learning techniques for code smell detection.
 As their training data, they manually evaluate a large body of code and tagged four basic smells (data class, large class, feature envy and long method).
 All of the different approaches show good performance, but J48 and random forest have the best results, while support vector machines fare the worst.
+\todo{difference: general smells + supervised}
 
 \section{Focus on Object Usages}
 
-\todo[inline] {title sucks?! -> api misuses? }
+\todo[inline] {title sucks?! -> api misuses? merge sections? (maybe one about temporal stuff?) }
 % -> api missuse detection
 
 \todo[inline]{
@@ -161,33 +165,33 @@ uses n-grams so intersting cause different approach? \cite{wang2016bugram}
 also mention overview paper \cite{amann2017systematic}
 }
 
-It is often difficult to correctly invoke API methods, not only because of their complexity, but also because of bad documentation.
+Bad documentation and high complexity often make it difficult to correctly invoke API methods.
 To circumvent this problem, developers often search for examples of how to use a particular API.
 To aid with this search, Zhong et al. \cite{zhong2009mapo} built a search tool for example code snippets.
-Their tool, MAPO, extracts API usages which describe how in certain scenarios some API methods are frequently called together and if the usage follows any sequential order.
+It extracts API usages which describe how in certain scenarios some API methods are frequently called together and if the usage follows any sequential order.
 Using clustering and frequent subsequences mining it then groups the extracted usages into usage patterns over which the search operates.
 While the tool does not look for any anomalies or code smells, it extracts exactly the type of information that is interesting if one wants to detect anomalies.
 
-There have been some works concerned with finding patterns in objects usages and using those to find potential bugs.
+There have been some works concerned with finding patterns in the way specific types are used and utilizing those patterns to find potential bugs.
 \todo{explain object usages somewhere? + cite some related work from monperrus here (just citation)?}
 Most relevant for this work and its primary inspiration are two papers by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} that propose a technique for detecting missing method calls.
-It is based on the intuition that an instance is probably an anomaly if it is alone in a large number of instances which do something similar but not exactly the same.
-They call this the ``majority rulw'' and we explain it in detail in Chapter \ref{ch:dmmc}.
+It is based on the intuition that an instance is probably an anomaly if it is alone in a large number of instances that do something similar, but not exactly the same.
+They call this the ``majority rule'' and we explain it in detail in Chapter \ref{ch:dmmc}.
 
 The evaluation they present is split into two parts.
 The first is based on a simulation which creates defects by degrading real software.
-For the simulation they remove singular method calls from the code and check if they can detect these known missing calls.
-They apply this simulation to several software packages, among them the Eclipse user interface, Apache derby and Apache tomcat.
+It removes singular method calls from the code and check if the majority rule can detect these known missing calls.
+They perform this simulation on several software packages, among them the Eclipse user interface, Apache derby and Apache tomcat.
 \todo{link?}
-Their system can answer between 54\% and 76\% of these simulated queries (depending on the package) and of the queries it answers 73\% to 89\% of the answers contain the actually missing call, albeit not necessarily as the first recommendation.
+Their system can answer between 54\% and 76\% of these simulated queries (depending on the package) and of the queries it can answer 73\% to 89\% contain the actually missing call, albeit not necessarily as the first recommendation.
 All in all, it reaches precision between 59\% and 83\% and recall of 41\% to 68\%.
-However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with artificially created cases.
+However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with these artificially created cases.
 
-For this reason, they also perform an additional, qualitative evaluation.
-They apply their tool onto Eclipse, derby and tomcat and manually analyze 30 very anomalous cases reported by it.
+For this reason, Monperrus et al. also perform an additional, qualitative evaluation.
+They apply their tool to Eclipse, derby and tomcat and manually analyze 30 very anomalous cases reported by it.
 They find that there are different reasons for an instance to be anomalous, not all of them actually indicate a missing call.
-It can also be just a code smell, i.e., a situation which could be rewritten or refactored for more clarity, or related to software aging, for example code using an old version of the API.
-While they reported 17 issues and got 9 patches accepted, there are also some negative results, where the anomaly is just that: an outlier, which is totally correct, even if a majority of other usages behave differently.
+Some are just a code smell, i.e., a situation which could be rewritten or refactored for more clarity, or related to software aging, like code using an old version of the API.
+They reported 17 issues and got 9 patches accepted, but there are also some negative results, where the anomaly is just that: an outlier, which is totally valid, even if a majority of other instances behave differently.
 
 Before this, Wasylkowski et al. \cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of method calls.
 First, they extract usage models from Java code by building a finite state automaton for each method.
@@ -207,11 +211,11 @@ This method stands out because it enables detecting dependencies between multipl
 % todo what does the branching thing even mean?
 Here the object usages are represented as a labeled directed graph in which the nodes are field accesses, constructor or method calls and branching occurs because of control structures.
 Thus, the edges of the graph represent the temporal usage order of methods and the dependencies between them.
-\todo{ is this merge sort thing true?!}
 They mine patterns using a frequent induced subgraph detection algorithm which builds larger patterns from small patterns from the ground up, similar to the way merge sort operates.
 Here an anomaly is also classified as a ``rare'' violation of a pattern, i.e., in relation to its size it does not appear frequently in the dataset.
 In an evaluation case study the authors find 64 defects in 9 open source software systems which they classify as 5 true defects, 8 smells and 11 hints, equalling a false positive rate of 62.5\%.
 Using a ranking method the top 10 results contain 3 defects, 2 smells and 1 hint.
+\todo{difference: temporal properties!}
 
 \todo[inline] {
 more work on temporal properties \cite{gruska2010learning}
@@ -230,16 +234,13 @@ It often occurs when an API developer changes the code but forgets to adapt the 
 If a user of the API then relies on the documentation, she can run into unforeseen bugs, and what is worse, the documentation might even hinder her.
 To alleviate this problem, Zhou et al.  \cite{zhou2017analyzing} propose an automated approach for detecting ``defects'' in the API documentation.
 They consider two situations: either the documentation is incomplete in describing the constraints at hand, or the description exists, but it does not match the realities of the code.
-They make one crucial assumption: the code is correct because contrary to the documentation has been tested extensively.
+They make one crucial assumption: the code is correct because, contrary to the documentation, it has been tested extensively.
 
 Their approach analyzes the code statically and uses pattern-based natural language processing to build a first order logic formula of the constraints which are present.
 For the API documentation, they use heuristics and a part-of-speech tagger to find the restrictions and constraints which are mentioned, before synthesizing them into another first order logic formula.
-Finally, the resulting formulas are fed into an SMT (satisfiability modulo theories) solver \cite{barrett2009satisfiability} to detect inconsistencies between them.
-With this approach, can detect four classes of documentation defects.
+The resulting formulas are fed into an SMT (satisfiability modulo theories) solver \cite{barrett2009satisfiability} to detect inconsistencies between them.
 They apply their prototype implementation to the \code{java.awt} and \code{java.swing} packages and find 1419 defects, of which 81.6\% are true positives.
-Using the heuristics extracted from these packages they also apply the prototype to some other packages and find 1188 defects of which 659 are true positives (a precision of 55.5\%).
+Using the heuristics extracted from these packages, they also apply the prototype to other packages and find 1188 defects of which 659 are true positives (a precision of 55.5\%).
 Overall it is worrying (if not surprising), that there are so many inconsistencies in the JDK documentation, which even has a reputation for being of rather high quality.
-Less well-known APIs will probably have inferior documentation and thus even further increase the risk of API usage relates bugs.
-\todo{too detailed?}
-
+Less well-known APIs will probably have inferior documentation and thus, even further increase the risk of API usage related bugs.
 

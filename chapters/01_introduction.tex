@@ -1,11 +1,12 @@
 \chapter{Introduction}\label{ch:intro}
 
-\todo{don't say ``outsource'', rather reuse oö?}
+\todo{benny stolpert über ``outsource''}
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
 Developers often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 These APIs would ideally be simple and easy to use, but there is always a trade-off between usability and flexibility.
 More powerful frameworks in particular struggle to provide a trivial API without limiting developers' ability to take greatest advantage of their functionality.
-Correctly invoking an API often requires that a developer know it well; not considering specific constraints and requirements or an involved interplay between different parts of the library can lead to serious bugs or complications.
+Correctly invoking an API often requires that a developer know it well;
+not considering specific constraints and requirements can lead to serious bugs or complications.
 
 %--- since it is often not trivial to use an API correctly, there will be ``wrong'' usages + examples?
 Sometimes, these problems could have been avoided if the developer had paid better attention to the API's documentation.
@@ -17,7 +18,7 @@ Examples, which come to mind in Java, are a programmer calling \code{next()} on 
 %--- correct usages of an API often share some underlying patterns + examples of them
 Despite the fact that there might be numerous appropriate ways to use an API, there are underlying patterns that the correct invocations have in common.
 % These patterns can take a lot of different forms and shapes, for example ``call method \code{foo} before calling method \code{bar}'', ``if an object of type \code{Foobar} is used as a parameter to method \code{baz}, condition X has to be fulfilled'', ``never call method \code{qux} in the GUI thread'', etc.
-For the Java examples mentioned above they could take the form of ``an object which implements \code{equals()} must also implement \code{hashCode()}'', ``if object A equals object B, their \code{hashCode()} must also be equal'' or ``a call to \code{next()} on an iterator should be preceded by a call to \code{hasNext()} to ensure that it actually contains another object''.
+For the Java examples, they could take the form of ``an object which implements \code{equals()} must also implement \code{hashCode()}'', ``if object A equals object B, their \code{hashCode()} must also be equal'' or ``a call to \code{next()} on an iterator should be preceded by a call to \code{hasNext()} to ensure that it actually contains another object''.
 
 %--- if we can extract the patterns, hopefully, the wrong usages will stand out and enable us to detect bugs
 API usage patterns \cite{robillard2013automated} can aid in detecting these kind of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
@@ -43,15 +44,16 @@ In large software projects it is common that one developer does not know all of 
 
 %--- Monperrus et al. also showed that the bugs sometimes DO get into the code, all in all, we want to be able to detect them
 Studies have confirmed the intuition that missing method calls are common pitfalls across a range of applications and even in mature code bases.
-In an informal review, Monperrus et al. found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many newsgroups, bug trackers, and forums.
+In an informal review \cite{monperrus2010detecting}, Monperrus et al. found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many newsgroups, bug trackers, and forums.
 The issues range from runtime exceptions\footnote{\url{https://issues.apache.org/jira/browse/TORQUE-42}} to problems in some limit cases, but generally reveal at least a code smell, if not worse.
-They also performed an extensive analysis\cite{monperrus2013detecting} of the Eclipse bug repository,
+They also performed an extensive analysis \cite{monperrus2013detecting} of the Eclipse bug repository,
 searching for syntactic patterns that they deemed related to missing method calls, such as: ``should call'', ``does not call'', ``is not called'', or ``should be called''.
 Manual inspection confirmed that more than half (117 of 211) of the bug reports located in this manner were indeed related to a missing method call.
 
 This number is if anything an underestimation of the total number of missing method call bugs in the code base.
 After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
 Given these numbers, it seems clear that automatically detecting missing method calls in production code would not only save developer time but als make maintenance cheaper and more manageable.
+\todo{somehow assert how serious this is a bit better}
 
 \section{Detection - but how?}
 
@@ -93,6 +95,7 @@ If a type is used in one particular way many, many times (that is, in the majori
 % This thesis builds on their work, re-evaluating the characterization of type usages and anomalies among them.
 
 \todo[inline]{
+    the part above is not actually contribution, but seems fine as intro, but add lots of meat for the next paragraph!
     needs more content! what am i actually doing and why (hoping to find what?) and what are the results?
     implementation also part of my work! -> part of contribution!!!
     evaluation -> more detail + what are the QUESTIONS?
