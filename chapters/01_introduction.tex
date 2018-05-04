@@ -1,5 +1,6 @@
 \chapter{Introduction}\label{ch:intro}
 
+\todo{don't say ``outsource'', rather reuse oö?}
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
 Developers often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 These APIs would ideally be simple and easy to use, but there is always a trade-off between usability and flexibility.
@@ -52,7 +53,7 @@ This number is if anything an underestimation of the total number of missing met
 After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
 Given these numbers, it seems clear that automatically detecting missing method calls in production code would not only save developer time but als make maintenance cheaper and more manageable.
 
-\subsection{Detection - but how?}
+\section{Detection - but how?}
 
 % General idea why we want to use Recommender Systems / Learning!
 %--- the first idea for detection: static rules, but the problem: very time/cost intensive
@@ -83,6 +84,7 @@ Whether this actually proves to save time and money hinges of the accuracy of th
 % first find likely recommendations, for writing, then realize, if something is super likely given a particular situation, but it is not there, it seems like a good indicator of an error
 
 \section{Contribution}
+\todo[inline]{clearly formulate problem statement somewhere (3-5 sentences which describe the problem to be solved + the ansatz)}
 
 To understand and tackle the missing method call problem, Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the idea of type usages.
 A type usage is the list of method calls which are invoked on an object of some type and occur in the body of some method.
@@ -90,12 +92,21 @@ The idea behind the technique by Monperrus et al. is to check for outliers among
 If a type is used in one particular way many, many times (that is, in the majority of cases) and differently only once (or a few times), this probably indicates a bug.
 % This thesis builds on their work, re-evaluating the characterization of type usages and anomalies among them.
 
+\todo[inline]{
+    needs more content! what am i actually doing and why (hoping to find what?) and what are the results?
+    implementation also part of my work! -> part of contribution!!!
+    evaluation -> more detail + what are the QUESTIONS?
+}
 We evaluate this concept by applying it to a dataset of more than 600 open source Android applications and performing a manual evaluation of the results.
 We further experiment with small changes to their initial idea and put them under the scrutiny of an automated benchmark.
 Additionally, we compare the results of the manual evaluation against those of the automated one and consider what this means for future research.
-\todo{mention some results!}
 
-\todo[inline]{actually include this?}
+\section{Outline}
+\todo[inline] {
+make own section!
+actually include this?
+rework after splitting dmmc chapter! + clearly state what is their work and what is mine
+}
 In Chapter \ref{ch:relWork} we present previous work which goes in a similar direction.
 % We group presented papers into \ldots -> skip this bc I already mention this in the intro of next section?
 Chapter \ref{ch:dmmc} explains the theoretical background of the method proposed by Monperrus et al. and some variations which we will compare in the evaluation.
