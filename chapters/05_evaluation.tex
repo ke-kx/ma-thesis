@@ -1,4 +1,10 @@
 \chapter{Evaluation}\label{ch:eval}
+
+Which questions are we trying to answer with the evaluation?
+quick overview + method to do this
+große frage: bringt das Verfahren etwas?
+
+take some stuff from results intro
 roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
 take their method + analyze it on a qualitative + quantitative basis on a big android dataset
 
@@ -6,16 +12,33 @@ The XXX section revolves around the benchmark system, the basic idea behind it a
 
 % http://libguides.usc.edu/writingguide/methodology
 
-\todo[inline]{does this order make sense or rather split by research question?}
 \section{Methodology}
 
 \subsection{Qualitative Evaluation / Android Case Study}
 android apps, blabla
-manual review of top 50 findings for each ``method''
--> which are the different methods?
+
+indea behind using android:
+    do real software systems actually behave in this way
+    ie: is it ``necessary'' to use classes in the same way
+    probably: most likely present in GUI systems
+    common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
 
 downloading + automatically analyzing android apps (in evaluation section?)
 \todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
+take random sample of Apps and there look at all the anomalous (>.9) findings (kind sounds a bit smarter?)
+
+use 3 different methods: DMMC, noContext, class merge
+maybe each with and without android.* filter -> will be a bit more than 10 in total because of overlap
+manually review 10(20?) randomly selected Apps
+flag all of the anomalous type usages as
+
+real bug (B): a real defect, change definitely necessary
+real smell (S): another way of doing things would be better, but probably not a defect
+implementation error (on my side) (IE): dot chaining not recognized correctly (not sure if actualy possible) (-> not sure i should include this)
+false positive (FP): the usage is totally fine, there is no causal relation which would imply that the "missing" method also needs to be used
+	(subcategory: it makes sense that the pattern exists ie that many ppl use this together but it simply doesn't indicate an error or smell)
+Special case(?) (SC): "weird" implementation with extra comment, for compatibility reasons, something like that
+not clear (NC): source code not available, ...
 
 \subsection{Automated Benchmark}
 
@@ -23,8 +46,7 @@ building benchmarking infrastructure
 flexibility with python class setup
 degrading type usages + checking if they will be detected
     some more subsections? (different ways for degrading type usages?)
-
-sometimes in even further degraded settings (degrade more than one)
+    sometimes in even further degraded settings (degrade more than one)
 
 general idea behind evaluation method and what we are trying to detect
 actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
@@ -36,106 +58,145 @@ Metrics explanation - Precision, Recall
     additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
     performance -> training time + performance when working
 
+\section{Dataset Overview}
+
+% general idea
+general data about avg tus related to different settings etc -> what does our dataset even consist of?
+mention somewhere: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
+Does the Strangeness Score behave as expected on Android Apps? (the behavior that I'm expecting is basically a mathematical necessity!)
+    do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
+        -> most tus are ``normal'', a few are ``abnormal''
+        what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
+
+% motivation
+should answer:
+    1 What kind of dataset do we have?
+    2 How are type usages in Android apps like?
+    3 How does the strangeness score behave?
+    4 Is it even fast enough? (this here or as separate research question?)
+-> get general feeling for this method and the dataset
+look into and understand the type of data i have -> how often small inputs, how often big, ...
+
+% concrete questions to answer + way of presenting it
+1 Dataset:
+    How many Apps + How many TUs in total + each (avg / median) -> how big are the apps, (how are the tus split between the apps)
+    number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
+    different number of tus for class merge? -> yes necessarily
+
+2 type usages:
+    length of method list -> histogram?
+    percentage on Android framework, percentage on other stuff
+
+3 strangeness score:
+    verteilung of strangeness score (histogram)
+    graphs related to general score verteilung
+
+4 performance:
+    total time +
+    duration of tu extraction in relation to number tus (proxy for project size)
+    + mention somewhere that analysis itself is relatively cheap (especially for new project coming in)
+
 \section{Results}
-Which questions are we trying to answer with the evaluation?
-quick overview + method to do this
 
 qualitative evaluation: are the findings useful in practice?
 quantitative evaluation: given some assumptions, how useful can we expect this technique to be? robustness? Qualitative vs automatic same results?
 make sure I will be able to a) answer those questions and b) the answers are ``interesting''
 
-große frage: bringt das Verfahren etwas?
+for each question: explanation of question, then results + interpretation
 
-for each question: explanation of question, then results + interprettation
-\subsection{Dataset Overview}
-rausziehen (extra section)
+\subsection{RQ1: How many true versus false Positives are among the anomalous Type Usages flagged by the Majority Rule?}
 
-what kind of dataset do we have? (how many apps, how big, how many TUs, how are the TUs split between the apps -> size of applications)
-number of partitions (types+context / types) and their sizes!
-what are typeusages in Android apps like? (length of method list, percentage on Android framework, percentage on other stuff, etc) 
-
-general data about avg tus related to different settings etc -> what does our dataset even consist of?
-
-look into and understand the type of data i have -> how often small inputs, how often big, ...
--> paint a bunch of graphs of the pkl results! (histogram of tu list sizes,  etc) (correctly bin histogram!)
- tu method list sizes - also check their paper, q mas?
-
-indea behind using android:
-    do real software systems actually behave in this way
-    ie: is it ``necessary'' to use classes in the same way
-    probably: most likely present in GUI systems
-    common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
-
-mention somewhere: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
-
-\subsection{RQ1: Does the Strangeness Score behave as expected on Android Apps?}
--> ist keine forschungsfrage, gehört zur vorherigen section!
-(the behavior that I'm expecting is basically a mathematical necessity!)
-
-do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
-    -> answer with graphs related to general score verteilung
-    -> most tus are ``normal'', a few are ``abnormal''
-    what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
-verteilung of strangeness scores, histogram of it
-
-Frage: Ist das ganze überhaupt schnell genug?
--> JA!
-(auslesen kosten + )
-
-\subsection{RQ2: How ``useful'' is this technique?}
+% General
 wie relevant sind diese obtained results in der praxis (as determined by fp vs tp)
-\todo[inline]{change title\ldots}
+how many true findings in relation to false positives does it find + 
 
-qualitative evaluation findings:
-how many true findings in relation to false positives does it find + average number of findings per app (remember that the findings now are for all 626 apps)
+% motivation behind question
+is this something that a developer would use to help with maintenance?
+are the results useful / helpful
 
-pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
-+ of course the REAL bug + some real smells
+% concrete techniques and results
+start with avg + median number of findings per app + in relation to their total TUs
+only the results of manual evaluation of the 10 random apps with the context variant
++ add the android filter
 
-and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
+\subsubsection{RQ1.1: Is there a noticeable difference between the different variants?}
 
-think if i should totally change the manual eval: take random sample of Apps and there look at all the anomalous (>.9) findings (kind sounds a bit smarter?)
+do the manual eval each for the slightly adapted forms (no context, class merged) and see if there is any difference
++ include the android filter
 
-\subsubsection{RQ2.1: Is there a noticeable difference between the different variants?}
-each for the slightly adapted forms (no context, class merged, etc)
-
-\subsubsection{RQ2.2: Given a known missing method call bug, can this approach detect it?}
-only if time!
+\subsubsection{RQ1.2: Given a known missing method call bug, can this approach detect it?}
+only if time! -> probably not
 
 reverse test: find actual missing call in bug database -> can I find it using the approach and is it among the top findings?
 
-\subsection{RQ3: How meaningful are the benchmarking results?}
-``meaningful'' not a good word, rather already describe what I'm doing (ie do the bnechmark results align with the results of the manual evaluation oä)
+\subsection{RQ2: Do the Benchmark Results align with the Results of the Manual Evaluation?}
 
+% general
+how 'meaningful' are the benchmarking results?
 does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
 -> comparison between manual evaluation of findings vs automatic benchmark over the different techniques used (context, no context, class merge, \ldots)
-
 first present benchmark results of different techniques (context, class merge, \ldots) then relate to qualitative results
-
 are the results better if we leave out the context / merge on a per class basis / FOR DIFFERENT Ks!\ldots
 
-\subsection{RQ4: How robust is this technique in the face of erroneous input data?}
+% motivation
+
+% techniques + results
+potentially simulate the benchmark only with tus from exactly the same 10 random apps? (so i don't have to do the whole dataset?)
+simply give metrics (precision, recall) for the different variants and relate them to the manual results
+(maybe relate the precision etc to the number of tus in the partition -> already have that data)
+
+\subsection{RQ3: How robust is this technique in the face of erroneous input data?}
+
+% general
 I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
 worauf is robustness bezogen? -> results quality or smth else?
-
 Robustness explanation
     wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
     what is needed for it to work (lines of code, feature richness, etc) 
     problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
-
 additional test:
 	for true findings, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
     / instead of throwing away: introducing random errors in the related tus
 
-\subsection{RQ5: What are the requirements for the input size?}
-benny didn't like ``requirements''\ldots
-ie: how big of a codebase do we need to be able to ``learn''. When can we apply this to a project which does not rely on some well known open source framework (Android) where it is easy to gather additional data, but on for example an in-house-closed-source library oä.
+% motivation
 
+% techniques + results
+I mean I have the benchmark test, so i might as well do it, but also mention mathematical results!
+
+\subsection{RQ4: What are the requirements for the input size?}
+\todo[inline]{
+benny didn't like ``requirements''
+-> How much input is needed to produce 'useful' results?
+How big does the system under analysis need to be?
+How many type usages are necessary to \ldots
+}
+
+% general
+ie: how big of a codebase do we need to be able to ``learn''. When can we apply this to a project which does not rely on some well known open source framework (Android) where it is easy to gather additional data, but on for example an in-house-closed-source library oä.
 extremely hard to answer especially if the findings regarding benchmark validity are more or less negative.
 however, even if I cannot give experimental answers, I can at least give some lower bounds + thoughts
 (need at least 10 tus within the same ``category'' to even reach a score > 0.9, from practical results in qualitative analysis, that is probably not enough, blabla)
 
+% motivation
+
+% techniques + results
+
+\subsection{RQ5: Can the Majority Rule also detect superfluous or wrong Method Calls?}
+
+manual eval of results when using superfluous / wrong variants
+-> same mode of evaluation as RQ1
+
 \section{Discussion}
+
+also mention runtime!
+
+average number of findings per app (remember that the findings now are for all 626 apps)
+how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
+
+and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
+
+pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
++ of course the REAL bug + some real smells
 
 \section{Threats to Validity}
 
@@ -143,6 +204,4 @@ explain problems with the automatic evaluation
 how related are the degraded TUs to missing method calls you can find in the wild?
 improving the metrics by dropping cases where we know we won't find an answer
 
-also mention runtime!
 wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
-\ldots
