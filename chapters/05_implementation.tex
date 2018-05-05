@@ -45,9 +45,9 @@ Given a software system, which shall be tested for anomalies, conceptually the f
 
     % py + db + end
     \node[vertex] (db2) [below = 0.25cm of db1] {Answer\\query};
-    \node[vertex] (py1) [below left = 0.5cm of db2] {Request\\current set};
-    \node[vertex] (py2) [below right = 0.5cm of db2] {Calculate\\ $\operatorname{S-score}$};
-    \node[fill=black,circle,inner sep=2pt] (end) [right = 1.5cm of py2] {};
+    \node[vertex] (py1) [below left = 0.6cm of db2] {Request\\current set};
+    \node[vertex] (py2) [below right = 0.6cm of db2] {Calculate\\ $\operatorname{S-score}$};
+    \node[fill=black,circle,inner sep=2pt] (end) [right = 1.25cm of py2] {};
     \node[fill=white,align=center] (endTxt) [above = 0.25cm of end] {List of\\anomalies};
 
     \draw[edge] (py1) to (db2);
@@ -55,16 +55,15 @@ Given a software system, which shall be tested for anomalies, conceptually the f
     \draw[edge] (py2) to (end);
 
     % big dashed boxes
-    \node[label=above left:{Java}, draw=black, thick, dashed, inner sep=0.25em, fit=(j1) (j2)] {};
-    \node[label=right:{Database}, draw=black, thick, dashed, inner sep=0.25em, fit=(db1) (db2)] {};
-    \node[label=left:{Python}, draw=black, thick, dashed, inner sep=0.25em, fit=(py1) (py2)] {};
+    \node[label=above left:{Java}, draw=black, thick, dashed, inner sep=0.35em, fit=(j1) (j2)] {};
+    \node[label=right:{Database}, draw=black, thick, dashed, inner sep=0.35em, fit=(db1) (db2)] {};
+    \node[label=left:{Python}, draw=black, thick, dashed, inner sep=0.35em, fit=(py1) (py2)] {};
 
 \end{tikzpicture}
 \caption{System overview}
 \label{fig:overview}
 \end{figure}
-\todo{make a bit nicer (alles bisi auseinander ziehen?), better position dash box labels | POTENTIALLY add the retrieve sets step to python?}
-% https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
+\todo{POTENTIALLY add the retrieve sets step to python?}
 
 %-- description of system
 However, this simple outline does not represent the actual realities of the system.
@@ -80,7 +79,6 @@ The following sections give a more in-depth explanation of the separate steps.
 \todo{smth more?}
 
 \section{Bytecode Analysis}\label{sec:bytecode}
-\todo[inline]{maybe rename section?}
 
 %-- general intro
 We use Soot \footnote{\url{https://sable.github.io/soot/}} for the bytecode analysis.
