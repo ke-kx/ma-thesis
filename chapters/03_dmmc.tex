@@ -1,5 +1,4 @@
 \chapter{Detecting Missing Method Calls}\label{ch:dmmc}
-\todo[inline]{TRENNEN! previous work vs my contribution -> 2 CHAPTERS!}
 
 In the introduction, we explored errors related to missing method calls.
 Especially when a developer is working with complicated frameworks and libraries and is not very experienced with them, it is easy to miss an important call.
@@ -8,19 +7,16 @@ We would like to automatically detect instances of missed method calls to make m
 %--- overview of this chapter
 In this chapter, we give a proper explanation of the method proposed by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
 The main idea is to extract patterns from correct usages and then look for violations of these patterns.
-For this we define the notions of type usages, as well as their similarity and almost similarity.
+For this we formalize the notions of type usages, as well as their similarity and almost similarity.
 We then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
-
-In the second section of this chapter, we explore some tweaks of the method proposed by Monperrus et al.
-We suggest using their method to also detect anomalies related to superfluous or wrong method calls and a variation which uses a slightly different input ordering.
-How suitable these variants are for detecting errors we explore in Chapter \ref{ch:eval}.
 
 \section{Foundation: The Majority Rule}\label{sec:majority}
 
 % general majority rule
 The intuition behind the majority rule is that if most or all instances do something in a particular way, this is probably the correct way.
-By implication this also means that if all or a great many behave differently than you, you are probably doing it wrong.
+By implication it follows that if all or a great many behave differently than you, you are probably doing it wrong.
 This gives rise to the definition of an anomaly by the majority rule: instances which have few or none ``equal'' but a lot of ``slightly different'' neighbors.
+Such anomalies should probably adapt to behave like their very similar neighbors.
 What exactly equal and slightly different means has to be defined for each application of the majority rule.
 
 % example (comic sans + waiter)
@@ -31,11 +27,7 @@ There is one button which is missing this call and, therefore, uses the default 
 It seems highly likely that this one button which is an exception to the rule ``each button which invokes \code{setText()} should also call \code{setFont()}'' is a mistake and that it should also make a call to \code{setFont()}.
 Imagine all buttons in the application using a unique and beautiful font, but this one button displaying the standard Comic Sans!
 
-The remainder of this section formalizes the different notions that are required to use the majority rule for detecting locations in code which are likely missing a method call.
-
-\todo[inline]{intro still feels slightly lacking, but not sure WHAT is missing}
-
-\subsection{Type Usages}
+\section{Type Usages}
 
 Generally speaking, type usages are an abstraction over the analyzed code.
 They ignore the order of method calls and are only concerned with the list of method calls invoked on some object.
@@ -88,14 +80,13 @@ The methods invoked on the \code{Button} object are initialization (\code{new}),
 The \code{Text} object, on the other hand, is only initialized.
 Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$, $C(x)$ and $M(x)$ are shown on the right hand side.
 
-\subsection{Exact and Almost Similarity}
+\section{Exact and Almost Similarity}
 
 %--- what are exactly equal and almost equal
 To detect type usages which are anomalous by the majority rule, we now need a notion what it means for two type usages to be exactly similar or only almost similar.
 Informally, we say that two type usages are exactly similar, iff they have the same type, the type usage appears in a similar method (i.e., the context is identical) and if their list of method calls is identical.
 Recall that the context is the name of the containing method together with the type of its parameters.
-\todo{ explain better what a SIMILAR method is? }
-The reason we call these type usages ``similar'' instead of ``equal'' because several things are not the same: variable names, surrounding or interspersed code, method order and the actual location (class) are all disregarded and might indeed differ.
+We call these type usages ``similar'' instead of ``equal'' because several things are not the same: variable names, surrounding or interspersed code, method order and the actual location (class) are all disregarded and might indeed differ.
 
 The notion of almost similarity is analogous.
 We say that a type usage $y$ is almost similar to a given type usage $x$ if they share the same type and context and the list of method calls of $y$ is the same as the method calls of $x$ plus one additional call.
@@ -171,7 +162,7 @@ class D extends Page {
 
 Consider the example code snippets in Figure \ref{fig:sim_asim}.
 The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the similar method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
-Observe that variable names and method parameter have no impact on this.
+Notice that variable names and method parameter have no impact on this.
 Additionally, it is not influenced by the order of methods or any interspersed code which does not call a method on the \code{Button} objects.
 The type usage in class \code{C} (bottom left) is almost similar to those in \code{A} and \code{B}, because besides the two methods \code{setText} and \code{setColor} it also invokes one additional method: \code{setLink}.
 Finally, the type usage in class \code{D} (bottom right) invokes \textbf{two} additional methods in comparison to the ones in \code{A} or \code{B}, meaning that it is not almost similar to them.
@@ -201,7 +192,7 @@ xA'y \iff & T(x) \: = T(y) \;\; \land \\
          & |M(y)| = |M(x)| + 1
 \end{align*}
 
-Similarly to $E(x)$ we define $A(x)$ as the set of type usages which are almost similar to $x$:
+Similarly to $E(x)$, we define $A(x)$ as the set of type usages which are almost similar to $x$:
 \begin{equation*}
 A(x) = \{y \mid xA'y \}
 \end{equation*}
@@ -211,13 +202,14 @@ Consider also that $A'$ is not symmetrical, i.e., $xA'y \centernot\iff yA'x$ sin
 This also means that $y \in A(x) \implies x \notin A(y)$.
 
 We can further refine the definition of almost similarity.
-Instead of looking for type usages which have the same method calls plus one additional one, it is also possible to consider those type usages which have the same method calls plus $k$ additional ones.
-Then, in the definition of $A$ the last line changes to: $|M(y)| = |M(x)| + k, k\geq1$
-This means that we would look for type usages missing $k$ calls instead of just one.
+Instead of including type usages which have the same method calls plus one additional one, it is also possible to consider those type usages which have the same method calls plus $k$ additional ones.
+Then, in the definition of $A$ the last line changes to: $|M(y)| = |M(x)| + k, k\geq1$.
+Now we would look for type usages missing $k$ calls instead of just one.
+\todo{rephrase?}
 
 Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ for one given type usage $x$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
 
-\subsection{The Strangeness Score}
+\section{The Strangeness Score}
 
 Recall the assumption behind the majority rule: A type usage is abnormal if a small number of type usages is exactly similar, but a significant number are almost similar.
 Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by exactly one method call).
@@ -225,7 +217,7 @@ Assuming the majority is correct, the type usage under scrutiny is deviant and p
 
 To capture concretely how anomalous an object is, we need a measure of strangeness.
 This will be the strangeness score.
-It allows to order type usages by how much of an outlier they are and thus to identify the ``strangest'' type usages, which are most interesting for evaluation by a human expert.
+We can use it to order type usages by how much of an outlier they are and to identify the ``strangest'' type usages, which are most interesting for evaluation by a human expert.
 
 %--- strangeness score calculation
 Formally, we define the S(trangeness)-Score as:
@@ -241,13 +233,13 @@ On the other hand, given a type usage $b$ with $99$ almost similar and no other 
 This results in a strangeness score of $\operatorname{S-score}(b) = 1-\frac{1}{1+99} = 0.99$.
 Intuitively such a type usage is very strange, and indeed, the S-score supports the intuition.
 
-\subsection{Which Calls are missing?}
+\section{Which Calls are missing?}
 
-Only detecting the type usages which are outliers is not enough.
-We would also like to present the developer with some candidate suggestions, what might be the method call that is missing.
-The intuition for this is to look at all the almost similar type usages and collect the additional method calls that each almost similar type usage invokes.
+It is not enough to detect the type usages that are outliers.
+We would also like to present the developer with some candidate suggestions, which method call might be missing.
+The intuition for this is to look at all the almost similar type usages and collect the additional method calls that each of them invokes.
 Recall, that an almost similar type usage will make exactly one additional call in comparison to the anomalous one.
-Given a set of these additional method calls, we then take the frequency of unique calls among them and use this as the suggestion likelihood.
+We then take the frequency of unique calls among the set of additional method calls and use it as the suggestion likelihood.
 
 Formally, the calls we can recommend for a type usage $x$ are the calls that are present in the type usages contained in $A(x)$ but are not in $M(x)$.
 The set of these methods shall be called $R(x)$ and is defined as follows:
@@ -296,14 +288,14 @@ Four of them ($a$ through $d$) have a call to \code{setText} after the initializ
 The last one, $e$, has a call to \code{setFont} instead.
 Thus, we can recommend the methods \code{setText} and \code{setFont} with a likelihood of $4/5 = 80\%$ and $1/5 = 20\%$ respectively.
 
-\subsection{Ignoring the Context}
+\section{Ignoring the Context}
 
 %--- why we use the context at all
-The reason for integrating the context into the definition of similarity and almost similarity is the idea that a type might be used in different ways depending on the situation it is used in.
+We integrate the context into the definition of similarity and almost similarity because a type might be used in different ways depending on the situation it is used in.
 An example would be the class \code{FileInputStream} which is rarely opened and closed in the same method.
-Monperrus et al. \cite{monperrus2013detecting} find in their evaluation that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and ultimately using it improves the precision of their experiments.
+In their evaluation Monperrus et al. \cite{monperrus2013detecting} find that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and using it improves the precision of their experiments.
 %-- why it might be better to exclude the context
-However, one might question the general assumption behind using the context.
+However, one can question the general assumption behind using the context.
 The idea that types are used in different ways seems reasonable, but is the name of the function that they are used in a good separator between those use cases?
 Furthermore, using the context might work well for some types and some systems, but does it make sense everywhere?
 One problem with using the context is that it drastically reduces the number of type usages which are even considered for (almost) similarity.
@@ -314,111 +306,4 @@ Because of this, next to the standard variant $\mathnormal{DMMC}$ (Detecting Mis
 It uses adapted measures for similarity and almost similarity, $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$ which are defined in the same manner as $E'$ and $A'$, except that they do not require the context of the type usages to be identical.
 The definitions of $E$, $A$, $\operatorname{S-score}$ and $\phi$ stay the same, besides that they now make use of the newly defined relations.
 
-\section{Extensions}
 
-In the previous section, we summarized the work of Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting}, in this one we propose some possible modifications to their method.
-For instance, it might be possible to leverage the majority rule not only for detecting missing method calls, but also to identify superfluous or flat-out wrong method invocations.
-Additionally, there are different ways of organizing the type usage data, which could yield better results.
-In this section, we give the motivation and theoretical background for these modifications, in Chapter \ref{ch:eval} we will explore further how they perform in comparison with the original.
-
-\subsection{Class-based merge}
-
-%--- idea behind this
-The $\mathnormal{DMMC}_{\mathnormal{noContext}}$ variant seeks to answer the question if it makes sense to group the type usages based on the method they appear in.
-Following this line of thought, it is also possible to ask, if it is optimal to collect the type usages with method granularity.
-Even when ignoring the context, the type usages will still be extracted on a per-method basis, that is only the methods invoked in one method body will belong to one type usage.
-It is possible though, that grouping method calls with class granularity yields much better results.
-Often the methods invoked on one object within a specific class include many, if not all, of the methods invoked on it in its whole lifetime.
-Thus, a class-based type usage offers a much bigger window into the objects utilization and potentially this makes it easier to detect if some method is missing.
-
-%--- informal how it's done
-We will denote this variant as $\mathnormal{DMMC}_{\mathnormal{class}}$.
-To obtain the class-based type usages, we extract the type usages at the method level, exactly as before.
-However, before calculating the strangeness score, we merge all those type usages which have the same type and originate from the same class.
-Note that this will merge them even if the original type usages came from different objects because tracing each objects life through the whole class would be too expensive.
-With these newly produced type usages we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
-
-%-- formalized
-To formalize $\mathnormal{DMMC}_{\mathnormal{class}}$, we need the new operator $\operatorname{Cls}(x)$ which denotes the class from which a type usage was extracted.
-We can then partition the set of all type usages into subsets $TC_i$ which have the same type and class:
-\begin{gather*}
-    x, y \in TC_i \iff T(x) = T(y) \land \operatorname{Cls}(x) = \operatorname{Cls}(y) \\
-    \forall i \ne j \;.\; TC_i \cap TC_j = \emptyset \\
-    \bigcup TC_i = \{ \text{all type usages} \}
-\end{gather*}
-
-Then we iterate through the partitions and calculate the set of new type usages as follows:
-\begin{align*}
-    \{ x' \mid \;  & T(x') = T(x_0),\\
-                & C(x') = \bigcup{C(x_i)},\\
-                & M(x') = \bigcup{M(x_i)},\\
-                & \text{with} \quad x_i \in TC_j \}
-\end{align*}
-\todo[inline]{a bit cleaner that we merge the tus in each of the partitions into one tu or smth like that}
-
-Recall that for exact and almost similarity we will use the version which ignores the context, so the context of the new type usage $C(x')$ is not that relevant.
-\todo[inline]{ mention some effects (such as much smaller dataset, blabla?) or somewhere else? }
-
-\subsection{Investigating different Anomalies}
-
-While a \emph{missing} method call might be the first error type that comes to mind and also potentially the most frequent one, the general technique of the majority rule can be adapted to look for two different anomalies related to method calls.
-First off, it is possible to flip around the notion of almost similarity and investigate if there exist any superfluous method calls.
-Additionally, one can envision a developer to invoke the \emph{wrong} method, rather than forgetting a call or adding one too many.
-% and we would like to detect such cases
-
-\todo[inline]{some more? }
-
-\subsubsection{Superfluous Method}
-
-%-- informal description
-The idea behind $\mathnormal{DMMC}_{\mathnormal{superfluous}}$ is the inverse of the method proposed by Monperrus et al.
-Instead of checking if a lot of other type usages are calling an additional method and the current one is thus missing a call, here we check if a lot of other type usages are making \emph{fewer} calls, and the current one is doing something extra which it should not.
-%-- idea behind this
-It is not intuitively clear what kind of errors this procedure will discover or indeed if there will be any.
-Furthermore, it is possible that it will only find outliers which are intentional outliers, be it to handle a special case, to work around a bug or for any other reason.
-Nonetheless, it seems reasonable to investigate this idea and only dismiss it if it does not yield any interesting results.
-
-\todo[inline]{include some example? }
-
-%-- formalized description
-Adapting the normal system to detect this type of outlier is rather simple.
-We only need to adapt the definition of $A(x)$ to:
-\begin{equation*}
-    A_{\mathnormal{superfluous}}(x) = \{x \mid yA'x \}
-\end{equation*}
-
-Recall that the almost similar relation $A'$ is not symmetric and observe that in comparison to $A(x)$, here $x$ and $y$ are flipped in the application of $A'$. 
-Thus, this definition of almost similarity considers all those type usages which call one method less than the input type usage to be almost similar.
-With the definition of $\operatorname{S-score}$ and $\phi$ as above, the scores will now indicate which type usage is calling anomalously many methods and which method might be the one that is too much.
-
-\subsubsection{Wrong Method}
-
-%-- informal description + why though
-Further extending the idea of the previous section and thinking consequently, developers might \emph{miss} a method call, they might \emph{add} a useless one but, of course, they could also simply choose the \emph{wrong} one.
-Especially if the developer is not all too familiar with a given framework or there is some ambiguity in the method names or documentation, it is entirely possible that he chooses the wrong method for a given task.
-Of course, it is possible that this type of error results in noticeable bugs much faster than a missing call, but again we do not know this before investigating.
-
-\todo[inline]{example? maybe some sort of conversion bug? (either for use case or for formalization?)}
-
-%-- formalized
-To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for invocations of a wrong method, we again need only change the definition of almost similarity.
-This time we define a new relation $A'_{\mathnormal{wrong}}$ as follows:
-\begin{align*}
-xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
-                                & C(x) \: = C(y) \;\; \land \\
-                                & M(x) \: \neq M(y) \;\; \land \\
-                                & |M(x)| \:  = |M(y)| \;\; \land \\
-                                & \exists S \; . \; S \subset M(x) \land S \subset M(y) \land |S| = |M(x)| - 1
-\end{align*}
-
-For this relation to hold, again the type and the context of both type usages have to be the same.
-Furthermore, it requires that all but one method of $M(x)$ and $M(y)$ are identical, that is, that the sets of method calls they make differ by exactly one method.
-Using this definition of almost similarity, the majority rule can flag those type usages that make a unusual method call as an anomaly.
-
-\todo[inline]{anything more here?, better description?}
-
-%\subsection{Working with the Inheritance Hierarchy}
-
-%\todo[inline]{basically the claass based merge is kinda the same as the inheritance relation right? (different split to dataset, either method/not methodlevel (context) or compelte class, or smth which inherits from X?)}
-%todo leave this out\ldots
-% I guess keep this until very last (somehow doubt I'll have the time to look into this)

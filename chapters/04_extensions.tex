@@ -1,0 +1,104 @@
+\chapter{Extensions}\label{ch:ext}
+
+In the previous Chapter, we summarized the work of Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting}, in this one we propose some possible modifications to their method.
+For instance, it might be possible to leverage the majority rule not only for detecting missing method calls, but also to identify superfluous or flat-out wrong method invocations.
+Additionally, there are different ways of organizing the type usage data, which could yield better results.
+In this section, we give the motivation and theoretical background for these modifications, in Chapter \ref{ch:eval} we will explore further how they perform in comparison with the original.
+
+\section{Class-based merge}
+
+%--- idea behind this
+The $\mathnormal{DMMC}_{\mathnormal{noContext}}$ variant seeks to answer the question if it makes sense to group the type usages based on the method they appear in.
+Following this line of thought, one might also ask if it is optimal to collect the type usages with method granularity.
+Even when ignoring the context, the type usages will still be extracted on a per-method basis, that is that is only the methods invoked in one method body will belong to one type usage.
+Maybe grouping method calls with class granularity yields much better results.
+Often the methods invoked on one object within a specific class include many, if not all, of the methods invoked on it in its whole lifetime.
+Thus, a class-based type usage offers a bigger window into the objects utilization and, potentially, this makes it easier to detect if some method is missing.
+
+%--- informal how it's done
+We will denote this variant as $\mathnormal{DMMC}_{\mathnormal{class}}$.
+To obtain the class-based type usages, we extract the type usages at the method level, exactly as before.
+However, before calculating the strangeness score, we merge all those type usages which have the same type and originate from the same class.
+We merge them even if the original type usages originate from different objects because tracing each objects life through the whole class would be too expensive.
+With these newly produced type usages we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
+
+%-- formalized
+To formalize $\mathnormal{DMMC}_{\mathnormal{class}}$, we need the new operator $\operatorname{Cls}(x)$ that denotes the class from which a type usage was extracted.
+We can then partition the set of all type usages into subsets $TC_i$ which have the same type and class:
+\begin{gather*}
+    x, y \in TC_i \iff T(x) = T(y) \land \operatorname{Cls}(x) = \operatorname{Cls}(y) \\
+    \forall i \ne j \;.\; TC_i \cap TC_j = \emptyset \\
+    \bigcup TC_i = \{ \text{all type usages} \}
+\end{gather*}
+
+Then we iterate through the partitions and calculate the set of new type usages as follows:
+\begin{align*}
+    \{ x' \mid \;  & T(x') = T(x_0),\\
+                & C(x') = \bigcup{C(x_i)},\\
+                & M(x') = \bigcup{M(x_i)},\\
+                & \text{with} \quad x_i \in TC_j \}
+\end{align*}
+\todo[inline]{a bit cleaner that we merge the tus in each of the partitions into one tu or smth like that}
+
+Recall that for exact and almost similarity we will use the version which ignores the context, so the context of the new type usage $C(x')$ is not that relevant.
+\todo[inline]{ mention some effects (such as much smaller dataset, blabla?) or somewhere else? }
+
+\section{Investigating different Anomalies}
+
+While a \emph{missing} method call might be the first error type that comes to mind and also potentially the most frequent one, the general technique of the majority rule can be adapted to detect two different anomalies related to method calls.
+First off, it is possible to flip around the notion of almost similarity and investigate if there exist any superfluous method calls.
+Additionally, one can envision a developer invoking the \emph{wrong} method, rather than forgetting a call or adding one too many.
+% and we would like to detect such cases
+
+\todo[inline]{some more? }
+
+\subsection{Superfluous Method}
+
+%-- informal description
+The idea behind $\mathnormal{DMMC}_{\mathnormal{superfluous}}$ is the inverse of the method proposed by Monperrus et al.
+Instead of checking if a lot of other type usages are calling an additional method and the current one is thus missing a call, here we check if a lot of other type usages are making \emph{fewer} calls, and the current one is doing something extra which it should not.
+%-- idea behind this
+It is not intuitively clear what kind of errors this procedure will discover or indeed if there will be any.
+Furthermore, it is possible that it will only find outliers which are intentional outliers, be it to handle a special case, to work around a bug or for any other reason.
+Nonetheless, it seems reasonable to investigate this idea and only dismiss it if it does not yield any interesting results.
+
+%-- formalized description
+Adapting the normal system to detect this type of outlier is rather simple.
+We only need to adapt the definition of $A(x)$ to:
+\begin{equation*}
+    A_{\mathnormal{superfluous}}(x) = \{x \mid yA'x \}
+\end{equation*}
+
+Recall that the almost similar relation $A'$ is not symmetric and observe that in comparison to $A(x)$, here $x$ and $y$ are flipped in the application of $A'$. 
+Thus, this definition of almost similarity considers type usages to be almost similar, when they call one method less than the input type usage.
+With the definition of $\operatorname{S-score}$ and $\phi$ as before, the scores will now indicate which type usage is calling anomalously many methods and which method might be the one that is too much.
+
+\subsection{Wrong Method}
+
+%-- informal description + why though
+Further extending the idea of the previous section and thinking consequently, developers might \emph{miss} a method call, they might \emph{add} a useless one but, of course, they could also simply choose the \emph{wrong} one.
+Especially if the developer is not all too familiar with a given framework or there is some ambiguity in the method names or documentation, it seems feasible that he chooses the wrong method for a given task.
+Of course, it is possible that this type of error results in noticeable bugs much faster than a missing call, but again we do not know this before investigating.
+
+%-- formalized
+To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for invocations of a wrong method, we again need only change the definition of almost similarity.
+This time we define a new relation $A'_{\mathnormal{wrong}}$ as follows:
+\begin{align*}
+xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
+                                & C(x) \: = C(y) \;\; \land \\
+                                & M(x) \: \neq M(y) \;\; \land \\
+                                & |M(x)| \:  = |M(y)| \;\; \land \\
+                                & \exists S \; . \; S \subset M(x) \land S \subset M(y) \land |S| = |M(x)| - 1
+\end{align*}
+
+For this relation to hold, again the type and the context of both type usages have to be the same.
+Furthermore, it requires that all but one method of $M(x)$ and $M(y)$ are identical, that is, that the sets of method calls they make differ by exactly one method.
+Using this definition of almost similarity, the majority rule can flag those type usages that make an unusual method call as an anomaly.
+
+\todo[inline]{anything more here?, better description?}
+
+%\subsection{Working with the Inheritance Hierarchy}
+
+%\todo[inline]{basically the claass based merge is kinda the same as the inheritance relation right? (different split to dataset, either method/not methodlevel (context) or compelte class, or smth which inherits from X?)}
+%todo leave this out\ldots
+% I guess keep this until very last (somehow doubt I'll have the time to look into this)

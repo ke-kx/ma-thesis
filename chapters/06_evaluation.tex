@@ -1,35 +1,60 @@
 \chapter{Evaluation}\label{ch:eval}
 
-Which questions are we trying to answer with the evaluation?
-quick overview + method to do this
-große frage: bringt das Verfahren etwas?
-
+% notes:
 take some stuff from results intro
 roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
 take their method + analyze it on a qualitative + quantitative basis on a big android dataset
 
-The XXX section revolves around the benchmark system, the basic idea behind it and how it is designed to ensure maximum flexibility.
+% The introduction to your methodology section should begin by restating the research problem and underlying assumptions underpinning your study
+wanna detect missing method calls!
+using method proposed by monperrus and some similar variations
 
-% http://libguides.usc.edu/writingguide/methodology
+% Which questions are we trying to answer with the evaluation?
+goal of evaluation:
+große frage: bringt das Verfahren etwas?
+understand how well this method works in the context of the android ecosystem
+
+In the following, we first give an overview of the methodology used during the evaluation
+then explore the dataset we are using for evaluation and how type usages operate on them
+before coming to the main evaluation
+we present results in answer to X research questions which should shed some light on the applicability of the method
+Finally we discuss the results
 
 \section{Methodology}
+
+% so what we are doing
+experimental evaluation of the  method
+two main approaches:
+qualitative evaluation of findings in 10 randomly selected android apps
+(ie manual check each finding and flag it as true / false / \ldots)
+also simulation experiment
+artificially remove method calls from code and check if the majority rule can detect this removed method
+-> this is what monperrus did and it seems acceptable
+but maybe some of the assumptions behind it are flawed, so we also evaluate if this works
 
 \subsection{Qualitative Evaluation / Android Case Study}
 android apps, blabla
 
-indea behind using android:
-    do real software systems actually behave in this way
-    ie: is it ``necessary'' to use classes in the same way
-    probably: most likely present in GUI systems
-    common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
+% idea behind using android
+do real software systems actually behave in this way
+ie: is it ``necessary'' to use classes in the same way
+probably: most likely present in GUI systems
+common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
 
+% source of android apps
 downloading + automatically analyzing android apps (in evaluation section?)
-\todo[inline]{mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä}
-take random sample of Apps and there look at all the anomalous (>.9) findings (kind sounds a bit smarter?)
+from: F-Droid
+%https://f-droid.org/en/
+repository for Free and Open Source software (FOSS) on the Android plattform
+used a quickly thrown together scraper to download latest version of all available apps
+when downloaded? -> 6. March
 
+% actual steps to evaluation
 use 3 different methods: DMMC, noContext, class merge
 maybe each with and without android.* filter -> will be a bit more than 10 in total because of overlap
 manually review 10(20?) randomly selected Apps
+take random sample of Apps and there look at all the anomalous (>.9) findings (kind sounds a bit smarter?)
+mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä
 flag all of the anomalous type usages as
 
 real bug (B): a real defect, change definitely necessary
@@ -42,18 +67,24 @@ not clear (NC): source code not available, ...
 
 \subsection{Automated Benchmark}
 
+maybe get some inspiration from monperrus description\ldots
+
+% general description what its doing + resons for doing ti
+general idea behind evaluation method and what we are trying to detect
+actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
+    imitation of the real system of software development
+    using a much simpler system, namely dropping method calls
+monperrus did it + seems reasonable
+    obvious question: how similar are the such created mmcs to mmcs in the wild?
+
+% actual setup + degradation mechanism
 building benchmarking infrastructure
 flexibility with python class setup
 degrading type usages + checking if they will be detected
     some more subsections? (different ways for degrading type usages?)
     sometimes in even further degraded settings (degrade more than one)
 
-general idea behind evaluation method and what we are trying to detect
-actually it's a sort of simulation (see recommender system book p. 301f) - micro vs macro evaluation, \ldots
-    imitation of the real system of software development
-    using a much simpler system, namely dropping method calls
-    obvious question: how similar are the such created mmcs to mmcs in the wild?
-
+% how do we evaluate stuff
 Metrics explanation - Precision, Recall
     additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
     performance -> training time + performance when working
@@ -198,7 +229,21 @@ and of course regarding the ``results'' always qualify -> this only for android,
 pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
 + of course the REAL bug + some real smells
 
+\todo[inline]{
+mention in the end that i tried a 
+Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
+    clustering detector try (+ hypersphere idea?)
+    but all in all it didnt work out / not enough time
+    + vermutungen warum es nicht funktioniert -> dataset exploration + size of method and typeusage lists per partition!
+
+mention this when discussing the results!
+    static functions evaluation!
+    something to fix the dotchaining problems
+    -> for both basically I'm just saying that i looked into it and it was too much work / impossible?
+}
+
 \section{Threats to Validity}
+\todo[inline]{needs to be extra section or can be together with discussion?}
 
 explain problems with the automatic evaluation
 how related are the degraded TUs to missing method calls you can find in the wild?

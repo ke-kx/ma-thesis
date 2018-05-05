@@ -1,0 +1,48 @@
+\chapter{Conclusion}\label{ch:concl}
+
+% summary of what i did (maybe look at intro as well?)
+we want to detect missing method calls
+because that would be useful over whole software lifetime, development of new software and maintenance of old mature software
+take method monperrus and improve the implementation by adding database + more flxibility / extensibility
+also propose a bunch of variations to their method, with the goal of a) BETTER detection of missing calls (no context, class merge)
+and b) detecting different kinds of bugs (wrong / superfluous)
+
+Datenset generiert, zumindest was über software sturktur lernen, bla !
+
+% experiments + results
+performed twofold evaluation, qualitatively and quantitatively
+general takeaway about suitability of this method + reasons WHY I would say so
+
+new method is amazing and way better in case xy but worse in zz
+robustness has shown this and that
+future research would be interesting in the direction of \ldots
+
+
+\section{Future Research}
+
+% improve the method itself
+higher precision by some means? (clustering, etc)
+-> better anomaly detection algorithm! (but difficult / constrained by the input size (few methods,\ldots) -> refer to dataset analysis section)
+    tried it but so far no luck
+    mention the hypersphere thing?
+specific problem: static functions -> potentially step into them sometimes
+something else that comes up in analysis? (dot chaining, \ldots)
+Performnance (shouldn't be a problem?)
+    but could use cython, etc
+bigger dataset!
+use different tu partitions (e.g. inheritance hierarchy?, \ldots)
+    maybe do some meta evaluation there -> which partition is best able to detect smth here?
+
+% apply to different anomalies
+apply this anomaly detection method to other features (implements, overrides, pairs of methods, \ldots.)
+    objectübergreifend somehow?
+    what other pairings might there be?
+or potentially later look into other features (like implements/override), pairs of methods, etc
+monperrus et al propose looking into traces or conditions as well
+
+of course about temporal properties\ldots
+Reihenfolge von Methoden - hat gut funktioniert und wäre potentiell nützlich, aber kleines subset + lots of research already done
+order of method calls? (probably should wait for empirical results - how long are typical method lists (state explosion, ...) / latice solution?)
+efficient update (only update files touched by change + the scores for affected type usages) - maybe database view for scores will already do this automatically? 
+
+
