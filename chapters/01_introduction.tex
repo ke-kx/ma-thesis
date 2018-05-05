@@ -1,6 +1,9 @@
 \chapter{Introduction}\label{ch:intro}
 
-\todo{benny stolpert über ``outsource''}
+\todo{benny stolpert über ``outsource'':
+Developers often use existing libraries or software frameworks, which expose their functionality through an application programming interface (API), to take care of the most complex tasks.
+These APIs would ideally be simple and easy to use, but there is always a trade-off between usability and flexibility.
+}
 %--- software systems want to use APIs to facilitate reuse, however, using an API is not always trivial
 Developers often outsource a significant amount of work to existing libraries or software frameworks, which expose their functionality through an application programming interface (API).
 These APIs would ideally be simple and easy to use, but there is always a trade-off between usability and flexibility.
@@ -52,8 +55,7 @@ Manual inspection confirmed that more than half (117 of 211) of the bug reports 
 
 This number is if anything an underestimation of the total number of missing method call bugs in the code base.
 After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
-Given these numbers, it seems clear that automatically detecting missing method calls in production code would not only save developer time but als make maintenance cheaper and more manageable.
-\todo{somehow assert how serious this is a bit better}
+Given how common they are, it seems clear that automatically detecting missing method calls in production code would be very helpful, not only saving developer time but also making maintenance cheaper and more manageable.
 
 \section{Detection - but how?}
 

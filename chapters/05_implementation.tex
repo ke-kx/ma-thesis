@@ -227,16 +227,13 @@ In hindsight, this was not the best idea.
 The first query we designed for calculating the strangeness score was quite complicated with many joins over views containing many joins.
 Even on a small test dataset, it was quite slow.
 We attempted many improvements to the query, including better indices and smart cached subtables but the query remained slow and memory intensive.
-\todo{(on a application of medium size -> mention LOC of teamcale, resulting in one dataset with about X typeusages)}
 We even invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but the results were equally disappointing.
-\todo[inline]{include the db queries for the strangeness score calculation here? I am mostly thinking no}
 
 % Better problem description + way to solution
 Careful analysis revealed that the biggest problem was the one-by-one comparison of each type usage with all other type usages to determine their [almost / exact] similarity, resulting in a runtime in $O(n^2)$ for $n$ type usages.
 It seemed that the database was not able to unravel these numerous comparisons with our insufficient instruction.
 However, if one thinks carefully about the process of determining the exact and almost similar type usages, something stands out: it is not necessary to compare all of the type usages one by one.
-The only type usages that have to be considered for exact or almost similarity are those that have the same type and context as the type usage we are currently investigating.
-\todo{change to more active way of description?}
+The only type usages that are potential candidates for exact or almost similarity are those that have the same type and context as the type usage we are currently investigating.
 %%however thinking about what happens - for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext) - only if that's the case go and compare the methods
 This gives rise to natural partitions of the dataset: the sets of type usages which share the same type and context (or just the same type for the variant $\mathnormal{DMMC}_\mathnormal{noContext}$).
 Within these partitions, we need to compare each type usage with all of the others, but each partition will only be a fraction of the size of the whole dataset.

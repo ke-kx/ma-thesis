@@ -204,8 +204,7 @@ This also means that $y \in A(x) \implies x \notin A(y)$.
 We can further refine the definition of almost similarity.
 Instead of including type usages which have the same method calls plus one additional one, it is also possible to consider those type usages which have the same method calls plus $k$ additional ones.
 Then, in the definition of $A$ the last line changes to: $|M(y)| = |M(x)| + k, k\geq1$.
-Now we would look for type usages missing $k$ calls instead of just one.
-\todo{rephrase?}
+The purpose of this change would be to detect type usages which are missing $k$ calls instead of just one.
 
 Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ for one given type usage $x$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
 

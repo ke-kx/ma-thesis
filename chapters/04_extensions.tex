@@ -38,10 +38,9 @@ Then we iterate through the partitions and calculate the set of new type usages 
                 & M(x') = \bigcup{M(x_i)},\\
                 & \text{with} \quad x_i \in TC_j \}
 \end{align*}
-\todo[inline]{a bit cleaner that we merge the tus in each of the partitions into one tu or smth like that}
 
-Recall that for exact and almost similarity we will use the version which ignores the context, so the context of the new type usage $C(x')$ is not that relevant.
-\todo[inline]{ mention some effects (such as much smaller dataset, blabla?) or somewhere else? }
+In this process, we are merging all type usages that belong to the same partition into one new type usage.
+Recall that for exact and almost similarity we will use the version which ignores the context, so the context $C(x')$ of the new type usage is not that relevant.
 
 \section{Investigating different Anomalies}
 
@@ -49,8 +48,7 @@ While a \emph{missing} method call might be the first error type that comes to m
 First off, it is possible to flip around the notion of almost similarity and investigate if there exist any superfluous method calls.
 Additionally, one can envision a developer invoking the \emph{wrong} method, rather than forgetting a call or adding one too many.
 % and we would like to detect such cases
-
-\todo[inline]{some more? }
+The primary difference of these variants lies with the definition of almost similarity between type usages.
 
 \subsection{Superfluous Method}
 

@@ -76,8 +76,7 @@ smth more here?
 some bayesian stuff that actually works on android \cite{murali2017bayesian}
 }
 
-Verloop \cite{verloop2013code} uses Java refactoring tools (e.g. PMD and JDeodorant) to detect basic code smells like large class or long method in mobile applications.
-\todo{links!}
+Verloop \cite{verloop2013code} uses Java refactoring tools (e.g. PMD\footnote{\url{https://pmd.github.io/}} and JDeodorant\footnote{\url{http://www.jdeodorant.org}}) to detect basic code smells like large class or long method in mobile applications.
 A noticeable finding is that smells can appear at different frequencies in classes inheriting from the Android framework than in other classes, for example
 they detect the ``long method'' smell nearly twice as often in classes that inherit from the framework than in those that do not.
 
@@ -181,14 +180,13 @@ They call this the ``majority rule'' and we explain it in detail in Chapter \ref
 The evaluation they present is split into two parts.
 The first is based on a simulation which creates defects by degrading real software.
 It removes singular method calls from the code and check if the majority rule can detect these known missing calls.
-They perform this simulation on several software packages, among them the Eclipse user interface, Apache derby and Apache tomcat.
-\todo{link?}
+They perform this simulation on several software packages, among them the Eclipse user interface, Apache Derby\footnote{\url{https://db.apache.org/derby/}} and Apache Tomcat\footnote{\url{https://tomcat.apache.org/}}.
 Their system can answer between 54\% and 76\% of these simulated queries (depending on the package) and of the queries it can answer 73\% to 89\% contain the actually missing call, albeit not necessarily as the first recommendation.
 All in all, it reaches precision between 59\% and 83\% and recall of 41\% to 68\%.
 However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with these artificially created cases.
 
 For this reason, Monperrus et al. also perform an additional, qualitative evaluation.
-They apply their tool to Eclipse, derby and tomcat and manually analyze 30 very anomalous cases reported by it.
+They apply their tool to Eclipse, Derby and Tomcat and manually analyze 30 very anomalous cases reported by it.
 They find that there are different reasons for an instance to be anomalous, not all of them actually indicate a missing call.
 Some are just a code smell, i.e., a situation which could be rewritten or refactored for more clarity, or related to software aging, like code using an old version of the API.
 They reported 17 issues and got 9 patches accepted, but there are also some negative results, where the anomaly is just that: an outlier, which is totally valid, even if a majority of other instances behave differently.
