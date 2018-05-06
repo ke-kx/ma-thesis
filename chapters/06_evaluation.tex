@@ -4,66 +4,80 @@
 take some stuff from results intro
 roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
 take their method + analyze it on a qualitative + quantitative basis on a big android dataset
-
-% The introduction to your methodology section should begin by restating the research problem and underlying assumptions underpinning your study
-wanna detect missing method calls!
-using method proposed by monperrus and some similar variations
-
-% Which questions are we trying to answer with the evaluation?
 goal of evaluation:
 große frage: bringt das Verfahren etwas?
 understand how well this method works in the context of the android ecosystem
 
-In the following, we first give an overview of the methodology used during the evaluation
-then explore the dataset we are using for evaluation and how type usages operate on them
-before coming to the main evaluation
-we present results in answer to X research questions which should shed some light on the applicability of the method
-Finally we discuss the results
+% Which questions are we trying to answer with the evaluation?
+In the following we present our evaluation of the method proposed by Monperrus et al.
+We strive to understand how well the majority rule is suited to detect missing method calls in object oriented software.
+For this we apply it to a large dataset of Android applications and evaluate the results qualitatively and quantitatively. 
+\todo{paragraphs don't work well together + might need some other content?}
+
+% chapter outline
+We give an overview of the methodology used during the evaluation, explore the dataset we are using and how the type usage notion operates on it.
+For the main evaluation we perform qualitative and quantitative evaluation on a randomly selected subset of the whole dataset.
+We present the results in answer to X research questions which are aimed ad shedding some light on the applicability of this method.
+Finally, we discuss the meaning of these results and how to understand them.
 
 \section{Methodology}
 
+% The introduction to your methodology section should begin by restating the research problem and underlying assumptions underpinning your study
+The goal of the method we explore in this thesis is to detect missing method calls.
+We use a method proposed by Monperrus et al. and some slight variations of it and would like to establish if and how well they work.
+\todo{more?}
 % so what we are doing
-experimental evaluation of the  method
-two main approaches:
-qualitative evaluation of findings in 10 randomly selected android apps
-(ie manual check each finding and flag it as true / false / \ldots)
-also simulation experiment
-artificially remove method calls from code and check if the majority rule can detect this removed method
--> this is what monperrus did and it seems acceptable
-but maybe some of the assumptions behind it are flawed, so we also evaluate if this works
+Our experimental evaluation is twofold: a qualitative evaluation of the findings in 10 randomly selected Android apps and a simulation experiment.
+For the qualitative evaluation we manually check each anomalous type usage and flag it as a true or false positive.
+The simulation consists of artificially removing method calls from the analyzed code and checking if we can this known missing method call.
+Since it is not assured that the results of this simulation correspond to the real performance, we also attempt to evaluate the applicability of the simulation experiment.
+\todo{maybe a bit nicer / more clear / less information?}
 
 \subsection{Qualitative Evaluation / Android Case Study}
-android apps, blabla
+
+% general description + source of android apps
+F-droid\footnote{\url{https://f-droid.org/en/}} is a repository for Free and Open Source software (FOSS) on the Android platform.
+We used a simple scraper to download the latest version of all available applications on the 6th of March 2018.
+From these XXX Android applications, we extract all type usages that are present and apply our implementation of the DMMC system to identify any anomalies.
 
 % idea behind using android
-do real software systems actually behave in this way
-ie: is it ``necessary'' to use classes in the same way
-probably: most likely present in GUI systems
-common way of using some classes -> investigate via Android (+ additional advantages: rich open source community, java, blabla)
+We are using software from the Android ecosystem for the evaluation to understand how this method behaves on real software.
+Advantages of Android are that it is based on Java and has a rich open source community.
+We can generate a large dataset because of the wide availability of sample applications and each of them will facilitate the Android API.
+Using this we can detect any common patterns that emerge when using the rich Android API.
+Especially because of the emphasis on GUI we consider this one of the environments in which patterns will appear most frequent and most clearly.
+\todo[inline]{needs rewriting, shuffling + making the points more clear\ldots
+    maybe Start with the idea and then say android is good for this
+do real software systems actually behave in this way ie: is it ``necessary'' to use classes in the same way
+}
 
-% source of android apps
-downloading + automatically analyzing android apps (in evaluation section?)
-from: F-Droid
-%https://f-droid.org/en/
-repository for Free and Open Source software (FOSS) on the Android plattform
-used a quickly thrown together scraper to download latest version of all available apps
-when downloaded? -> 6. March
-
+\todo[inline]{
+    needs way better coherence!
+    mention the android.* filter!
+    change all dmmc to using text?
+    reshuffle a bit
+}
 % actual steps to evaluation
-use 3 different methods: DMMC, noContext, class merge
-maybe each with and without android.* filter -> will be a bit more than 10 in total because of overlap
-manually review 10(20?) randomly selected Apps
-take random sample of Apps and there look at all the anomalous (>.9) findings (kind sounds a bit smarter?)
-mention that monperrus hold 0.9 as treshhold for smth being an anomaly and that this will be our cutoff oä
-flag all of the anomalous type usages as
+The procedure of the evaluation is as follows:
+We extract the type usages of all XXX Android applications that we downloaded and persist them into the database.
+We then use the 3 different variants $\mathnormal{DMMC}$, $\mathnormal{DMMC}_{\mathnormal{noContext}}$ and $\mathnormal{DMMC}_{\mathnormal{class}}$ to analyze the type usages and determine any anomalous findings.
+Monperrus et al. consider a strangeness score bigger than 0.9 to mark an anomaly and this is our cutoff as well.
+We manually evaluate the anomalous findings and flag each of them as one of the following:
 
-real bug (B): a real defect, change definitely necessary
-real smell (S): another way of doing things would be better, but probably not a defect
-implementation error (on my side) (IE): dot chaining not recognized correctly (not sure if actualy possible) (-> not sure i should include this)
-false positive (FP): the usage is totally fine, there is no causal relation which would imply that the "missing" method also needs to be used
+\begin{description}
+    \item [real bug (B)] a real defect, change definitely necessary
+    \item [real smell (S)] another way of doing things would be better, but probably not a defect
+    \item [implementation error (on my side) (IE)] dot chaining not recognized correctly (not sure if actualy possible) (-> not sure i should include this)
+    \item [false positive (FP)] the usage is totally fine, there is no causal relation which would imply that the "missing" method also needs to be used
 	(subcategory: it makes sense that the pattern exists ie that many ppl use this together but it simply doesn't indicate an error or smell)
-Special case(?) (SC): "weird" implementation with extra comment, for compatibility reasons, something like that
-not clear (NC): source code not available, ...
+    \item [Special case(?) (SC)] "weird" implementation with extra comment, for compatibility reasons, something like that
+    \item [not clear (NC)] source code not available, ...
+\end{description}
+\todo[inline]{make sure that these categories make sense and adapt descriptions to be more serious}
+
+% how do we decide what is what?
+the decision is based on reviewing the source code and api documentation
+
 
 \subsection{Automated Benchmark}
 
@@ -88,6 +102,9 @@ degrading type usages + checking if they will be detected
 Metrics explanation - Precision, Recall
     additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
     performance -> training time + performance when working
+
+% how we want to evaluate the simulation itself
+compare results to the results of manual evaluation between the different methods (ie does one perform much worse in both or just in one?)
 
 \section{Dataset Overview}
 
