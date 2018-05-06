@@ -121,37 +121,30 @@ In Figure \ref{fig:sootparam} we have listed the settings we are using to config
 
 \section{Extracting Type Usages}
 
-\todo[inline]{
-some more on extraction! + the algorithm!
-some information on what kind of further analysis is attempted (local must alias, bla)
-general / not sure where yet: 
-explain the changes I made to their code ie proper refactoring, etc
-}
-
 %-- general ablauf
-The Soot execution is divided into 'phases' each of which has a specific task, for example the aggregation of local variables.
-The phases consist of transformations, which can modify the input they receive but are not required to do so.
-Phases are grouped into 'packs', and the registered packs are applied successively during the execution.
-To extract type usages, We register a custom transformation in the Jimple transformation pack, which is applied to every method in the analyzed program.
+The Soot execution is divided into `phases' each of which has a specific task, for example the aggregation of local variables.
+Phases consist of transformations, which can modify the input they receive but are not required to do so.
+The phases are grouped into `packs', and the registered packs are applied successively during the execution.
+To extract type usages, we register a custom transformation in the Jimple transformation pack, which is applied to every method in the analyzed program.
 
 %--- what is the transformer doing?
 The transformation receives as input a Jimple representation of the method body it is currently analyzing.
-To extract the type usages, it iterates through all the statements in the body and marks those which are invoking a method.
-It then iterates through this list of method calls and groups them into type usages.
-It first checks on which variable or object the current call was invoked and if there is already a type usage for this object.
-If there is, it adds the call to the type usage and advances to the next method call in the list.
-If so far there is no type usage for the object, it creates a new one.
+It iterates through all the statements in the body and marks those which are invoking a method.
+It then iterates through this list of method calls and groups them into type usages based on the objects that the calls are made on.
+For each call, it first checks if there already exists a type usage for the object it is invoked on.
+If such a type usage exists, it adds the current call to the type usage and advances to the next method call in the list.
+If, on the other hand, there is no type usage for the object, it creates a new one.
 After completing this process for all method calls in the method body, the extraction finishes and returns the list of type usages.
 
 %-- local must alias analysis
 One noteworthy step of this analysis is the \code{LocalMustAliasAnalysis}, which attempts to determine if two local variables (at potentially different program points) must point to the same object.
 This is necessary to decide if the calls made on these locals should be grouped into one type usage or not.
 The underlying abstraction is based on global variable numbering and follows the ideas presented by Lapowsky et al. \cite{lapkowski1998extended} with some minor adaptions.
-This analysis is a Soot feature, and in test runs on big applications, we noticed that it requires a lot of memory and time.
+The analysis is a Soot feature, and in test runs on big applications, we noticed that it requires a lot of memory and time.
 Thus, we made it optional, however, we were able to use it for our benchmarks and evaluation.
 
 %-- ignoring some classes
-For performance reasons, we are excluding some classes from the Android analysis .
+For performance reasons, we are excluding some classes from the extraction.
 We do not store type usages that occur \emph{inside} of those classes, we do, however, still record usages of them.
 The packages we exclude in this manner are \code{java.*}, \code{android.*}, \code{soot.*} and  \code{javax.*}.
 These are all framework classes, and we are primarily interested in the type usages occurring in the application itself, not in the framework.
@@ -182,7 +175,6 @@ We can already expect useful results when analyzing one application in separatio
 However, our real interest lies with the framework and library classes that are used in more than one application.
 By analyzing many applications that use the same framework, we can build a large dataset of type usages on the framework classes and incorporate much more information into the decision if a type usage is an anomaly or not.
 Having a database backend facilitates building such a large dataset because it can store large amounts of data and we can later query it selectively.
-\todo{more like our primary aim / goal / or even more they seem easier to hit?}
 
 \begin{figure}[t]
     \centering
@@ -241,19 +233,16 @@ With this realization, we can continue to the final step of the analysis: detect
 
 % overview of process
 
-\todo[inline]{this paragraph seems terrible? => beef it up with references to the queries!}
+\todo[inline]{not super happy with this paragraph, but how to change it?}
 % partitions + analysis
 Some relatively simple Python scripts handle the anomaly detection.
 The first step is to obtain the possible partitions of the dataset, depending on the variant, either all types in the dataset or all valid combinations of type and context.
 Observe that the database makes it very simple to obtain these partitions with a simple query.
-\todo{include actual query? - i think yes, all of them in one figure?}
 In its outer loop, the script iterates through all partitions and retrieves the type usages belonging to the current partition.
-Again, querying the database for these type usages is simple and also quite fast because of an index on [column].
-\todo{refer to query + which column?}
+Again, querying the database for these type usages is simple and also quite fast because of a indices on the relevant columns.
 % analysis
 In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
-\todo{we compare each tu\ldots}
-By comparing each type usage with each other type usage only once similar to filling an upper triangle matrix, we can again save nearly half of the comparisons.
+We compare each type usage with each other type usage only once, similar to filling an upper triangle matrix, thus saving nearly half of the comparison.
 % tear down / result
 After determining the number of exactly and almost similar neighbors for each type usage in this manner, it is easy to calculate the strangeness score for all of them.
 Finally, the script saves a list of the results for further analysis and evaluation by an expert.
