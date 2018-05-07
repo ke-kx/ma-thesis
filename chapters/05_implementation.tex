@@ -90,17 +90,16 @@ In theory, it would be possible to extract type usages from the source code, but
 Both the JVM bytecode and the Dalvik bytecode found in Android applications are very standardized, which facilitates the analysis.
 While Soot supports source code analysis on paper, it only works up to Java 7 and, furthermore, bytecode analysis is the approach recommended by its authors.
 Besides that, using compiled applications simplifies our experimental setup, and as a marginally useful side-effect, it also helps with analyzing obfuscated applications.
-Finally, there are no real disadvantages to this approach; if the program is only available as source code, we can simply compile it before analyzing it.
+Finally, there are no real disadvantages to this approach; if the program is only available as source code, we can compile it before analyzing it.
 
 %-- some more in depth info on how soot does what it does?
 Soot operates by transforming the given program into intermediate representations, which can then be optimized or analyzed.
-It provides four intermediate representations with different use cases; of these we use Jimple, Soot's primary representation.
+It provides four intermediate representations with different use cases; of these, we use Jimple, Soot's primary representation.
 Jimple is a typed 3-address representation which is especially suited for optimization but also suffices for our purpose.
 
 %-- soot startup and settings?
 Soot is a very powerful framework, and one can customize it to cater for quite specialized requirements.
-We analyze mostly Android applications, and the settings we use reflect this.
-Figure~\ref{fig:sootparam} lists the settings we apply to configure it.
+We analyze mostly Android applications, and the settings we apply to configure it (listed in Figure~\ref{fig:sootparam}) reflect this.
 
 \begin{figure}[t]
     \centering
@@ -120,14 +119,14 @@ Figure~\ref{fig:sootparam} lists the settings we apply to configure it.
 \section{Extracting Type Usages}
 
 %-- general ablauf
-The Soot execution is divided into `phases', each of which has a specific task, for example the aggregation of local variables.
+The Soot execution is divided into `phases,' each of which has a specific task, for example the aggregation of local variables.
 Phases consist of transformations, which can modify the input they receive but are not required to do so.
-The phases are grouped into `packs', and the registered packs are applied successively during the execution.
+The phases are grouped into `packs,' and the registered packs are applied successively during the execution.
 To extract type usages, we register a custom transformation in the Jimple transformation pack, which is applied to every method in the analyzed program.
 
 %--- what is the transformer doing?
 The transformation receives as input a Jimple representation of the method body it is currently analyzing.
-It iterates through all the statements in the body and marks those which invoke a method.
+It iterates through all the statements in the body and marks those that invoke a method.
 It then iterates through this list of method calls and groups them into type usages based on the objects that the calls are made on.
 For each call, it first checks whether a type usage corresponding to the object the call is invoked on already exists.
 If such a type usage exists, the transformation adds the current call to it and advances to the next method call in the list.
@@ -156,7 +155,7 @@ explain a bit better that these classes are kind of exactly what we are most int
 %intro / übergang + general info
 After the transformer has analyzed the current method body and extracted a list of type usages, we store them in a database.
 For this, we use HSQLDB\footnote{\url{http://hsqldb.org/}}, an SQL relational database written in Java, which provides a multithreaded and transactional database engine with memory- or disk-based tables.
-We chose HSQLDB because it is small and offers good performance as well as an easy setup.
+We chose HSQLDB because it is small and offers excellent performance as well as an easy setup.
 Additional arguments were its permissive license and the large number of features it supports.
 
 %- why are we using a database at all?
@@ -164,13 +163,13 @@ In their work, Monperrus et al.\ save all data in a text-based format.
 Consequently, they need to parse everything again for the analysis, which can be slow and require a lot of memory for large inputs.
 Additionally, the data takes up a lot of storage space when persisted to disk.
 In contrast, using a database has many positive ramifications.
-First, retrieving data from a database is fast,and we can access the data selectively based on changing criteria.
+First, retrieving data from a database is fast, and we can access the data selectively based on changing criteria.
 Additionally, we gain a lot of flexibility, and it becomes easier to extend both the stored data and the analysis itself.
 %(This enables us to quickly build several prototypes of the analysis using Python.)
 
 % what we really wanna do: build big database collecting ALL tus -> better analysis
 We can already expect useful results when analyzing one application in isolation, especially if it is a large application.
-However, our real interest lies with the framework and library classes that are used in more than one application.
+However, our real interest lies in the framework and library classes that are used in more than one application.
 By analyzing many applications that use the same framework, we can build a large dataset of type usages on the framework classes and thus, make a more informed decision whether a type usage is an anomaly or not.
 Having a database backend facilitates building such a large dataset because it can store large amounts of data and we can later query it selectively.
 
@@ -191,7 +190,7 @@ This includes the class (complete with fully qualified package name) and the con
 Additionally, it references two other tables, \code{PROJECT} and \code{TYPE}.
 In our setup, the \code{PROJECT} table describes the Android application from which the type usage was extracted together with the time it took to analyze this application.
 
-The \code{TYPE} reference specifies which type the type usage belongs to.
+The \code{TYPE} reference specifies to which type the type usage belongs.
 Each type holds a reference to its parent type (if one exists), to enable rebuilding the inheritance hierarchy if so desired.
 The methods that can be invoked on a type are stored in the \code{METHOD} table.
 Finally, the \code{CALLLIST} table connects type usages and method calls and specifies which of the methods that \emph{could} be invoked are actually called on the type usage in question.
@@ -204,7 +203,7 @@ Finally, the \code{CALLLIST} table connects type usages and method calls and spe
 Monperrus et al.\ released their code and data on GitHub\footnote{\url{https://github.com/stg-tud/typeusage}}.
 We started with their implementation and refactored it extensively\footnote{\url{https://github.com/ke-kx/typeusage}} to understand it better and to facilitate slight improvements like the database backend connection.
 During the refactoring process, we discovered small discrepancies between what they describe in the paper and how their code behaves.
-In the calculation of almost similarity between two type usages $x$ and $y$, the code only checks that the size of $M(y) \setminus M(x)$ is equal to one, however, it fails to verify that $M(x)$ does not include any other methods.
+In the calculation of almost similarity between two type usages $x$ and $y$, the code only checks that the size of $M(y) \setminus M(x)$ is equal to one; however, it fails to verify that $M(x)$ does not include any other methods.
 As such, in the situation that $M(x) =\{A, B, C\}$ and $M(y) = \{A, B, Z\}$, the code considers $y$ to be almost similar to $x$, because $y$ calls the additional method $Z$.
 Recall that almost similarity expects one type usage to have one method call more than the other, and this is clearly not the case here with both type usages calling three methods.
 However, we reran their experiments after correcting this small inaccuracy, and the results did not change significantly.
@@ -219,7 +218,7 @@ We attempted many improvements to the query, including better indices and smart 
 We even invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but the results were equally disappointing.
 
 % Better problem description + way to solution
-Careful analysis revealed that the biggest problem was the one-by-one comparison of each type usage with all other type usages to determine their [almost / exact] similarity, resulting in a runtime in $O(n^2)$ for $n$ type usages.
+Careful analysis revealed that the biggest problem was the one-by-one comparison of each type usage with all other type usages to determine their [almost / exact] similarity, resulting in runtime in $O(n^2)$ for $n$ type usages.
 It seemed that the database was not able to unravel these numerous comparisons with our insufficient instruction.
 However, if one thinks carefully about the process of determining the exact and almost similar type usages, something stands out: it is not necessary to compare all of the type usages one by one.
 The only type usages that are potential candidates for exact or almost similarity are those that have the same type and context as the type usage under investigation.
@@ -237,15 +236,15 @@ With this realization, we can continue to the final step of the analysis: detect
 % partitions + analysis
 Some relatively simple Python scripts handle the anomaly detection.
 The first step is to obtain the possible partitions of the dataset, depending on the variant, either all types in the dataset or all valid combinations of type and context.
-Observe that the database makes it very simple to obtain these partitions with a simple query.
+Observe that the database makes it very simple to obtain these partitions with just one query.
 In its outer loop, the script iterates through all partitions and retrieves the type usages belonging to the current partition.
-Again, querying the database for these type usages is simple and also quite fast because of a indices on the relevant columns.
+Again, querying the database for these type usages is simple and also quite fast because of indices on the relevant columns.
 % analysis
 In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
-We compare each type usage with each other type usage only once, similar to filling an upper triangle matrix, thus saving nearly half of the comparison.
+We compare each type usage with each other type usage only once, similar to filling an upper triangle matrix, thus saving nearly half of the comparisons.
 % tear down / result
 After determining the number of exactly and almost similar neighbors for each type usage in this manner, it is easy to calculate the strangeness score for all of them.
-Finally, the script saves a list of the results for further analysis and evaluation by an expert.
+Finally, the script saves the results for further analysis and evaluation by an expert.
 
 % other variants: loading
 The anomaly detection is the only part that of the implementation that is affected by the different variants presented in Chapter~\ref{ch:dmmc}.
@@ -253,5 +252,5 @@ We already mentioned the differences between including or excluding the context.
 For the class merge variant, we perform some simple preprocessing before starting the analysis.
 We load the data with type partitioning and merge those type usages which originated in the same class.
 % other variants: anomalies
-For the detection of superfluous or wrong method calls, we can use exactly the same setup and only need to adapt the almost equal check to the new requirements.
+For the detection of superfluous or wrong method calls, we can use the same setup and only need to adapt the almost equal check to the new requirements.
 

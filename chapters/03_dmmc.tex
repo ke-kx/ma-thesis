@@ -7,20 +7,20 @@ We would like to automatically detect instances of missed method calls to make m
 %--- overview of this chapter
 In this chapter, we give a proper explanation of the method proposed by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
 The main idea is to extract patterns from correct usages and then look for violations of these patterns.
-For this we formalize the notions of type usages, as well as their similarity and almost similarity.
+For this, we formalize the notions of type usages, as well as their similarity and almost similarity.
 We then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
 
 \section{Foundation: The Majority Rule}\label{sec:majority}
 
 % general majority rule
 The intuition behind the majority rule is that if most or all instances do something in a particular way, this is probably the correct way.
-By implication it follows that if all or a great many behave differently than you, you are probably doing it wrong.
+By implication, it follows that if all or a great many behave differently than you, you are probably doing it wrong.
 This gives rise to the definition of an anomaly by the majority rule: instances which have few or none ``equal'' but a lot of ``slightly different'' neighbors.
 Such anomalies should probably adapt to behave like their very similar neighbors.
 What exactly equal and slightly different means has to be defined for each application of the majority rule.
 
 % example (comic sans + waiter)
-To illustrate how this idea might work in the context of object oriented software and method calls, consider the following example.
+To illustrate how this idea might work in the context of object-oriented software and method calls, consider the following example.
 We are analyzing an Android app which uses a total of 100 instances of the \code{Button} class.
 On all 100 of them the method \code{setText()} is invoked to describe the functionality of the button instance, but only 99 of them also call \code{setFont()}.
 There is one button which is missing this call and, therefore, uses the default font.
@@ -210,7 +210,7 @@ Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ for o
 \section{The Strangeness Score}
 
 Recall the assumption behind the majority rule: A type usage is abnormal if a small number of type usages is exactly similar, but a significant number are almost similar.
-Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by exactly one method call).
+Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by one method call).
 Assuming the majority is correct, the type usage under scrutiny is deviant and potentially erroneous, because it is missing a method call.
 
 To capture concretely how anomalous an object is, we need a measure of strangeness.
@@ -290,7 +290,7 @@ Thus, we can recommend the methods \code{setText} and \code{setFont} with a like
 %--- why we use the context at all
 We integrate the context into the definition of similarity and almost similarity because a type might be used in different ways depending on the situation it is used in.
 An example would be the class \code{FileInputStream} which is rarely opened and closed in the same method.
-In their evaluation Monperrus et al.~\cite{monperrus2013detecting} find that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and using it improves the precision of their experiments.
+In their evaluation, Monperrus et al.~\cite{monperrus2013detecting} find that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and using it improves the precision of their experiments.
 %-- why it might be better to exclude the context
 However, one can question the general assumption behind using the context.
 The idea that types are used in different ways seems reasonable, but is the name of the function that they are used in a good separator between those use cases?

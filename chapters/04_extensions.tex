@@ -20,7 +20,7 @@ We will denote this variant as $\mathnormal{DMMC}_{\mathnormal{class}}$.
 To obtain the class-based type usages, we extract the type usages at the method level, exactly as before.
 However, before calculating the strangeness score, we merge all those type usages which have the same type and originate from the same class.
 We merge them even if the original type usages originate from different objects because tracing each objects life through the whole class would be too expensive.
-With these newly produced type usages we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
+With these newly produced type usages, we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
 
 %-- formalized
 To formalize $\mathnormal{DMMC}_{\mathnormal{class}}$, we need the new operator $\operatorname{Cls}(x)$ that denotes the class from which a type usage was extracted.
@@ -79,7 +79,7 @@ Especially if the developer is not all too familiar with a given framework or th
 Of course, it is possible that this type of error results in noticeable bugs much faster than a missing call, but again we do not know this before investigating.
 
 %-- formalized
-To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for invocations of a wrong method, we again need only change the definition of almost similarity.
+To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for erroneous method invocations, we again need only change the definition of almost similarity.
 This time we define a new relation $A'_{\mathnormal{wrong}}$ as follows:
 \begin{align*}
 xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
@@ -90,8 +90,8 @@ xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
 \end{align*}
 
 For this relation to hold, again the type and the context of both type usages have to be the same.
-Furthermore, it requires that all but one method of $M(x)$ and $M(y)$ are identical, that is, that the sets of method calls they make differ by exactly one method.
-Using this definition of almost similarity, the majority rule can flag those type usages that make an unusual method call as an anomaly.
+Furthermore, it requires that all but one method of $M(x)$ and $M(y)$ be identical, that is, that their sets of method calls differ by exactly one method.
+With this definition of almost similarity, the majority rule flags those type usages that make an unusual method call as an anomaly.
 
 \todo[inline]{anything more here?, better description?}
 

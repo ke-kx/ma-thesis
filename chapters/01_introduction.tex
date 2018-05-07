@@ -13,8 +13,8 @@ not considering specific constraints and requirements can lead to serious bugs o
 
 %--- since it is often not trivial to use an API correctly, there will be ``wrong'' usages + examples?
 Sometimes, these problems could have been avoided if the developer had paid better attention to the API's documentation.
-But documentation is often vague or incomplete leading to misinterpretations or oversights.
-And even if it is of high quality, the complexities of some libraries make it inevitable that there will be erroneous invocations of their APIs.
+However, documentation is often vague or incomplete leading to misinterpretations or oversights.
+Moreover, even if it is of high quality, the complexities of some libraries make it inevitable that there will be erroneous invocations of their APIs.
 Regardless of their origin, mistakes can relate to parameter choice, method order, or a range of other factors (some methods may need to be invoked in an extra thread, a specific precondition may have to be satisfied, setup work may need to be performed).
 
 Examples, which come to mind in Java, are a programmer calling \code{next()} on an iterator without first checking with \code{hasNext()} if it even contains another object, or a class which overrides \code{equals()} without ensuring that an invocation of \code{hashCode()} always produces the same output for two equal objects.
@@ -24,7 +24,7 @@ Despite the fact that there might be numerous appropriate ways to use an API, th
 For the Java examples, they could take the form of ``an object which implements \code{equals()} must also implement \code{hashCode()}'', ``if object A equals object B, their \code{hashCode()} must also be equal'' or ``a call to \code{next()} on an iterator should be preceded by a call to \code{hasNext()} to ensure that it actually contains another object''.
 
 %--- if we can extract the patterns, hopefully, the wrong usages will stand out and enable us to detect bugs
-API usage patterns~\cite{robillard2013automated} can aid in detecting these kind of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
+API usage patterns~\cite{robillard2013automated} can aid in detecting these kinds of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
 The challenge here is twofold.
 First, it is extracting and recognizing the patterns.
 Second, it is understanding when a deviation from a pattern actually signifies a code smell or an error that should be corrected.
@@ -54,7 +54,7 @@ searching for syntactic patterns that they deemed related to missing method call
 Manual inspection confirmed that more than half (117 of 211) of the bug reports located in this manner were indeed related to a missing method call.
 
 This number is if anything an underestimation of the total number of missing method call bugs in the code base.
-After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
+After all, the researchers might have missed some syntactic patterns, and the bug repository can only contain those bugs that have already been discovered.
 Given how common they are, it seems clear that automatically detecting missing method calls in production code would be very helpful, not only saving developer time but also making maintenance cheaper and more manageable.
 
 \section{Detection -- but how?}
@@ -76,7 +76,9 @@ While the effort might even be justified for large and important libraries, it m
 Instead, we propose automatically detecting locations in a code base where a method call is potentially missing, using only the code itself as input.
 Such an approach would adapt to changes without requiring additional work from a developer and could also be applied to proprietary code, which is closed to the public.
 The locations this method pinpoints might not be as accurate as those discovered by a hand-crated list of rules, bug a second step could address this problem: manual examination by an expert, who would determine the severity of the problem and, if necessary, issue a fix.
-Whether this actually proves to save time and money hinges of the accuracy of the approach.
+Whether this proves to save time and money hinges on the accuracy of the approach.
+
+\todo[inline]{clearly formulate problem statement somewhere (3-5 sentences which describe the problem to be solved + the ansatz) -> i think this is fine with the paragraph above?}
 
 %--- additional advantages to automatic detection: continuous integration, adaptability, can be used on closed software, etc
 %\todo[inline]{additional advantages to automatic detection: continuous integration, adaptability, can be used for closed software
@@ -88,9 +90,8 @@ Whether this actually proves to save time and money hinges of the accuracy of th
 % first find likely recommendations, for writing, then realize, if something is super likely given a particular situation, but it is not there, it seems like a good indicator of an error
 
 \section{Contribution}
-\todo[inline]{clearly formulate problem statement somewhere (3-5 sentences which describe the problem to be solved + the ansatz)}
 
-To understand and tackle the missing method call problem, Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the idea of type usages.
+To understand and tackle the missing method call problem, Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the notion of type usages.
 A type usage is the list of method calls which are invoked on an object of some type and occur in the body of some method.
 The idea behind the technique by Monperrus et al.\ is to check for outliers among the type usages by using the majority rule:
 If a type is used in one particular way many, many times (that is, in the majority of cases) and differently only once (or a few times), this probably indicates a bug.
@@ -100,8 +101,17 @@ If a type is used in one particular way many, many times (that is, in the majori
     the part above is not actually contribution, but seems fine as intro, but add lots of meat for the next paragraph!
     needs more content! what am i actually doing and why (hoping to find what?) and what are the results?
     implementation also part of my work! -> part of contribution!!!
-    evaluation -> more detail + what are the QUESTIONS?
+
+take their implementation and improve it
+based on their method some related variants
+evaluation with the goal of understanding which of the variants works best
+qualitative evaluation on android
++ generally get a feeling for the performance if this method
+understand if automated benchmark works + some other properties that this method entails
+
+evaluation -> more detail + what are the QUESTIONS?
 }
+
 We evaluate this concept by applying it to a dataset of more than 600 open source Android applications and performing a manual evaluation of the results.
 We further experiment with small changes to their initial idea and put them under the scrutiny of an automated benchmark.
 Additionally, we compare the results of the manual evaluation against those of the automated one and consider what this means for future research.
