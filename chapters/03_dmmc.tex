@@ -5,7 +5,7 @@ Especially when a developer is working with complicated frameworks and libraries
 We would like to automatically detect instances of missed method calls to make maintenance easier and cheaper.
 
 %--- overview of this chapter
-In this chapter, we give a proper explanation of the method proposed by Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
+In this chapter, we give a proper explanation of the method proposed by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
 The main idea is to extract patterns from correct usages and then look for violations of these patterns.
 For this we formalize the notions of type usages, as well as their similarity and almost similarity.
 We then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
@@ -39,7 +39,7 @@ We define the context as the name of the method in whose body the type usage app
 Formalized, given some code the type usages we extract as follows:
 For each variable $x$, note its type $T(x)$ and the context $C(x)$ in which it occurs.
 Additionally, save the list of methods which are invoked on $x$ within $C(x)$: $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
-If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object, more on this in Section \ref{sec:bytecode}).
+If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object, more on this in Section~\ref{sec:bytecode}).
 
 \begin{figure}[h]
     \begin{subfigure}[c]{0.5\textwidth}
@@ -73,7 +73,7 @@ M(t) = {<init>}
     \label{fig:tu_example}
 \end{figure}
 
-As an example, consider the code in Figure \ref{fig:tu_example}.
+As an example, consider the code in Figure~\ref{fig:tu_example}.
 It contains two type usages, one of type \code{Button} and another one of type \code{Text}.
 The context for both is \code{createButton()}.
 The methods invoked on the \code{Button} object are initialization (\code{new}), \code{setText} and \code{setColor}.
@@ -156,11 +156,10 @@ class D extends Page {
         \end{lstlisting}
     \end{subfigure}
 
-    \caption{Examples of similar and almost similar Type Usages (also inspired by \cite{monperrus2013detecting})}
-    \label{fig:sim_asim}
+    \caption{Examples of similar and almost similar Type Usages (also inspired by~\cite{monperrus2013detecting})}\label{fig:sim_asim}
 \end{figure}
 
-Consider the example code snippets in Figure \ref{fig:sim_asim}.
+Consider the example code snippets in Figure~\ref{fig:sim_asim}.
 The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the similar method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
 Notice that variable names and method parameter have no impact on this.
 Additionally, it is not influenced by the order of methods or any interspersed code which does not call a method on the \code{Button} objects.
@@ -276,11 +275,10 @@ Observe that this definition also works when $M(x)$ is empty or $x$ is \code{thi
 & \phi(\mathtt{setFont}, x) = \frac{1}{5} = 0.2
         \end{align*}
     \end{subfigure}
-    \caption{Example for computing the Likelihood of missing Calls (\cite{monperrus2013detecting})}
-    \label{fig:missing_calls}
+    \caption{Example for computing the Likelihood of missing Calls (\cite{monperrus2013detecting})}\label{fig:missing_calls}
 \end{figure}
 
-To illustrate these definitions, consider the example in Figure \ref{fig:missing_calls}.
+To illustrate these definitions, consider the example in Figure~\ref{fig:missing_calls}.
 The type usage under analysis is denoted with $x$, operates on a \code{Button} object and the only method that it invokes is the initialization.
 There are five almost similar usages denoted as $a$, $b$, $c$, $d$ and $e$.
 Four of them ($a$ through $d$) have a call to \code{setText} after the initialization.
@@ -292,7 +290,7 @@ Thus, we can recommend the methods \code{setText} and \code{setFont} with a like
 %--- why we use the context at all
 We integrate the context into the definition of similarity and almost similarity because a type might be used in different ways depending on the situation it is used in.
 An example would be the class \code{FileInputStream} which is rarely opened and closed in the same method.
-In their evaluation Monperrus et al. \cite{monperrus2013detecting} find that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and using it improves the precision of their experiments.
+In their evaluation Monperrus et al.~\cite{monperrus2013detecting} find that not considering the context adds a lot of noise (not relevant items in $E(x)$ and $A(x)$) and using it improves the precision of their experiments.
 %-- why it might be better to exclude the context
 However, one can question the general assumption behind using the context.
 The idea that types are used in different ways seems reasonable, but is the name of the function that they are used in a good separator between those use cases?

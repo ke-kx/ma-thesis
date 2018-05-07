@@ -24,7 +24,7 @@ Despite the fact that there might be numerous appropriate ways to use an API, th
 For the Java examples, they could take the form of ``an object which implements \code{equals()} must also implement \code{hashCode()}'', ``if object A equals object B, their \code{hashCode()} must also be equal'' or ``a call to \code{next()} on an iterator should be preceded by a call to \code{hasNext()} to ensure that it actually contains another object''.
 
 %--- if we can extract the patterns, hopefully, the wrong usages will stand out and enable us to detect bugs
-API usage patterns \cite{robillard2013automated} can aid in detecting these kind of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
+API usage patterns~\cite{robillard2013automated} can aid in detecting these kind of defects in a software project, by noting where the code deviates too far from the patterns associated with the API it is employing.
 The challenge here is twofold.
 First, it is extracting and recognizing the patterns.
 Second, it is understanding when a deviation from a pattern actually signifies a code smell or an error that should be corrected.
@@ -35,7 +35,7 @@ Second, it is understanding when a deviation from a pattern actually signifies a
 %--- we will focus on MMCs + top-level view of missing method calls + example
 Of the many subtle mistakes a developer can make when invoking an API, this work focuses on one specific type: missing method calls, which occur in the context of Object Oriented Programming (OOP).
 In OOP software, an object of a specific type is almost always used by invoking some of its methods.
-Types will then have underlying patterns, such as ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well`` or ''methods \code{X} and \code{Y} of type $T_2$ are always used together``.
+Types will then have underlying patterns, such as ``when methods \code{A} and \code{B} of type $T_1$ are invoked, then method \code{C} is called as well'' or ``methods \code{X} and \code{Y} of type $T_2$ are always used together''.
 Given an object of type $T_1$ on which only methods \code{A} and \code{B} are called, we can say that a call to \code{C} is missing.
 Similarly, if we have an object of type $T_2$ where only \code{X} is invoked, we can say that a call to \code{Y} is missing.
 
@@ -47,9 +47,9 @@ In large software projects it is common that one developer does not know all of 
 
 %--- Monperrus et al. also showed that the bugs sometimes DO get into the code, all in all, we want to be able to detect them
 Studies have confirmed the intuition that missing method calls are common pitfalls across a range of applications and even in mature code bases.
-In an informal review \cite{monperrus2010detecting}, Monperrus et al. found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many newsgroups, bug trackers, and forums.
+In an informal review~\cite{monperrus2010detecting}, Monperrus et al.\ found bug reports\footnote{\url{https://bugs.eclipse.org/bugs/show_bug.cgi?id=222305}} and problems\footnote{\url{https://www.thecodingforums.com/threads/customvalidator-for-checkboxes.111943/}} related to missing method calls in many newsgroups, bug trackers, and forums.
 The issues range from runtime exceptions\footnote{\url{https://issues.apache.org/jira/browse/TORQUE-42}} to problems in some limit cases, but generally reveal at least a code smell, if not worse.
-They also performed an extensive analysis \cite{monperrus2013detecting} of the Eclipse bug repository,
+They also performed an extensive analysis~\cite{monperrus2013detecting} of the Eclipse bug repository,
 searching for syntactic patterns that they deemed related to missing method calls, such as: ``should call'', ``does not call'', ``is not called'', or ``should be called''.
 Manual inspection confirmed that more than half (117 of 211) of the bug reports located in this manner were indeed related to a missing method call.
 
@@ -57,7 +57,7 @@ This number is if anything an underestimation of the total number of missing met
 After all, the researchers might have missed some syntactic patterns and the bug repository can only contain those bugs that have already been discovered.
 Given how common they are, it seems clear that automatically detecting missing method calls in production code would be very helpful, not only saving developer time but also making maintenance cheaper and more manageable.
 
-\section{Detection - but how?}
+\section{Detection -- but how?}
 
 % General idea why we want to use Recommender Systems / Learning!
 %--- the first idea for detection: static rules, but the problem: very time/cost intensive
@@ -90,9 +90,9 @@ Whether this actually proves to save time and money hinges of the accuracy of th
 \section{Contribution}
 \todo[inline]{clearly formulate problem statement somewhere (3-5 sentences which describe the problem to be solved + the ansatz)}
 
-To understand and tackle the missing method call problem, Monperrus et al. \cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the idea of type usages.
+To understand and tackle the missing method call problem, Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} introduced the idea of type usages.
 A type usage is the list of method calls which are invoked on an object of some type and occur in the body of some method.
-The idea behind the technique by Monperrus et al. is to check for outliers among the type usages by using the majority rule:
+The idea behind the technique by Monperrus et al.\ is to check for outliers among the type usages by using the majority rule:
 If a type is used in one particular way many, many times (that is, in the majority of cases) and differently only once (or a few times), this probably indicates a bug.
 % This thesis builds on their work, re-evaluating the characterization of type usages and anomalies among them.
 
@@ -108,8 +108,8 @@ Additionally, we compare the results of the manual evaluation against those of t
 
 \section{Outline}
 
-In Chapter \ref{ch:relWork} we present previous work which goes in a similar direction.
-Chapter \ref{ch:dmmc} explains the theoretical background of the method proposed by Monperrus et al. and in Chapter \ref{ch:ext} we propose some variations to their method.
-We explain the inner workings of our implementation in Chapter \ref{ch:impl}, before summarizing the details and results of the evaluation in Chapter \ref{ch:eval}.
-The last Chapter \ref{ch:concl} concludes this work and gives an outlook for future research.
+In Chapter~\ref{ch:relWork} we present previous work which goes in a similar direction.
+Chapter~\ref{ch:dmmc} explains the theoretical background of the method proposed by Monperrus et al.\ and in Chapter~\ref{ch:ext} we propose some variations to their method.
+We explain the inner workings of our implementation in Chapter~\ref{ch:impl}, before summarizing the details and results of the evaluation in Chapter~\ref{ch:eval}.
+The last Chapter~\ref{ch:concl} concludes this work and gives an outlook for future research.
 
