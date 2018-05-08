@@ -1,45 +1,45 @@
 \chapter{Detecting Missing Method Calls}\label{ch:dmmc}
 
 In the introduction, we explored errors related to missing method calls.
-Especially when a developer is working with complicated frameworks and libraries and is not very experienced with them, it is easy to miss an important call.
+These occur frequently, particularly when developers are working with unfamiliar or new code.
+\todo{or: Developers working with complicated frameworks and libraries or generally with resources they are new to are particularly prone to missing an important call.}
 We would like to automatically detect instances of missed method calls to make maintenance easier and cheaper.
-
-%--- overview of this chapter
-In this chapter, we give a proper explanation of the method proposed by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
-The main idea is to extract patterns from correct usages and then look for violations of these patterns.
-For this, we formalize the notions of type usages, as well as their similarity and almost similarity.
-We then explain how the strangeness score, which describes the degree to which a particular type usage is different from its relevant neighbors, is calculated, before going into detail how the potentially missing calls are determined.
+In this chapter, we explain in detail the method proposed by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
 
 \section{Foundation: The Majority Rule}\label{sec:majority}
 
 % general majority rule
-The intuition behind the majority rule is that if most or all instances do something in a particular way, this is probably the correct way.
-By implication, it follows that if all or a great many behave differently than you, you are probably doing it wrong.
-This gives rise to the definition of an anomaly by the majority rule: instances which have few or none ``equal'' but a lot of ``slightly different'' neighbors.
+The intuition behind the majority rule is that the way something is done most often is probably the correct way.
+It follows that if everyone or almost everyone is doing something differently than you, you are probably doing it wrong.
+\todo!{(This is only relevant when the action being performed is in some way close to what you want to do.) -> smth more\ldots
+    smth about how if it is too far away we don't care anymore at all (spoon / fork analogie\ldots)
+}
+This gives rise to the definition of an anomaly by the majority rule: instances with few or no ``equal'' but many ``slightly different'' neighbors.
 Such anomalies should probably adapt to behave like their very similar neighbors.
-What exactly equal and slightly different means has to be defined for each application of the majority rule.
+What exactly ``equal'' and ``slightly different'' mean has to be defined for each application of the majority rule.
 
 % example (comic sans + waiter)
 To illustrate how this idea might work in the context of object-oriented software and method calls, consider the following example.
 We are analyzing an Android app which uses a total of 100 instances of the \code{Button} class.
-On all 100 of them the method \code{setText()} is invoked to describe the functionality of the button instance, but only 99 of them also call \code{setFont()}.
-There is one button which is missing this call and, therefore, uses the default font.
-It seems highly likely that this one button which is an exception to the rule ``each button which invokes \code{setText()} should also call \code{setFont()}'' is a mistake and that it should also make a call to \code{setFont()}.
-Imagine all buttons in the application using a unique and beautiful font, but this one button displaying the standard Comic Sans!
+On all 100 the method \code{setText()} is invoked to describe the functionality of the button, but only 99 of them also call \code{setFont()}.
+There is one button that is missing this call and, thus, uses the default font.
+It seems highly likely that this one button is an exception to the rule ``each button which invokes \code{setText()} should also call \code{setFont()}'' and therefore a mistake.
+To correct this, it should also make a call to \code{setFont()}.
+Imagine all buttons in the application using a unique and beautiful font, but this one button displaying Comic Sans!
 
 \section{Type Usages}
 
-Generally speaking, type usages are an abstraction over the analyzed code.
-They ignore the order of method calls and are only concerned with the list of method calls invoked on some object.
-The critical information which is associated with a type usage is the type of the object, the list of methods invoked on it and the context in which the object is used.
+Generally speaking, type usages are an abstraction over the code.
+They ignore the order of method calls and are only concerned with the list of method calls invoked on a particular object.
+The critical pieces of information associated with a type usage are the type of the object, the list of methods invoked on it and the context in which the object is used.
 We define the context as the name of the method in whose body the type usage appears together with the type of its parameters.
 %todo I think the return type is ignored?
 
 %--- formalized -> reread the papers for inspiration
-Formalized, given some code the type usages we extract as follows:
+It is useful here to define formal terms.
 For each variable $x$, note its type $T(x)$ and the context $C(x)$ in which it occurs.
-Additionally, save the list of methods which are invoked on $x$ within $C(x)$: $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
-If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object, more on this in Section~\ref{sec:bytecode}).
+The list of methods which are invoked on $x$ within $C(x)$ is denoted as $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
+If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object; more on this in Section~\ref{sec:bytecode}).
 
 \begin{figure}[h]
     \begin{subfigure}[c]{0.5\textwidth}
@@ -74,22 +74,22 @@ M(t) = {<init>}
 \end{figure}
 
 As an example, consider the code in Figure~\ref{fig:tu_example}.
-It contains two type usages, one of type \code{Button} and another one of type \code{Text}.
+It contains two type usages, one of type \code{Button} and another of type \code{Text}.
 The context for both is \code{createButton()}.
-The methods invoked on the \code{Button} object are initialization (\code{new}), \code{setText} and \code{setColor}.
+The methods invoked on the \code{Button} object are initialization (\code{new}), \code{setText}, and \code{setColor}.
 The \code{Text} object, on the other hand, is only initialized.
-Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$, $C(x)$ and $M(x)$ are shown on the right hand side.
+Given the two variables $b$ and $t$ as input, the corresponding values of $T(x)$, $C(x)$ and $M(x)$ are shown on the right-hand side.
 
 \section{Exact and Almost Similarity}
 
 %--- what are exactly equal and almost equal
-To detect type usages which are anomalous by the majority rule, we now need a notion what it means for two type usages to be exactly similar or only almost similar.
-Informally, we say that two type usages are exactly similar, iff they have the same type, the type usage appears in a similar method (i.e., the context is identical) and if their list of method calls is identical.
-Recall that the context is the name of the containing method together with the type of its parameters.
-We call these type usages ``similar'' instead of ``equal'' because several things are not the same: variable names, surrounding or interspersed code, method order and the actual location (class) are all disregarded and might indeed differ.
+To detect type usages that are anomalous by the majority rule, we need a notion of what it means for two type usages to be exactly similar or only almost similar.
+Informally, we say that two type usages are exactly similar if they have the same type, if the type usage appears in a similar method (i.e., the context is identical), and if their list of method calls is identical.
+Recall that the context is the name of the method in which the type usage occurs, together with the type of its parameters.
+We call these type usages ``similar'' instead of ``equal'' because several things are not the same: variable names, surrounding or interspersed code, method order or parameters, and the actual location (class).
 
 The notion of almost similarity is analogous.
-We say that a type usage $y$ is almost similar to a given type usage $x$ if they share the same type and context and the list of method calls of $y$ is the same as the method calls of $x$ plus one additional call.
+We say that a type usage $y$ is almost similar to a given type usage $x$ if they share the same type and if context and the list of method calls of $y$ is the same as the method calls of $x$ plus one additional call.
 
 \begin{figure}[h]
     \centering
@@ -162,10 +162,10 @@ class D extends Page {
 Consider the example code snippets in Figure~\ref{fig:sim_asim}.
 The type usages of \code{Button} in classes \code{A} (top left) and \code{B} (top right) are exactly similar, because they not only appear in the similar method \code{createButton}, but also invoke the same methods \code{setText} and \code{setColor}.
 Notice that variable names and method parameter have no impact on this.
-Additionally, it is not influenced by the order of methods or any interspersed code which does not call a method on the \code{Button} objects.
-The type usage in class \code{C} (bottom left) is almost similar to those in \code{A} and \code{B}, because besides the two methods \code{setText} and \code{setColor} it also invokes one additional method: \code{setLink}.
-Finally, the type usage in class \code{D} (bottom right) invokes \textbf{two} additional methods in comparison to the ones in \code{A} or \code{B}, meaning that it is not almost similar to them.
-However, it is in fact almost similar to the type usage in class \code{C}, since it only invokes one additional method in comparison: \code{setTooltipText}.
+Additionally, the comparison is not influenced by the order of methods or any interspersed code that does not call a method on the \code{Button} objects.
+The type usage in class \code{C} (bottom left) is almost similar to those in \code{A} and \code{B}, because apart from \code{setText} and \code{setColor} it also invokes one additional method -- \code{setLink}.
+Finally, the type usage in class \code{D} (bottom right) invokes \textbf{two} additional methods compared with the ones in \code{A} or \code{B}, meaning that it is not almost similar to them.
+However, it is almost similar to the type usage in class \code{C}, since it only invokes one additional method -- \code{setTooltipText}.
 
 %--- formalized
 To formalize these notions, we define two binary relationships over type usages.
@@ -197,7 +197,7 @@ A(x) = \{y \mid xA'y \}
 \end{equation*}
 
 In contrast to $E(x)$, $A(x)$ can be empty and $|A(x)|\geq0$.
-Consider also that $A'$ is not symmetrical, i.e., $xA'y \centernot\iff yA'x$ since one of the two type usages has to have fewer methods.
+Consider also that $A'$ is not symmetrical, i.e., $xA'y \centernot\iff yA'x$ since one of the two type usages must have fewer methods.
 This also means that $y \in A(x) \implies x \notin A(y)$.
 
 We can further refine the definition of almost similarity.
@@ -205,7 +205,7 @@ Instead of including type usages which have the same method calls plus one addit
 Then, in the definition of $A$ the last line changes to: $|M(y)| = |M(x)| + k, k\geq1$.
 The purpose of this change would be to detect type usages which are missing $k$ calls instead of just one.
 
-Note that given a codebase with $n$ type usages the sets $E(x)$ and $A(x)$ for one given type usage $x$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
+Given a codebase with $n$ type usages, the sets $E(x)$ and $A(x)$ for one given type usage $x$ can be computed in linear time $O(n)$ by iterating once through all type usages and checking for similarity or almost similarity.
 
 \section{The Strangeness Score}
 

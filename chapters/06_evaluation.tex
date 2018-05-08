@@ -130,7 +130,7 @@ look into and understand the type of data i have -> how often small inputs, how 
 1 Dataset:
     How many Apps + How many TUs in total + each (avg / median) -> how big are the apps, (how are the tus split between the apps)
     number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
-    different number of tus for class merge? -> yes necessarily
+    different number of tus for class merge? -> yes necessarily, but equal to number of partitions!
         mention how the dataset becomes smaller -> need to see if results become better
 
 2 type usages:
@@ -167,7 +167,7 @@ are the results useful / helpful
 % concrete techniques and results
 start with avg + median number of findings per app + in relation to their total TUs
 only the results of manual evaluation of the 10 random apps with the context variant
-+ add the android filter
++ add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
 
 \subsubsection{RQ1.1: Is there a noticeable difference between the different variants?}
 
