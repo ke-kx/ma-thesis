@@ -218,68 +218,68 @@ Once more we review all of their findings and classify them as true or false pos
 \subsection{RQ2: Do the Benchmark Results align with the Results of the Manual Evaluation?}
 \todo[inline]{IMPROTANT: this as a sub question?! / at least have some question related to the benchmark and no tus and length of method list and precision}
 
-% rough order + stichwörter below
-monp bases lots of their evaluation on the automated benchmark
-    This type of simulation is at the heart of the evaluation by Monperrus et al.
-the simulation seems to make sense on the face of it
-As such, we are essentially simulating the situation that a developer forgot the method call we removed and verify if our implementation would be helpful in this case.
-    how 'meaningful' are the benchmarking results?
-    does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
-but thinking about it a bit more critically, it's not clear how close the created tus are to real bugs
-    unclear how good of a simulation
-    While it seems like a reasonable procedure to perform, it relies on a crucial assumption: the artificially created missing method calls are comparable to missing method call bugs in real software.
-    this is not inheritly clear to us which is why we actually wanna check this?
-    without this assumption the numbers produced by the procedure are meaninglesss
-    obvious question: how similar are the such created mmcs to mmcs in the wild?
-so in the end the only thing we get are numbers which explain how well the method performs on this artificially designed problem
+\todo[inline]{edit for concision and coherence}
+% general
+Monperrus et al.\ base a significant part of their evaluation on an automated benchmark much like the one we perform.
+While such a simulation makes sense on the face of it, one has to question how meaningful are its results.
+Recall that we essentially simulate the situation that a developer forgets the method call we removed and verify if our implementation would be helpful in this case.
+The critical assumption here is that the artificially created missing calls are in some way comparable to missing method call bugs in real software.
+If they are not, the benchmark only measures how well the method performs on the exact problem of detecting randomly removed method calls, which is not very helpful at all.
 
-because of this we would like to present the results of the benchmark twofold:
-first just plainly present them + what are we presenting?
-    first present benchmark results of different techniques (context, class merge, \ldots) then relate to qualitative results
 % how we want to evaluate the simulation itself
+For us it is not inherently clear that the degenerated type usages behave like real missing method calls.
+Because of this, we would like to present the benchmark results twofold.
+First, we present the benchmark results of the different variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$.
+Second, we compare the results of the manual evaluation to the benchmark results and discern whether the performances align.
+In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.
+\todo[inline]{
+a bit better explanation\ldots
 second put them in relation to the results of the manual eval -> do we get similar performance between the variants?
     compare results to the results of manual evaluation between the different methods (ie does one perform much worse in both or just in one?)
-    are the results better if we leave out the context / merge on a per class basis / FOR DIFFERENT Ks!\ldots
     -> comparison between manual evaluation of findings vs automatic benchmark over the different techniques used (context, no context, class merge, \ldots)
++ mention the technique:
+    simply give metrics (precision, recall) for the different variants and relate them to the manual results
+}
 
-% techniques + results
-simply give metrics (precision, recall) for the different variants and relate them to the manual results
+\todo[inline]{
+present results!
 (maybe relate the precision etc to the number of tus in the partition -> already have that data)
+}
 
 \subsection{RQ3: How robust is this technique in the face of erroneous input data?}
 
-% general
-I would add this, even if the results of comparison with manual evaluation are relatively negative / don't say anything
+\todo[inline]{
 worauf is robustness bezogen? -> results quality or smth else? (Robustness explanation)
+what is needed for it to work (lines of code, feature richness, etc) 
+wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
+}
 
-% motivation
-it is important to understand what other requirements this method has
-here we would like to understand how sensitive the method is to perturbed inputs
-the scenario we envision is the following
-    this method learns patterns from the code at hand
-    given a new and crazy library:
-    wie viel brauche ich um sinnvoll viel zu lernen - hälfte der leute machen fehler -> wie robust brauchst du die daten / ist das verfahren !
-    what is needed for it to work (lines of code, feature richness, etc) 
+% general / motivation
+Apart from the quality of the results, it is also important to understand what other requirements this technique has.
+Here, we would like to examine how sensitive the majority rule is to perturbed inputs.
+Since we extract type usages and then patterns from any input code, it is entirely feasible that there will be some erroneous code among it.
+Imagine for example a new library that is not very well designed causing many developers to use it in incorrect ways.
+Now the question is, how much correct input do we need to detect the incorrect usages?
 
-problem: how to evaluate when it is "working" vs not working -> again simulate "missing methods", compare performance?
--> mathematical answer at least: how does the strangeness score behave if there are additional erroneous instances
+% problem + math answer
+problem: how to evaluate when it is "working" vs not working
+    -> again simulate "missing methods" + additional erros, compare performance?
+    but problematic benchmark ``doesn't work at all''
+definitely also mention some MATH
+    how does the strangeness score behave if there are additional erroneous instances
+    if there is only one anomaly and we get another one (of the same type) can half the strangeness score
     -> the thing regarding if the same method is removed score halfs / if it's another one it's not so bad (should have written down somewhere right?)
-    + probably ppl make a similar mistake assuming it's because this api is hard to use oä
-    -> for this it might be hard
-
-% techniques + results
-\todo[inline]{how to best present the robustness results?}
-I mean I have the benchmark test, so i might as well do it, but also mention mathematical results!
-for true findings, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
+    or just decrease it in proportion to the almost equal number (if wrong method gets removed)
+    + probably ppl make a similar mistake assuming it's because this api is hard to use oä -> for this it might be hard
+    but assumption: if one method is difficult, it's most likely the one ppl forget
+example: use true bug finding, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
 / instead of throwing away: introducing random errors in the related tus
 
-definitely also mention some MATH
-    if there is only one anomaly and we get another one (of the same type) can half the strangeness score
-    or just decrease it in proportion to the almost equal number (if wrong method gets removed)
-    but assumption: if one method is difficult, it's most likely the one ppl forget
-but also benchmark!
+% techniques + results
+\todo[inline]{
+include here the benchmark results (I have them so i might as well)
 try with intentionally degraded data -> I already have the setup, I just have to improve the benchmark thing performancewise a bit and let it run
-also: for true findings, try to throw away parts of the data -> when can we not find this anymore
+}
 
 \subsection{RQ4: What are the requirements for the input size?}
 \todo[inline]{
@@ -291,14 +291,16 @@ How many type usages are necessary to \ldots
 
 % motivation + general
 besides the sensitivity to low quality input as discussed in the previous section, we are also interested in how much data this method needs to produce sensible results
-
-% general
 ie: how big of a codebase do we need to be able to ``learn''. When can we apply this to a project which does not rely on some well known open source framework (Android) where it is easy to gather additional data, but on for example an in-house-closed-source library oä.
 extremely hard to answer especially if the findings regarding benchmark validity are more or less negative.
+
+% math answer
 however, even if I cannot give experimental answers, I can at least give some lower bounds + thoughts
 (need at least 10 tus within the same ``category'' to even reach a score > 0.9, from practical results in qualitative analysis, that is probably not enough, blabla)
 
 % techniques + results
+-> mention some of the parition sizes which I have already plotted during the dataset overview
+potentially mention the number of ae / e for the different errortypes (B / S / FP)
 
 \subsection{RQ5: Can the Majority Rule also detect superfluous or wrong Method Calls?}
 
@@ -315,34 +317,42 @@ already problem I'm seeing: things with 1 call will always be almost similar sin
 
 \section{Discussion}
 
+% general
+summary of what i did + results
 also mention runtime!
+general aussage like ``its good or its useless''
+
+% general qualifiaction / threts to validity
+and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
+explain problems with the automatic evaluation
+how related are the degraded TUs to missing method calls you can find in the wild?
+improving the metrics by dropping cases where we know we won't find an answer
+
+wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
 
 average number of findings per app (remember that the findings now are for all 626 apps)
 how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
 
-and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
-
+% Manual eval examples
+qualitatively describe some of the failings?! 
 pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
 + of course the REAL bug + some real smells
+mention the remedies we have thought of (filters etc) but also -> say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
+-> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
+(muster: if there is "several" equal ones it doesn't work so well, if its just very few (<4) it's at least a smell?)
 
-%maybe:
-muster: if there is "several" equal ones it doesn't work so well, if its just very few (<4) it's at least a smell?
-qualitatively describe some of the failings?! -> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
-consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
-
-potentially have the examples in the discussion rather than here?
 example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
--> these filters also as my ``contribution''? :D -> rather say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
+-> these filters also as my ``contribution''? :D 
 failure mode: doesn't follow static functions (where the method in question is actually called)
 failure mode: kotlin -> outlier generally
 suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
 dot chaining -> hard to fix / tradeoffs
 
 mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
+consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
 + add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
 + add the ``only from my project'' filter
 
-\todo[inline]{
 mention in the end that i tried a 
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)
@@ -353,13 +363,4 @@ mention this when discussing the results!
     static functions evaluation!
     something to fix the dotchaining problems
     -> for both basically I'm just saying that i looked into it and it was too much work / impossible?
-}
 
-\section{Threats to Validity}
-\todo[inline]{needs to be extra section or can be together with discussion?}
-
-explain problems with the automatic evaluation
-how related are the degraded TUs to missing method calls you can find in the wild?
-improving the metrics by dropping cases where we know we won't find an answer
-
-wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
