@@ -68,13 +68,13 @@ We manually reviewed all anomalous type usages of the selected applications and 
 
 \todo[inline]{
     descriptions fine like this?, don't need the ones below?
-\item [Special case(?) (SC)] "weird" implementation with extra comment, for compatibility reasons, something like that
-\item [not clear (NC)] source code not available, ...
+[Special case(?) (SC)] "weird" implementation with extra comment, for compatibility reasons, something like that
+[not clear (NC)] source code not available, ...
 }
 
 Depending on the quality of results one expects, hints could either be counted towards smells or towards false positives.
 We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with in the code in question.
-As an example consider the situation in which a developer calls \code{next} on an iterator that he just obtained from a list of size one.
+As an example, consider the situation in which a developer calls \code{next} on an iterator that he just obtained from a list of size one.
 Here, he knows that the iterator contains one element so he does not need to check for it with \code{hasNext}, nonetheless, it is useful to detect locations where \code{next} is invoked without a preceding \code{hasNext}.
 
 \todo[inline]{
@@ -90,52 +90,49 @@ setTitle not called -> not strictly necessary but ``makes sense''
 
 % general description what its doing + reasons for doing it
 We would like to understand better how the majority rule behaves under different circumstances.
-During the automated benchmark, we select a type usage from the dataset and remove one of its method calls.
+Unfortunately, we do not have a large dataset of known missing method calls available that we could use to asses the quality of our implementation.
+Instead, we create instances of missing calls by sampling a type usage from the dataset and removing one of its method calls.
 We then calculate the strangeness score of the degraded type usage and determine if the majority rule can detect the known missing call.
-As such, we are essentially simulating the situation that a developer forgot the method call in question and verify if our implementation would be helpful in this case.
-This procedure enables us to test the system on many cases for that we know the correct answer.
-We can calculate relevant metrics that capture the systems success and compare the different variants on an objective basis.
+Using this procedure, we can test the system on many cases for that we know the correct answer.
+Knowing the expected answer, enables us to calculate relevant metrics that capture the systems success and compare the different variants on an objective basis.
 
 % actual setup + degradation mechanism
-We built a flexible benchmarking infrastructure in Python.
-It randomly chooses type usages from the dataset and applies one of several degradation mechanisms to it.
-The normal mechanism removes a method call and then checks if our implementation detects it.
-However, for further evaluation we also support different processes for degradation, such as removing more than one method call or degrading more than one type usage.
-\todo{not too much repeated what i said before? + better description of other degradation mechanisms?}
+We perform the benchmark using a custom benchmarking infrastructure written in Python.
+It randomly chooses type usages from the dataset and applies a degradation mechanisms to it.
+The normal degradation mechanism removes each method call of the selected type usage once and checks for each new version if our implementation of the $\text{DMMC}$ system detects the known anomaly.
+To retain a reasonable performance and execution time, we only apply this procedure to a portion of the entire dataset (around 10\%).
+\todo{correct percentage?}
+For further evaluation, we also support different processes for degradation, such as removing more than one method call or degrading more than one type usage.
 
 % how do we evaluate stuff
-To compare the results of the different variants, we calculate a number of metrics.
-\todo[inline]{WHICH metrics do i actually wanna compute?!}
-Metrics explanation - Precision, Recall
-    additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
-    performance -> training time + performance when working
+Since we know the correct answer for all degraded type usages, we can use the results to calculate a number of metrics.
+\paragraph{Correct} is the percentage of queries that were detected as anomalous.
+\paragraph{Precision} is the 
+\paragraph{Recall}
 
+\todo[inline]{
+    explain correctly\ldots
++ those numbers in relation to nr tus / method list length
+}
+
+\todo[inline]{
+additional metrics from recommender systems book p.245f (robustness, learning rate - p. 261)
+performance -> training time + performance when working
+already mention here that this kind of simulation is kinda questionable?}
 
 \section{Dataset Overview}
 
 \todo[inline]{
-% general idea
-general data about avg tus related to different settings etc -> what does our dataset even consist of?
 mention somewhere: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
 Does the Strangeness Score behave as expected on Android Apps? (the behavior that I'm expecting is basically a mathematical necessity!)
     do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
-        -> most tus are ``normal'', a few are ``abnormal''
-        what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
-
-% motivation
-concrete questions to answer + way of presenting it
-should answer:
-    1 What kind of dataset do we have?
-    2 How are type usages in Android apps like?
-    3 How does the strangeness score behave?
-    4 Is it even fast enough? (this here or as separate research question?)
--> get general feeling for this method and the dataset
-look into and understand the type of data i have -> how often small inputs, how often big, ...
+    -> most tus are ``normal'', a few are ``abnormal''
+    what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
 }
 
 % general dataset
 %    How many Apps + How many TUs in total + each (avg / median) -> how big are the apps, (how are the tus split between the apps)
-Our dataset consists of 3,880,556 type usages that our Java program extracted from the 625 Android applications downloaded from F-droid.
+Our dataset consists of 3,880,556 type usages that the Java program extracted from the 625 Android applications downloaded from F-droid.
 On average there are X type usages per application and the median is Y.
 In Figure X we have plotted the number of type usages per application.
 \todo[inline]{Plot TUS / applications}
@@ -148,9 +145,9 @@ In Figure Z we have plotted how many method calls there are per type usage to gi
 \todo[inline]{Plot method list lenghts}
 
 %   number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
-In the variation $\text{DMMC}$, a partition is a valid combination of type in context and there are 1,410,709 combinations in the dataset.
-In the variant $\text{DMMC}_{text{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
-Since $\text{DMMC}_{text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same.
+In the variation $\text{DMMC}$, a partition is a valid combination of type in context and there are 1,410,709 combinations like that in the dataset.
+In the variant $\text{DMMC}_{\text{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
+Since $\text{DMMC}_{\text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same.
 However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to XYZ.
 \todo[inline]{determine class merge no of tus (can just load results)}
 In Figure X we have plotted the distribution of type usages per partition for the different variants.
@@ -193,52 +190,39 @@ For each question, we first explain its purpose and modus of evaluation, before 
 % motivation behind question + general
 It is among the primary goal of our evaluation to understand if the method we implemented is something that a developer would use to help with maintenance.
 It seems that the deciding factor for this would be the ability of the majority rule to detect bugs and to detect them with clarity.
-If the developer needs to sift through thousands of anomalies to detect a single mistake, this technique is not very useful.
-If on the other hand most of the high ranked anomalies are indeed hints for potential bugs, it would be of tremendous worth.
+If the developer needs to sift through thousands of anomalies to detect a single mistake, the technique is not very useful.
+If, on the other hand, most of the high ranked anomalies are indeed hints for potential bugs, it would be of tremendous worth.
 
 To mimic the experience a developer would have when applying our tool to his software, we randomly select 10 applications for in detail analysis.
 Of these apps we examine each of the anomalous type usages in detail and classify them as described above.
-Our measure of success shall be the number of findings per app and the ratio of true to false positive findings.
+Our measure of success shall be the number of findings per application and the ratio of true to false positive findings.
 \todo{mention only here that we do the random sampling instead of above?}
 
 % concrete techniques and results
 \todo[inline]{
-    prepare table with findings per app (+ avg/median) + mention nr of total TUS!
-    only the results of manual evaluation of the 10 random apps with the context variant
-+ add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
-+ add the ``only from my project'' filter
+    prepare table with findings per app (+ avg/median)
 }
-
-%maybe:
-muster: if there is "several" equal ones it doesn't work so well, if its just very few (<5) it's at least a smell?
-qualitatively describe some of the failings?! -> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
-consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
-
-potentially have the examples in the discussion rather than here?
-example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
--> these filters also as my ``contribution''? :D -> rather say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
-failure mode: doesn't follow static functions (where the method in question is actually called)
-failure mode: kotlin -> outlier generally
-suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
-dot chaining -> hard to fix / tradeoffs
-
-mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
 
 \subsubsection{RQ1.1: Is there a noticeable difference between the different variants?}
 
-do the manual eval each for the slightly adapted forms (no context, class merged) and see if there is any difference
-+ include the android filter
+In Chapter \ref{ch:ext}, we suggested the variant $\text{DMMC}_\text{class}$ and Monperrus et al.\ already propose the $\text{DMMC}_\text{noContext}$ version.
+To understand how they behave in comparison to the $\text{DMMC}$ system, we applied them to the same 10 applications that we randomly selected for the manual evaluation.
+Once more we review all of their findings and classify them as true or false positives.
+
+\todo[inline]{table with the results + discussion!}
 
 %\subsubsection{RQ1.2: Given a known missing method call bug, can this approach detect it?}
 % only if time! -> probably not
 % reverse test: find actual missing call in bug database -> can I find it using the approach and is it among the top findings?
 
 \subsection{RQ2: Do the Benchmark Results align with the Results of the Manual Evaluation?}
+\todo[inline]{IMPROTANT: this as a sub question?! / at least have some question related to the benchmark and no tus and length of method list and precision}
 
-% rough order + stichwörter below\ldots
+% rough order + stichwörter below
 monp bases lots of their evaluation on the automated benchmark
     This type of simulation is at the heart of the evaluation by Monperrus et al.
 the simulation seems to make sense on the face of it
+As such, we are essentially simulating the situation that a developer forgot the method call we removed and verify if our implementation would be helpful in this case.
     how 'meaningful' are the benchmarking results?
     does it make sense to evaluate this method using the benchmarking as proposed by Monperrus et al.?
 but thinking about it a bit more critically, it's not clear how close the created tus are to real bugs
@@ -259,7 +243,6 @@ second put them in relation to the results of the manual eval -> do we get simil
     -> comparison between manual evaluation of findings vs automatic benchmark over the different techniques used (context, no context, class merge, \ldots)
 
 % techniques + results
-potentially simulate the benchmark only with tus from exactly the same 10 random apps? (so i don't have to do the whole dataset?)
 simply give metrics (precision, recall) for the different variants and relate them to the manual results
 (maybe relate the precision etc to the number of tus in the partition -> already have that data)
 
@@ -341,6 +324,23 @@ and of course regarding the ``results'' always qualify -> this only for android,
 
 pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
 + of course the REAL bug + some real smells
+
+%maybe:
+muster: if there is "several" equal ones it doesn't work so well, if its just very few (<4) it's at least a smell?
+qualitatively describe some of the failings?! -> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
+consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
+
+potentially have the examples in the discussion rather than here?
+example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
+-> these filters also as my ``contribution''? :D -> rather say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
+failure mode: doesn't follow static functions (where the method in question is actually called)
+failure mode: kotlin -> outlier generally
+suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
+dot chaining -> hard to fix / tradeoffs
+
+mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
++ add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
++ add the ``only from my project'' filter
 
 \todo[inline]{
 mention in the end that i tried a 
