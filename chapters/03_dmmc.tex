@@ -299,8 +299,8 @@ One problem with using the context is that it drastically reduces the number of 
 In smaller datasets, this makes it much more likely that ``patterns'' appear, which in truth are only artifacts of randomness.
 
 All in all, it is not clear that using the context necessarily improves the performance of the system.
-Because of this, next to the standard variant $\mathnormal{DMMC}$ (Detecting Missing Method Calls), we also define a variant called $\mathnormal{DMMC}_{\mathnormal{noContext}}$, which does not take the context into account.
-It uses adapted measures for similarity and almost similarity, $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$ which are defined in the same manner as $E'$ and $A'$, except that they do not require the context of the type usages to be identical.
+Because of this, next to the standard variant $\text{DMMC}$ (Detecting Missing Method Calls), we also define a variant called $\text{DMMC}_{\text{noContext}}$, which does not take the context into account.
+It uses adapted measures for similarity and almost similarity, $E'_{\text{noContext}}$ and $A'_{\text{noContext}}$ which are defined in the same manner as $E'$ and $A'$, except that they do not require the context of the type usages to be identical.
 The definitions of $E$, $A$, $\operatorname{S-score}$ and $\phi$ stay the same, besides that they now make use of the newly defined relations.
 
 

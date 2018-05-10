@@ -1,31 +1,29 @@
 \chapter{Evaluation}\label{ch:eval}
 
-% notes:
-roter faden: results of manual analysis vs benchmark (ie. is context better than no context)
-take their method + analyze it on a qualitative + quantitative basis on a big android dataset
-goal of evaluation:
-große frage: bringt das Verfahren etwas?
+\todo[inline]{
+goal of evaluation: große frage: bringt das Verfahren etwas?
 understand how well this method works in the context of the android ecosystem, and the NATURE of findings
 
-% Which questions are we trying to answer with the evaluation?
-In the following we present our evaluation of the method proposed by Monperrus et al.
-We strive to understand how well the majority rule is suited to detect missing method calls in object oriented software.
-For this we apply our implementation to a large dataset of Android applications and evaluate the results qualitatively and quantitatively. 
-\todo{paragraphs don't work well together + might need some other content?}
-
-% chapter outline
-We give an overview of the methodology used during the evaluation, explore the dataset we are using and how the type usage notion behaves on it.
-For the main evaluation we perform qualitative and quantitative evaluation on a randomly selected subset of the whole dataset.
-We present the results in answer to X research questions which are aimed ad shedding some light on the applicability of this method.
-Finally, we discuss the meaning of these results and how to understand them.
+does this need something more?
 / point out the threats to validity / problems / improvement / smth?
+}
+
+% Which questions are we trying to answer with the evaluation?
+Our evaluation of the method proposed by Monperrus et al.\ is aimed at comprehending how well the majority rule is suited to detect missing method calls in object oriented software.
+We would like to understand better the nature and quality of findings produced by our implementation.
+To achieve this, we apply our implementation to a large dataset of Android applications and evaluate the results qualitatively and quantitatively.
+% chapter outline
+In the following, we first give an overview of our methodology before we examine the dataset.
+We present some general data and analyze how type usages behave in Android applications.
+We discuss the results of the evaluation in response to 5 research questions which are all aimed at shedding some light on the applicability of this method.
+Finally, we consider the meaning of these results and what might threaten their validity.
 
 \section{Methodology}
 
 % The introduction to your methodology section should begin by restating the research problem and underlying assumptions underpinning your study
 In this thesis we explore an approach for detecting missing method calls.
 We present an implementation of the method proposed by Monperrus et al.\ as well as two other related variations.
-During the evaluation we would like to understand how they behave and what kind of results one can expect.
+The goal of the evaluation is to understand how they behave and what kind of results one can expect.
 \todo{more?}
 % so what we are doing
 Our experimental evaluation is twofold: a qualitative evaluation of the findings in 10 randomly selected Android apps and a simulation experiment using artificially created errors.
@@ -35,48 +33,57 @@ Since it is not assured that the results of this simulation correspond to the re
 \todo{maybe a bit nicer / more clear / less information?}
 
 \subsection{Qualitative Evaluation / Android Case Study}
+\todo[inline]{decide on title\ldots}
 
 % general description + source of android apps
 F-droid\footnote{\url{https://f-droid.org/en/}} is a repository for Free and Open Source software (FOSS) on the Android platform.
 We used a scraper to download the latest version of all available applications on the 6th of March 2018.
-From these 625 Android applications, we extract all type usages that are present and apply our implementation of the $\mathnormal{DMMC}$ system to identify any anomalies.
+From these 625 Android applications, we extract all type usages that are present and apply our implementation of the $\text{DMMC}$ system to identify any anomalies.
 
 % idea behind using android
-The Android ecosystem is particularly suited for this evaluation and enables us to evaluate how this method behaves on real software.
+The Android ecosystem is particularly suited for this evaluation and enables us to evaluate how type usages and the majority rule behave on real software.
 The Java code is easy to analyze and there is a rich open source community, placing many sample applications at our disposal.
-Each of these applications uses the Android API, so that we can generate a large dataset on it and detect any common patterns that emerge when using it.
-Especially because of the API's emphasis on the user interface we consider this to be one of the environments in which patterns will appear most frequent and most clearly.
-\todo{ do real software systems actually behave in this way ie: is it ``necessary'' to use classes in the same way }
+Each of these applications uses the Android API, so that we can generate a large dataset on the classes in the API, and detect any common patterns that emerge when using it.
+Because of the API's emphasis on the user interface, we consider this to be an environment in which patterns will appear most frequently and most clearly.
+\todo{formulate last sentence a bit different}
 
-\todo[inline]{
-    needs way better coherence!
-    mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
-    change all dmmc to using text?
-    reshuffle a bit
-}
 % actual steps to evaluation
-The procedure of the evaluation is as follows:
-We extract the type usages of all 625 Android applications that we downloaded and store them in the database.
-We then use the 3 different variants $\mathnormal{DMMC}$, $\mathnormal{DMMC}_{\mathnormal{noContext}}$ and $\mathnormal{DMMC}_{\mathnormal{class}}$ to analyze the type usages and determine the respective $\operatorname{S-score}$ for al of them.
-Using a random number generator\footnote{Google frontpage on: \url{https://www.google.com/search?q=random+number}}, we sampled 10 applications to be examined in detail.
+\todo[inline]{ past tense makes sense or not really?  }
+The detailed procedure of the manual evaluation was as follows:
+We extracted the type usages of the 625 Android applications that we had downloaded and stored them in the database.
+Next, we analyzed the extracted type usages with the 3 different variants $\text{DMMC}$, $\text{DMMC}_{\text{noContext}}$ and $\text{DMMC}_{\text{class}}$ and determined their respective $\operatorname{S-score}$s.
+We consider type usages with an $\operatorname{S-score}$ bigger than $0.9$ to be anomalies.
+This is the value that Monperrus et al.\ suggest and since it implies that 90\% of similar type usages are almost similar it seems like a reasonable cutoff.
 
-We manually evaluate the anomalous findings of the selected applications and flag each of them as true or false positive.
-We consider a type usage to be anomalous when it has a strangeness score bigger than $0.9$.
-This is was Monperrus et al.\ suggest and it implies that 90\% of similar type usages are almost similar which seems like a reasonable cutoff.
-For the decision, we carefully review the source code and API documentation and then classify the finding as one of the following: 
-
+While we would have liked to review all anomalies that our implementation uncovers, there were simply too many.
+\todo{determine how many anomalous findings we have in total (easy!)}
+Instead, we used a random number generator\footnote{Google frontpage on: \url{https://www.google.com/search?q=random+number}} to sample 10 applications to be examined in detail.
+We manually reviewed all anomalous type usages of the selected applications and carefully considered the source code and the API documentation before classifying them as one of the following:
 \begin{description}
     \item [real bug (B)] a real defect, change definitely necessary
-    \item [real smell (S)] another way of doing things would be better, but probably not a defect
-    \item [implementation error (on my side) (IE)] dot chaining not recognized correctly (not sure if actualy possible) (-> not sure i should include this)
-    \item [false positive (FP)] the usage is totally fine, there is no causal relation which would imply that the "missing" method also needs to be used
-	(subcategory: it makes sense that the pattern exists ie that many ppl use this together but it simply doesn't indicate an error or smell)
-    \item [Special case(?) (SC)] "weird" implementation with extra comment, for compatibility reasons, something like that
-    \item [not clear (NC)] source code not available, ...
+    \item [real smell (S)] another way of doing things would be better, but probably not a defect in the given instance
+    \item [hint (H)] the code is fine, but the pattern is also legitimate; some connection between the methods
+    \item [false positive (FP)] the usage is totally fine; no causal relation implying the ``missing'' method must be called
 \end{description}
-\todo[inline]{make sure that these categories make sense and adapt descriptions to be more serious
-Hint (H)
-	not sure i wanna add this or just say fp...
+
+\todo[inline]{
+    descriptions fine like this?, don't need the ones below?
+\item [Special case(?) (SC)] "weird" implementation with extra comment, for compatibility reasons, something like that
+\item [not clear (NC)] source code not available, ...
+}
+
+Depending on the quality of results one expects, hints could either be counted towards smells or towards false positives.
+We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with in the code in question.
+As an example consider the situation in which a developer calls \code{next} on an iterator that he just obtained from a list of size one.
+Here, he knows that the iterator contains one element so he does not need to check for it with \code{hasNext}, nonetheless, it is useful to detect locations where \code{next} is invoked without a preceding \code{hasNext}.
+
+\todo[inline]{
+a bit more explanation?
+    proper example code for better understanding?
+
+additional examples:
+only height() or width()
+setTitle not called -> not strictly necessary but ``makes sense''
 }
 
 \subsection{Automated Benchmark}
@@ -141,9 +148,9 @@ In Figure Z we have plotted how many method calls there are per type usage to gi
 \todo[inline]{Plot method list lenghts}
 
 %   number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
-In the variation $\mathnormal{DMMC}$, a partition is a valid combination of type in context and there are 1,410,709 combinations in the dataset.
-In the variant $\mathnormal{DMMC}_{_mathnormal{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
-Since $\mathnormal{DMMC}_{_mathnormal{class}}$ relies on $A'_\mathnormal{noContext}$, the partitions for it are the same.
+In the variation $\text{DMMC}$, a partition is a valid combination of type in context and there are 1,410,709 combinations in the dataset.
+In the variant $\text{DMMC}_{text{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
+Since $\text{DMMC}_{text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same.
 However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to XYZ.
 \todo[inline]{determine class merge no of tus (can just load results)}
 In Figure X we have plotted the distribution of type usages per partition for the different variants.
@@ -163,7 +170,7 @@ strangeness score:
     verteilung of strangeness score (histogram)
     graphs related to general score verteilung
     explain why we expect the scores verteilung to be like that
-    score in relation to smth? ie method length, #tus in partition, etc
+    score in relation to smth? ie method length, nr tus in partition, etc
     put this only in rq1?  -> not so sure\ldots
 }
 
@@ -205,6 +212,17 @@ Our measure of success shall be the number of findings per app and the ratio of 
 %maybe:
 muster: if there is "several" equal ones it doesn't work so well, if its just very few (<5) it's at least a smell?
 qualitatively describe some of the failings?! -> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
+consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
+
+potentially have the examples in the discussion rather than here?
+example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
+-> these filters also as my ``contribution''? :D -> rather say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
+failure mode: doesn't follow static functions (where the method in question is actually called)
+failure mode: kotlin -> outlier generally
+suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
+dot chaining -> hard to fix / tradeoffs
+
+mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
 
 \subsubsection{RQ1.1: Is there a noticeable difference between the different variants?}
 
@@ -272,6 +290,14 @@ I mean I have the benchmark test, so i might as well do it, but also mention mat
 for true findings, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
 / instead of throwing away: introducing random errors in the related tus
 
+definitely also mention some MATH
+    if there is only one anomaly and we get another one (of the same type) can half the strangeness score
+    or just decrease it in proportion to the almost equal number (if wrong method gets removed)
+    but assumption: if one method is difficult, it's most likely the one ppl forget
+but also benchmark!
+try with intentionally degraded data -> I already have the setup, I just have to improve the benchmark thing performancewise a bit and let it run
+also: for true findings, try to throw away parts of the data -> when can we not find this anymore
+
 \subsection{RQ4: What are the requirements for the input size?}
 \todo[inline]{
 benny didn't like ``requirements''
@@ -300,6 +326,9 @@ to understand if theses variations offer anything of value we evaluate their fin
 
 manual eval of results when using superfluous / wrong variants
 -> same mode of evaluation as RQ1
+
+already problem I'm seeing: things with 1 call will always be almost similar since only one call is different
+ -> this could be a problem?
 
 \section{Discussion}
 

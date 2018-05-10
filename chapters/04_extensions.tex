@@ -8,7 +8,7 @@ In this section, we give the motivation and theoretical background for these mod
 \section{Class-based merge}
 
 %--- idea behind this
-The $\mathnormal{DMMC}_{\mathnormal{noContext}}$ variant seeks to answer the question if it makes sense to group the type usages based on the method they appear in.
+The $\text{DMMC}_{\text{noContext}}$ variant seeks to answer the question if it makes sense to group the type usages based on the method they appear in.
 Following this line of thought, one might also ask if it is optimal to collect the type usages with method granularity.
 Even when ignoring the context, the type usages will still be extracted on a per-method basis, that is that is only the methods invoked in one method body will belong to one type usage.
 Maybe grouping method calls with class granularity yields much better results.
@@ -16,14 +16,14 @@ Often the methods invoked on one object within a specific class include many, if
 Thus, a class-based type usage offers a bigger window into the objects utilization and, potentially, this makes it easier to detect if some method is missing.
 
 %--- informal how it's done
-We will denote this variant as $\mathnormal{DMMC}_{\mathnormal{class}}$.
+We will denote this variant as $\text{DMMC}_{\text{class}}$.
 To obtain the class-based type usages, we extract the type usages at the method level, exactly as before.
 However, before calculating the strangeness score, we merge all those type usages which have the same type and originate from the same class.
 We merge them even if the original type usages originate from different objects because tracing each objects life through the whole class would be too expensive.
-With these newly produced type usages, we can then calculate the set of similar and almost similar type usages using $E'_{\mathnormal{noContext}}$ and $A'_{\mathnormal{noContext}}$, respectively.
+With these newly produced type usages, we can then calculate the set of similar and almost similar type usages using $E'_{\text{noContext}}$ and $A'_{\text{noContext}}$, respectively.
 
 %-- formalized
-To formalize $\mathnormal{DMMC}_{\mathnormal{class}}$, we need the new operator $\operatorname{Cls}(x)$ that denotes the class from which a type usage was extracted.
+To formalize $\text{DMMC}_{\text{class}}$, we need the new operator $\operatorname{Cls}(x)$ that denotes the class from which a type usage was extracted.
 We can then partition the set of all type usages into subsets $TC_i$ which have the same type and class:
 \begin{gather*}
     x, y \in TC_i \iff T(x) = T(y) \land \operatorname{Cls}(x) = \operatorname{Cls}(y) \\
@@ -53,7 +53,7 @@ The primary difference of these variants lies with the definition of almost simi
 \subsection{Superfluous Method}
 
 %-- informal description
-The idea behind $\mathnormal{DMMC}_{\mathnormal{superfluous}}$ is the inverse of the method proposed by Monperrus et al.
+The idea behind $\text{DMMC}_{\text{superfluous}}$ is the inverse of the method proposed by Monperrus et al.
 Instead of checking if a lot of other type usages are calling an additional method and the current one is thus missing a call, here we check if a lot of other type usages are making \emph{fewer} calls, and the current one is doing something extra which it should not.
 %-- idea behind this
 It is not intuitively clear what kind of errors this procedure will discover or indeed if there will be any.
@@ -64,7 +64,7 @@ Nonetheless, it seems reasonable to investigate this idea and only dismiss it if
 Adapting the normal system to detect this type of outlier is rather simple.
 We only need to adapt the definition of $A(x)$ to:
 \begin{equation*}
-    A_{\mathnormal{superfluous}}(x) = \{x \mid yA'x \}
+    A_{\text{superfluous}}(x) = \{x \mid yA'x \}
 \end{equation*}
 
 Recall that the almost similar relation $A'$ is not symmetric and observe that in comparison to $A(x)$, here $x$ and $y$ are flipped in the application of $A'$. 
@@ -79,10 +79,10 @@ Especially if the developer is not all too familiar with a given framework or th
 Of course, it is possible that this type of error results in noticeable bugs much faster than a missing call, but again we do not know this before investigating.
 
 %-- formalized
-To formalize this new variant $\mathnormal{DMMC}_{\mathnormal{wrong}}$ looking for erroneous method invocations, we again need only change the definition of almost similarity.
-This time we define a new relation $A'_{\mathnormal{wrong}}$ as follows:
+To formalize this new variant $\text{DMMC}_{\text{wrong}}$ looking for erroneous method invocations, we again need only change the definition of almost similarity.
+This time we define a new relation $A'_{\text{wrong}}$ as follows:
 \begin{align*}
-xA'_{\mathnormal{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
+xA'_{\text{wrong}}y \iff & T(x) \: = T(y) \;\; \land \\
                                 & C(x) \: = C(y) \;\; \land \\
                                 & M(x) \: \neq M(y) \;\; \land \\
                                 & |M(x)| \:  = |M(y)| \;\; \land \\

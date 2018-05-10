@@ -223,7 +223,7 @@ It seemed that the database was not able to unravel these numerous comparisons w
 However, if one thinks carefully about the process of determining the exact and almost similar type usages, something stands out: it is not necessary to compare all of the type usages one by one.
 The only type usages that are potential candidates for exact or almost similarity are those that have the same type and context as the type usage under investigation.
 %%however thinking about what happens - for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext) - only if that's the case go and compare the methods
-This gives rise to natural partitions of the dataset: the sets of type usages which share the same type and context (or just the same type for the variant $\mathnormal{DMMC}_\mathnormal{noContext}$).
+This gives rise to natural partitions of the dataset: the sets of type usages which share the same type and context (or just the same type for the variant $\text{DMMC}_\text{noContext}$).
 Within these partitions, we need to compare each type usage with all of the others, but each partition will only be a fraction of the size of the whole dataset.
 Fortunately, the database is already perfectly suited for obtaining these subsets.
 With this realization, we can continue to the final step of the analysis: detecting anomalies.
