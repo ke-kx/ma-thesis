@@ -80,6 +80,7 @@ Here, he knows that the iterator contains one element so he does not need to che
 \todo[inline]{
 a bit more explanation?
     proper example code for better understanding?
+    just use the easiest example? -> height and width pairs
 
 additional examples:
 only height() or width()
@@ -169,6 +170,7 @@ strangeness score:
     explain why we expect the scores verteilung to be like that
     score in relation to smth? ie method length, nr tus in partition, etc
     put this only in rq1?  -> not so sure\ldots
+    DEFINITELY somewhere mention the average number of anomalies per app!
 }
 
 \section{Results}
@@ -201,7 +203,29 @@ Our measure of success shall be the number of findings per application and the r
 % concrete techniques and results
 \todo[inline]{
     prepare table with findings per app (+ avg/median)
+    comment it in some useful manner!
 }
+
+\begin{figure}[t]
+    \centering
+    \begin{tabular}[h]{c|c|c|c|c|c|c}
+\toprule
+Name & Type Usages & Findings & B & S & H & FP \\
+\midrule
+ar.rulosoft.mimanganu\_78.apk 			& 11241  & 12 & 1 & 1 & 4 & 6 \\
+com.zeapo.pwdstore\_94.apk 				& 12659  & 1  &   &   & 1 &   \\
+net.bitplane.android.microphone\_7.apk 	& 80     &    &   &   &   &   \\
+com.quaap.dodatheexploda\_2.apk			& 87     &    &   &   &   &   \\
+com.health.openscale\_23.apk 			& 3645   & 3  &   & 1 & 2 &   \\
+se.tube42.kidsmem.android\_16.apk 		& 13547  & 1  &   &   & 1 &   \\
+org.billthefarmer.diary\_125.apk 		& 880    &    &   &   &   &   \\
+org.ligi.blexplorer\_12.apk 			& 8350   &    &   &   &   &   \\
+org.kaqui\_27.apk						& 1675   &    &   &   &   &   \\
+com.afollestad.nocknock\_13.apk 		& 9547   &    &   &   &   &   \\
+\bottomrule
+    \end{tabular}
+    \caption{The results of the manual evaluation}\label{fig:manual}
+\end{figure}
 
 \subsubsection{RQ1.1: Is there a noticeable difference between the different variants?}
 
@@ -209,7 +233,7 @@ In Chapter \ref{ch:ext}, we suggested the variant $\text{DMMC}_\text{class}$ and
 To understand how they behave in comparison to the $\text{DMMC}$ system, we applied them to the same 10 applications that we randomly selected for the manual evaluation.
 Once more we review all of their findings and classify them as true or false positives.
 
-\todo[inline]{table with the results + discussion!}
+\todo[inline]{table with the results + discussion!, replace names with numbers\ldots}
 
 %\subsubsection{RQ1.2: Given a known missing method call bug, can this approach detect it?}
 % only if time! -> probably not
