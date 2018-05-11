@@ -208,20 +208,20 @@ Our measure of success shall be the number of findings per application and the r
 
 \begin{figure}[t]
     \centering
-    \begin{tabular}[h]{c|c|c|c|c|c|c}
+    \begin{tabular}[h]{c|l|r|c|c|c|c|c}
 \toprule
-Name & Type Usages & Findings & B & S & H & FP \\
+Nr & Name & Type Usages & Findings & B & S & H & FP \\
 \midrule
-ar.rulosoft.mimanganu\_78.apk 			& 11241  & 12 & 1 & 1 & 4 & 6 \\
-com.zeapo.pwdstore\_94.apk 				& 12659  & 1  &   &   & 1 &   \\
-net.bitplane.android.microphone\_7.apk 	& 80     &    &   &   &   &   \\
-com.quaap.dodatheexploda\_2.apk			& 87     &    &   &   &   &   \\
-com.health.openscale\_23.apk 			& 3645   & 3  &   & 1 & 2 &   \\
-se.tube42.kidsmem.android\_16.apk 		& 13547  & 1  &   &   & 1 &   \\
-org.billthefarmer.diary\_125.apk 		& 880    &    &   &   &   &   \\
-org.ligi.blexplorer\_12.apk 			& 8350   &    &   &   &   &   \\
-org.kaqui\_27.apk						& 1675   &    &   &   &   &   \\
-com.afollestad.nocknock\_13.apk 		& 9547   &    &   &   &   &   \\
+1 & ar.rulosoft.mimanganu\_78.apk 			& 11241  & 12 & 1 & 1 & 4 &   6 \\
+2 & com.zeapo.pwdstore\_94.apk 				& 12659  & 1  &\cc&\cc& 1 & \cc \\
+3 & net.bitplane.android.microphone\_7.apk 	& 80     & \cc&\cc&\cc&\cc& \cc \\
+4 & com.quaap.dodatheexploda\_2.apk			& 87     & \cc&\cc&\cc&\cc& \cc \\
+5 & com.health.openscale\_23.apk 		   	& 3645   & 3  &\cc& 1 & 2 & \cc \\
+6 & se.tube42.kidsmem.android\_16.apk 		& 13547  & 1  &\cc&\cc& 1 & \cc \\
+7 & org.billthefarmer.diary\_125.apk	   	& 880    & \cc&\cc&\cc&\cc& \cc \\
+8 & org.ligi.blexplorer\_12.apk 	    	& 8350   & \cc&\cc&\cc&\cc& \cc \\
+9 & org.kaqui\_27.apk				    	& 1675   & \cc&\cc&\cc&\cc& \cc \\
+10 & com.afollestad.nocknock\_13.apk     	& 9547   & \cc&\cc&\cc&\cc& \cc \\
 \bottomrule
     \end{tabular}
     \caption{The results of the manual evaluation}\label{fig:manual}
@@ -233,7 +233,40 @@ In Chapter \ref{ch:ext}, we suggested the variant $\text{DMMC}_\text{class}$ and
 To understand how they behave in comparison to the $\text{DMMC}$ system, we applied them to the same 10 applications that we randomly selected for the manual evaluation.
 Once more we review all of their findings and classify them as true or false positives.
 
-\todo[inline]{table with the results + discussion!, replace names with numbers\ldots}
+\todo[inline]{table with the results + discussion!, replace names with numbers\ldots
+    mention some numbers related to the failure modes? (still not sure if I wanna do their discussion here or below)
+}
+
+\begin{figure}[t]
+    \centering
+    \begin{tabular}[h]{r|r|c|c|c|c|c|c|c|c|c|c}
+\toprule
+%\cmidrule(l){3-10}
+\multicolumn{2}{c}{ } & \multicolumn{5}{|c|}{noContext} & \multicolumn{5}{|c}{class} \\
+     \midrule
+App & Type Usages & Findings & B & S  & H    & FP & Findings & B & S & H & FP \\
+\midrule
+1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & 28 &  1  &  \cc &  8  &  19 \\
+2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & 10 & \cc &  \cc &  1  &   9 \\
+3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   &  0 & \cc &  \cc & \cc & \cc \\
+4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   &  0 & \cc &  \cc & \cc & \cc \\
+5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) &  7 & \cc &  \cc & \cc &   7 \\
+6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) &  0 & \cc &  \cc & \cc & \cc \\
+7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & 21 & \cc &  \cc & \cc &  21 \\
+8 & 8350   &  4 (4)  &  \cc   &  \cc  &  \cc    &  4 (4) &  2 & \cc &  \cc &  1  &   1 \\
+9 & 1675   &  2 (1)  &  \cc   &  \cc  &  2 (1)  &  \cc   &  1 & \cc &  \cc &   1 & \cc \\
+10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) &  4 & \cc &  \cc & \cc &   4 \\
+\bottomrule
+    \end{tabular}
+    \caption{Comparing $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
+\end{figure}
+\todo{include the SC findings or not?
+    2 -> 29 (2) SC
+    8 -> 24 (0) SC
+
+visualize that its worse? aka make the ones where it's higher red oä?
+switch toprule to smth else to not go over whole table
+}
 
 %\subsubsection{RQ1.2: Given a known missing method call bug, can this approach detect it?}
 % only if time! -> probably not
