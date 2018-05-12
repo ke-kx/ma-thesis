@@ -275,6 +275,7 @@ App & Type Usages & Findings & B & S  & H    & FP & Findings & B & S & H & FP \\
 
 visualize that its worse? aka make the ones where it's higher red oä?
 switch toprule to smth else to not go over whole table
+it's too wide right now! Fix that!
 }
 
 %\subsubsection{RQ1.2: Given a known missing method call bug, can this approach detect it?}
@@ -392,15 +393,15 @@ any other actual results on this? I don't actually think so\ldots
 \subsection{RQ5: Can the Majority Rule also detect superfluous or wrong Method Calls?}
 
 % motivation + intro
-in chapter X we extend the method for detecting missing method calls that monp et al proposed to also detect two other anomalies:
-superfluous and wrong method calls
-to understand if theses variations offer anything of value we evaluate their findings manually in the same manner as we evaluate the findings of the vanilla variant.
+In Chapter \ref{ch:ext}, we propose extending the method for detecting missing method calls that Monperrus et al.\ introduced to also detect two other anomalies: superfluous and wrong method calls.
+To understand if the variations $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ can successfully aid with detecting bugs in software, we manually evaluated their findings in the same manner as we evaluated those of the originally variant.
 
-manual eval of results when using superfluous / wrong variants
--> same mode of evaluation as RQ1
-
-already problem I'm seeing: things with 1 call will always be almost similar since only one call is different
- -> this could be a problem?
+\todo[inline]{
+    describe results
+    lots of findings! (mention numbers at least)
+    -> first problems: things with 1 call will always be almost similar since only one call is different
+    -> problem of superfluous? (init?)
+}
 
 \section{Discussion}
 
@@ -431,6 +432,7 @@ mention the remedies we have thought of (filters etc) but also -> say that it wo
 example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
 -> these filters also as my ``contribution''? :D 
 failure mode: doesn't follow static functions (where the method in question is actually called)
+    suggest improvement to follow them
 failure mode: kotlin -> outlier generally
 suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
 dot chaining -> hard to fix / tradeoffs

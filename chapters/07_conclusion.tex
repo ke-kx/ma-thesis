@@ -1,49 +1,65 @@
 \chapter{Conclusion}\label{ch:concl}
 
 % summary of what i did (maybe look at intro as well?)
-we want to detect missing method calls
-because that would be useful over whole software lifetime, development of new software and maintenance of old mature software
-take method monperrus and improve the implementation by adding database + more flxibility / extensibility
-also propose a bunch of variations to their method, with the goal of a) BETTER detection of missing calls (no context, class merge)
-and b) detecting different kinds of bugs (wrong / superfluous)
+In this thesis, we investigate a method for detecting missing method calls that was proposed by Monperrus et al.
+Detecting missing method calls would be useful over the entirety of a software's lifetime, be it when developing a new program or when maintaining old and mature software.
+The method we implement does not require any input besides the source code itself as it extracts patterns from the data it receives.
+This makes it superior to other bug detection systems as it does not require the work of keeping hand-crafted detection rules up to date.
 
-Datenset generiert, zumindest was über software sturktur lernen, bla !
+We improve upon the implementation of Monperrus et al.\ in that we add a database backend and enable better extensibility.
+Furthermore, we propose several variations to their method with the goal of better detection of missing calls on the one hand and detecting different kind of errors on the other.
+To get an all-round impression of the results that their method produces and how our variations behave in comparison, we evaluate them on a large dataset of Android applications. 
 
 % experiments + results
+\todo[inline]{
+    Summary of results! + MAIN TAKEAWAY!
 performed twofold evaluation, qualitatively and quantitatively
 general takeaway about suitability of this method + reasons WHY I would say so
 mention some numbers!
 
 new method is amazing and way better in case xy but worse in zz
+    tentively that it's inferior because of bad detection rate oä
 robustness has shown this and that
+}
 
 \section{Future Research}
+\todo[inline]{cahnge title to possible improvements oä?}
 
-future research would be interesting in the direction of \ldots
+% general intro
+\todo{smth with relation to how good i rate the method to be?}
+In principle there are two dimensions along which we envision future research.
+The first dimension concerns itself with improving the detection of missing method calls in some way.
+The second dimension is about applying the majority rule to other types of anomalies.
 
 % improve the method itself
-higher precision by some means? (clustering, etc)
--> better anomaly detection algorithm! (but difficult / constrained by the input size (few methods,\ldots) -> refer to dataset analysis section)
-    tried it but so far no luck
-    mention the hypersphere thing?
-specific problem: static functions -> potentially step into them sometimes
-something else that comes up in analysis? (dot chaining, \ldots)
-Performnance (shouldn't be a problem?)
-    but could use cython, etc
-bigger dataset!
-use different tu partitions (e.g. inheritance hierarchy?, \ldots)
-    maybe do some meta evaluation there -> which partition is best able to detect smth here?
+As for improving the missing method call detection, we would first like to reference the analysis of typical failures we encountered that we did in Section ABC.
+In it we already address a number of potential improvements as well as their drawbacks.
+Especially some filters seem like an easy way to decrease the number of false positives and thus increase the precision, albeit they are a bit antithetical to the original idea of staying away from hand-crafted rule sets.
+Another way to improve the precision could be to use a completely different anomaly detection algorithm.
+As mentioned, we did actually invest quite some time researching in that direction but it proved to be rather difficult, because the data on which to learn is actually rather thin.
+\todo{rephrase\ldots}
+\todo[inline]{correct reference!, mention examples? (dot chaining, static function etc)
+make sure this paragraph works with the actual discussion section, stuff needs to be explained proper!\ldots}
+
+We questioned how valid it is to partition the type usages by the context they appear in and suggested two other options for it ($\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$).
+While our evaluation showed that grouping them by context produces the best results, there might be even better ways of organizing them.
+We would be especially interested to see if one can improve the results by considering the inheritance hierarchy of the classes that the type usages appear in.
+
+The majority rule is essentially looking for outliers by virtue of being different then the rest, the findings could certainly be improved by taking more data into consideration.
+\todo{terrible first part of the sentence\ldots, actually terrible paragraph\ldots}
+We already consider a sizeable dataset in our evaluation, however the ecosystem of existing Android applications is by far larger than that.
+Analyzing a large portion of the Google playstore and extracting all of the type usages would certainly increase the precision.
+We don't expect the performance to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize the implementation by using a dedicated database server and Cython (or any regular compiled language) for the analysis phase.
 
 % apply to different anomalies
-apply this anomaly detection method to other features (implements, overrides, pairs of methods, \ldots.)
-    objectübergreifend somehow?
-    what other pairings might there be?
-or potentially later look into other features (like implements/override), pairs of methods, etc
-monperrus et al propose looking into traces or conditions as well
+Besides these measures to improve the detection of missing method calls, one could also envision using the majority rules to detect other types of anomalies.
+Monperrus et al.\ suggest applying concept of almost similarity to execution traces to detect runtime defects or to conditional statements to improve the resilience of software to incorrect input.
+We also see potential in considering other features, for example, the interfaces a class implements or the methods it overrides.
+\todo{idea clear?, any other pairings?, objectübergreifen?}
 
+\todo[inline]{
+    i think not mentioning this is actually smarter!
 of course about temporal properties\ldots
 Reihenfolge von Methoden - hat gut funktioniert und wäre potentiell nützlich, aber kleines subset + lots of research already done
 order of method calls? (probably should wait for empirical results - how long are typical method lists (state explosion, ...) / latice solution?)
-efficient update (only update files touched by change + the scores for affected type usages) - maybe database view for scores will already do this automatically? 
-
-
+}
