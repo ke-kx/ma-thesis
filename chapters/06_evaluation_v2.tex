@@ -18,57 +18,48 @@ Over the course of this evaluation, we would like to understand better the natur
 We answer the following 5 (6)? more detailed research questions.
 \todo[inline]{smth more ala ``and what other prerequisites this technique has'' oä?}
 
-\subsection{RQ 1: How many true versus false Positives are among the anomalous Type Usages flagged by the Majority Rule?}
+\subsection{RQ 1: How many true versus false positives are among the anomalous type usages flagged by the majority rule?}
 
 % motivation behind question + general
-It is among the primary goals of our evaluation to understand if the method we implemented is something that a developer would use to improve the quality of the software he is developing.
+It is among the primary goals of our evaluation to understand if the technique we implemented is something that a developer would use to improve the quality of the software he is developing.
 It seems that the deciding factor for this would be the ability of the majority rule to detect bugs and to detect them with clarity.
 If the developer needs to sift through thousands of anomalies to detect a single true mistake, the technique is not very useful.
 If, on the other hand, most of the high ranked anomalies are indeed hints for potential bugs, it would be of tremendous worth.
 
-\subsubsection{RQ 1.1: Is there a noticeable Difference between the different Variants?}
+\subsubsection{RQ 1.1: Is there a noticeable difference between the different variants?}
 
-In Chapter \ref{ch:ext}, we suggest the variant $\text{DMMC}_\text{class}$ and Monperrus et al.\ already propose the $\text{DMMC}_\text{noContext}$ version.
+In Chapter \ref{ch:ext}, we suggest $\text{DMMC}_\text{class}$ and Monperrus et al.\ already propose $\text{DMMC}_\text{noContext}$.
 We would like to understand how these variations behave in comparison to the original $\text{DMMC}$ system, are the results they produce of comparable, better or worse quality?
 
-\subsection{RQ 2: Do the Benchmark Results align with the Results of the Manual Evaluation?}
+\subsection{RQ 2: Do the benchmark results align with the results of the manual evaluation?}
 
 % general description what benchmark doing + reasons for doing it
-Monperrus et al.\ base a significant part of their evaluation on an automated benchmark to the end that they understand better how the majority rules behaves under different circumstances.
-Since they do not have a large dataset of known missing method calls available that they could use to asses the quality of their method, they create instances of missing calls by sampling a type usage from the dataset and removing one of its method calls.
-They then calculate the strangeness score of this degraded type usage and determine if the majority rule can detect the known missing call.
+Monperrus et al.\ base a significant part of their evaluation on an automated benchmark with the aim of understanding better how the majority rules behaves under different circumstances.
+Because they do not have a large dataset of known missing method calls available that they could use to asses the quality of their method, they create instances of missing calls by sampling a type usage from the dataset and removing one of its calls.
+They then calculate the strangeness score of this degraded type usage and determine if their implementation can detect the known missing call.
 Using this procedure, they can test the system on many cases for that they know the correct answer.
-Because they know the expected answer, they can calculate relevant metrics that capture the systems success and compare the different variants on an objective basis.
+Knowing the expected answer, they can calculate relevant metrics that capture the systems success and compare the different variants on an objective basis.
 
 % it seems to make sense, but is also a little bit questionable, we would like to confirm / deny if we can put some trust into the results
 While such a benchmark makes sense on the face of it, one can question how meaningful are its results.
 Monperrus et al.\ are essentially simulating the situation that a developer forgets the method call they remove and verify if their implementation would be helpful in that case.
-The critical assumption here is that the artificially created missing calls are in some way comparable to missing method call bugs in real software.
+The critical assumption here is that the artificially created missing calls are in some way comparable to real missing method call bugs in software.
 If they are not, the benchmark only measures how well the method performs on the exact problem of detecting randomly removed method calls, which is not very meaningful at all.
 \todo[inline]{
     anything else? is the question clear like this?
 ``In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.''
-
-    do i wann use the benchmark for anything else?
-        like smth just about benchmark performance relative to no tus in partition?
 }
 
-\subsection{RQ 3: How many Type Usages are necessary to accurately detect Anomalies?}
-\todo[inline]{ still not happy with title\ldots }
+\subsection{RQ 3: How many type usages are necessary to detect anomalies?}
+\todo[inline]{ still not happy with title\ldots - removed ``accurately'' maybe better now? }
 
 % motivation + general
-Apart from investigating the quality of the results, it is also important to understand what other prerequisites this technique has.
+Apart from investigating the quality of results, it is also important to understand what prerequisites this technique has.
 Here, we examine how much data the majority rule needs to produce sensible results.
 Ideally, we would like to understand how big a codebase needs to be before patterns and their violations emerge.
 Can we apply this method to a in-house, closed-source library or does it only work on a well known open source framework like Android where it is easy to gather additional data?
 
-\subsection{RQ 4: How robust is the Majority Rule in the Face of erroneous Input Data?}
-
-\todo[inline]{
-worauf is robustness bezogen? -> results quality or smth else? (Robustness explanation)
-
-not super happy with the questions in description, is it fine?
-}
+\subsection{RQ 4: How robust is the majority rule in the face of erroneous input data?}
 
 % general / motivation
 It is not only important to understand how much data the majority rule requires, we are also interested how sensitive it is to perturbed inputs.
@@ -78,7 +69,7 @@ However, the question is, how much correct input is needed to detect the incorre
 Imagine, for example, a new library that is not very well designed causing many developers to use it in incorrect ways.
 Can we expect the majority rule to be of any help in such a scenario or will it just fail completely?
 
-\subsection{RQ 5: Can the Majority Rule also detect superfluous or wrong Method Calls?}
+\subsection{RQ 5: Can the majority rule also detect superfluous or wrong method calls?}
 
 % motivation + intro
 In Chapter \ref{ch:ext}, we propose extending the method for detecting missing method calls that Monperrus et al.\ introduced to also detect two other anomalies: superfluous and wrong method calls.
@@ -159,20 +150,15 @@ Does the Strangeness Score behave as expected on Android Apps? (the behavior tha
 \section{Study Design}
 % This section describes how the study, using the information from the study objects, attempts to answer the research questions.
 
-% something general?!
-\todo[inline]{
-What here? one stupid intro sentence? aka we use the android dataset for everything oä?
-per RQ one part explaining the GENERAL idea}
-
 \paragraph{For RQ 1: True vs False Positives}
 
-To determine if a anomaly that was flagged by our implementation constitutes a true finding, we need to manually review it.
+To determine if an anomaly that was flagged by our implementation is a true finding, we need to manually review it.
 Unfortunately, our implementation uncovered too many anomalous type usages to review all of them, prompting us to randomly select 10 applications for detailed analysis.
 We examine each anomalous type usages of these applications in detail and classify them as either true or false positive.
 This mimics the experience a developer would have when applying our tool to his software.
 To answer the research question, we consider the total number of findings per application and the ratio of true to false positive findings.
 
-For RQ 1.2, whether the variations $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ produce different results, we apply them to the same 10 applications that we randomly selected for RQ 1.
+For RQ 1.2, whether the variations $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ produce different results, we apply them to the same 10 applications that we sampled for RQ 1.
 Once more, we review all findings and classify them as true or false positives.
 
 \paragraph{For RQ 2: Benchmark Results}
@@ -188,10 +174,10 @@ Because we know the correct answer for all degraded type usages, we can use the 
 \end{description}
 \todo[inline]{actually explain metrics!}
 % how we want to evaluate the simulation itself
-These metrics are already at least mildly interesting by themselves if we compare them across the three variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$.
+These metrics are at least mildly interesting by themselves if we compare them across the three variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$.
 However, as we are not sure about their significance, we also want to evaluate the benchmark itself.
 To do so, we compare the benchmark results of each variant to the results of the manual evaluation we performed for RQ 1.
-We would expect them to align, that is if one variant produces bad results in the manual evaluation it would also yield bad results in the benchmark.
+We would expect them to align, that is if one variant produces bad results in the manual evaluation it should also yield bad results in the benchmark.
 If there is a serious mismatch between the manual and the benchmark results, this would question the validity of the benchmark.
 However, if they align, it would at least strengthen the idea that the benchmark has some relation to the real world performance of these techniques.
 
@@ -203,66 +189,54 @@ concrete measures for success or not sucess?
 
 \paragraph{For RQ 3: Input Size}
 
-Even if we have just questioned the validity of the benchmark,
-we would like to present some numbers here to support the mathematical considerations.
-
-HERE THE BENCHMARK RE PARTITION SIZE!!
-not clear benchmark works
-but still some aussage
--> do the same kind of benchmark as for rq2, but this time record the results with respect to partition size
--> we can discern at least a little bit (+ mathematical answer in discussion)
+Even if we have just questioned the validity of the benchmark, we still think that it can offer some insight into the working of our implementation.
+Thus, to understand how the quality of findings depends on the amount of input data that is available, we perform a similar kind of benchmark as for RQ 2.
+That is, we sample type usages, degrade them by removing a method call and then check if our implementation recognizes them as anomalies.
+We calculate the same metrics as in the previous experiment, but this time we consider one additional factor: the size of the partition.
+\todo[inline]{need to explain the partition size at least a little bit, at least reference previous section?
+    + mention mathematical results here or not?}
+In the discussion, we also present some mathematical considerations to support the results.
 
 \paragraph{For RQ 4: Robustness}
 
-threefold: 
-mathematical considerations in discussion, benchmark, true BUG + take away
-
-% problem + math answer
-It is difficult to answer this question with certainty.
-However, we would like to present two different views on the problem.
-The first one is a mathematical consideration with regards to the behavior of the $\operatorname{S-score}$.
-The second one is a simulation experiment similarly to the one performed for the previous question.
+\todo[inline]{mention bug and math answers here or only in discussion? -> right now think only discussion would be best..}
+%threefold: mathematical considerations in discussion, benchmark, true BUG + take away
+It is difficult to give an accurate answer to the question how sensitive the majority rule is to low-quality input data.
+However, we would like to present three different points that should be taken into account.
+The first one is a mathematical consideration with regards to the behavior of the $\operatorname{S-score}$, we give it in full in the discussion.
+The second one is a simulation experiment similarly to the one perform for the previous question and for the third one we examine a true bug that our implementation discovered.
 
 % benchmark answer: idea
-We ran another simulation experiment, similarly to the one we present in the previous section.
-In this experiment, we degenerated not only one type usage by removing a method call, instead we  \ldots
-\todo[inline]{what the fuck am i doing for this? am i actually doing it or do I just say: ``well benchmark doesn't make sense so i didn't do it?''
-try with intentionally degraded data -> I already have the setup, I just have to improve the benchmark thing performancewise a bit and let it run
--> again simulate "missing methods" + additional erros, compare performance?
-}
-
-\todo[inline]{
-example: use true bug finding, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
-give example about the true bug we found + how fast it would disappear from the findings list? or rather how slow
-}
+In the simulation experiment, we again sample a type usage from the dataset and degrade it to create a known missing method call.
+However, this time, degrading only one type usage is not enough.
+Instead, we pick a second random type usage from the same partition as the first one and also remove one of its methods calls, before checking if our implementation can detect the known missing call.
+Thus, we simulate the situation that the type in question is in some way difficult to use and it has been used wrongly in multiple places.
+We can then calculate the same metrics as before and investigate how this lower quality input data affects the performance of our implementation.
+\todo[inline]{is this the true degradation mechanism?
++ maybe a bit more formal and ausführliche erklärung?}
 
 \paragraph{For RQ 5: Other Anomalies}
 
-To understand  we manually evaluate their findings in the same manner as we evaluate those of the originally variant.
-again apply to same rnd 10 apps
-
+To understand if the majority rule can also be used to detect superfluous or wrong method calls, we apply our implementation of $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ to the 10 random applications we sampled for RQ 1.
+We manually review their findings in the same manner as we review those of the original variant and label them as true or false positives.
 
 \section{Study Procedure}
 % This section describes the nitty gritty details required to implement the study design in reality.
 % In principle, they could also be included directly in the description of the study design.
 % However, it is easier for the reader to first understand the general idea, and then the details.
 
-keep it general?, no subsections / paragraphs
-or maybe split in manual vs benchmark
-
-% actual steps to evaluation
-\todo[inline]{ past tense makes sense or not really?  }
-The detailed procedure of the manual evaluation was as follows:
-We extracted the type usages of the 625 Android applications that we had downloaded and stored them in the database.
-
-Next, we analyzed the extracted type usages with the 3 different variants $\text{DMMC}$, $\text{DMMC}_{\text{noContext}}$ and $\text{DMMC}_{\text{class}}$ and determined their respective $\operatorname{S-score}$s.
-We consider type usages with an $\operatorname{S-score}$ bigger than $0.9$ to be anomalies.
+The only parameter that our implementation requires is the limit that defines when a type usage is an anomaly.
+For this evaluation, we consider type usages with an $\operatorname{S-score}$ bigger than $0.9$ to be anomalies.
 This is the value that Monperrus et al.\ suggest and since it implies that 90\% of similar type usages are almost similar it seems like a reasonable cutoff.
 
-While we would have liked to review all anomalies that our implementation uncovers, there were simply too many.
-\todo{determine how many anomalous findings we have in total (easy!)}
-Instead, we used a random number generator\footnote{Google frontpage on: \url{https://www.google.com/search?q=random+number}} to sample 10 applications to be examined in detail.
-We manually reviewed all anomalous type usages of the selected applications and carefully considered the source code and the API documentation before classifying them as one of the following:
+\subsection{Manual Review}
+
+% concrete rnd nr gen + results? (already mention the apps -> reference the first rsult figure!)
+We used a random number generator\footnote{Google frontpage on: \url{https://www.google.com/search?q=random+number}} to sample the 10 applications that should be examined in detail.
+The names of the selected applications can be found in Figure \ref{fig:manual}.
+% manual eval steps?
+We analyze all of their type usages with the three different variants $\text{DMMC}$, $\text{DMMC}_{\text{noContext}}$ and $\text{DMMC}_{\text{class}}$ and determine their respective $\operatorname{S-score}$s.
+We then manually review all anomalous type usages and carefully consider the source code and the Android API documentation before classifying them as one of the following:
 \begin{description}
     \item [real bug (B)] a real defect, change definitely necessary
     \item [real smell (S)] another way of doing things would be better, but probably not a defect in the given instance
@@ -292,8 +266,7 @@ only height() or width()
 setTitle not called -> not strictly necessary but ``makes sense''
 }
 
-% ---- 
-rq 2:
+\subsection{Automated Benchmark}
 
 % actual setup + degradation mechanism
 We perform the benchmark using a custom benchmarking infrastructure written in Python.
@@ -302,39 +275,17 @@ The normal degradation mechanism removes each method call of the selected type u
 To retain a reasonable performance and execution time, we only apply this procedure to a portion of the entire dataset (around 10\%).
 \todo{correct percentage?}
 For further evaluation, we also support different processes for degradation, such as removing more than one method call or degrading more than one type usage.
--> this will be necessary for RQ 3 + 4(?)
-
-rq3 no additional info needed, just same way of benchmarking + recording the results
-rq4 other degradation mechanism
-rq5 nothing additional necessary?!
+\todo[inline]{describe degradation a bit better?}
 
 \section{Results \& Interpretation}
 % describe results + interpret them with respect to rqs
 % A common mistake is to mix the results with the discussion. This makes it harder for the reader to separate backed-up results from speculation.
 
-\todo[inline]{
-general idea:
-qualitative evaluation: are the findings useful in practice?
-quantitative evaluation: given some assumptions, how useful can we expect this technique to be? robustness? Qualitative vs automatic same results?
-make sure I will be able to a) answer those questions and b) the answers are ``interesting''
-}
+In the following, we present our results relating to each of the research questions.
 
-We investigate the performance of our implementation along the lines of five research questions.
-\todo{change performance, sounds like time!}
-The goal of this investigation is to understand how useful we can expect this technique to be in practice.
-We would like to understand some of the preconditions it requires and under which circumstances it might fail.
-For each question, we first explain its purpose and modus of evaluation, before giving results and an interpretation of them.
-
-\paragraph{For RQ 1: True vs False Positives}
-
-average number of findings per app (remember that the findings now are for all 626 apps)
-how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
+\paragraph{For RQ 1: Manual Review}
 
 % concrete techniques and results
-\todo[inline]{
-    prepare table with findings per app (+ avg/median)
-    comment it in some useful manner!
-}
 \begin{figure}[t]
     \centering
     \begin{tabular}[h]{c|l|r|c|c|c|c|c}
@@ -356,11 +307,16 @@ Nr & Name & Type Usages & Findings & B & S & H & FP \\
     \caption{The results of the manual evaluation}\label{fig:manual}
 \end{figure}
 
-\subsubsection{For RQ1.1:}
+In Figure \ref{fig:manual}, we summarize the results of manually reviewing the findings of the $\text{DMMC}$ variation.
+Most of the applications do not exhibit any anomalous type usages and those that do only have a few.
+One of the application is responsible for the majority of findings and also for the majority of false positives.
+However, it is also the only one in which a finding indicates a true bug.
+In fact, we reported this bug and the maintainer already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
+\todo[inline]{ mention average number of findings per app (remember that the findings now are for all 626 apps) (all findings)}
 
-\todo[inline]{table with the results + discussion!, replace names with numbers\ldots
-    mention some numbers related to the failure modes? (still not sure if I wanna do their discussion here or below)
-}
+In Figure \ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
+Both variants yield more anomalies than the original version and the number of false positives is also higher.
+\todo[inline]{better general description? / give example?}
 
 \begin{figure}[t]
     \centering
@@ -385,27 +341,33 @@ App & Type Usages & Findings & B & S  & H    & FP & Findings & B & S & H & FP \\
     \end{tabular}
     \caption{Comparing $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
 \end{figure}
-\todo{include the SC findings or not?
+\todo[inline]{include the SC findings or not?
     2 -> 29 (2) SC
     8 -> 24 (0) SC
 
-visualize that its worse? aka make the ones where it's higher red oä?
 switch toprule to smth else to not go over whole table
 it's too wide right now! Fix that!
+the nr TUS for noContext is not the same as for class!
+
+mention some numbers related to the failure modes? (still not sure if I wanna do their discussion here or below)
 }
 
-\paragraph{For RQ 2: Benchmark Results}
-
-\todo[inline]{
-present results!
-(maybe relate the precision etc to the number of tus in the partition -> already have that data)
-}
-
-\paragraph{For RQ 3: Input Size}
+\paragraph{For RQ 2 and 3: Benchmark}
 
 First, we present the benchmark results of the different variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$.
 
+\todo[inline]{
+present results!
+    -> first in general, then also in relation to partition size
+(maybe relate the precision etc to the number of tus in the partition -> already have that data)
+}
+
 \paragraph{For RQ 4: Robustness}
+
+\todo[inline]{
+example: use true bug finding, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
+give example about the true bug we found + how fast it would disappear from the findings list? or rather how slow
+}
 
 \paragraph{For RQ 5: Other Anomalies}
 
@@ -419,6 +381,8 @@ First, we present the benchmark results of the different variants $\text{DMMC}$,
 
 \paragraph{For RQ 1: True vs False Positives}
 
+how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
+somewhere actually mention the percentage of tp to fp?
 general aussage like ``its good or its useless''
 
 % Manual eval examples
@@ -430,7 +394,6 @@ mention the remedies we have thought of (filters etc) but also -> say that it wo
 (muster: if there is "several" equal ones it doesn't work so well, if its just very few (<4) it's at least a smell?)
 
 example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
--> these filters also as my ``contribution''? :D 
 failure mode: doesn't follow static functions (where the method in question is actually called)
     suggest improvement to follow them
 failure mode: kotlin -> outlier generally
@@ -441,12 +404,6 @@ mention the android.* filter! / does it actually make sense -> data says not rea
 consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
 + add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
 + add the ``only from my project'' filter
-
-mention in the end that i tried a 
-Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
-    clustering detector try (+ hypersphere idea?)
-    but all in all it didnt work out / not enough time
-    + vermutungen warum es nicht funktioniert -> dataset exploration + size of method and typeusage lists per partition!
 
 mention this when discussing the results!
     static functions evaluation!
@@ -497,13 +454,17 @@ oö
 
 Split into external vs interal threats!
 
-% general qualifiaction / threts to validity
 and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
-explain problems with the automatic evaluation
+
+% internal: reasons why the results could be invalid for your study objects
+manual eval: biased, subjektive bewertet, but rated rather conversatively at least
+
+general problem of automatic benchmark! (already mentioned but still applies to other questions)
     we can only show that the benchmark is not WRONG, cannot show it's right
 how related are the degraded TUs to missing method calls you can find in the wild?
-improving the metrics by dropping cases where we know we won't find an answer
+improving the metrics by dropping cases where we know we won't find an answer!!!
 
+% external: reasons why the results encountered for the study objects might not be transferable to other objects.
+% In the example, the way we chose the study objects (through our personal network) might bias our results. To mitigate this threat, we at least chose systems that had different characteristics, such as programming language, development contractor and age.
 wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
-
 
