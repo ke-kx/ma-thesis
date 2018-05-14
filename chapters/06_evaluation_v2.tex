@@ -406,15 +406,17 @@ Nr & Type Usages & Findings & On Project & Findings & >1 Call & On Project \\
 \end{table}
 
 The results of applying the two variations $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ to the randomly selected applications are depicted in Table \ref{fig:other}.
-Both methods consider a lot of type usages to be anomalous - 
- METNION NUBMER!
-During manual review we did not find a single true positive among them or even a smell or hint, that is, all of these anomalies are false positives.
-To put these into proportion, we have again filtered the findings by \ldots
+Both methods detect a lot of anomalies.
+During the manual review we did not find a single true positive among them or even a smell or hint, that is, all of these anomalies are false positives.
+We again filtered the findings to only include those type usages that originate from the application and not from libraries, however this only reduces the number of findings a little bit.
+Before filtering, $\text{DMMC}_\text{superfluous}$ flags a total of 149 type usages as outliers and after 111 remain.
 
--> mention and explain the >1 call problem!
-general flaw of WRONG -> all tus with just one call (on the same type) are considered AE! (even if with context this is too many!)
--> LOOOOTS of noise and super uselless, thus we also filter out these
--> nonethelsse all fps\ldots
+The high number of findings of $\text{DMMC}_\text{wrong}$ is due to a general flaw with the definition of $A'_\text{wrong}$, which we only realized during the evaluation.
+The problem is that all type usages that have the same type and make just one call are considered almost equal to each other.
+Since the majority rule considers type usages with many almost equal instances to be outliers, this causes the strangeness score of type usages with only one call to be extremely high.
+All in all, there is a lot of noise in the data (even if we take the context into account) and the results are nearly meaningless.
+Thus, we filter all type usages with only one call from the anomaly list, which reduces them considerably.
+However, even the filtered anomalies contain only false positives.
 
 \section{Discussion}
 % Interpretation of the results that go further than the research questions. This can, e.g., contain implications for software development.
@@ -507,20 +509,28 @@ oö
 
 \paragraph{For RQ 5: Other Anomalies}
 
-just something like: considering the high number of detected findings and zero actual success
-+ the patterns that were detected
--> majority rule cannot be considered useful for detecting wrong or superfluous calls
+Our implementations of $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ both detect a relatively high number of findings without any actual success.
+More damningly, upon manual review of the findings it becomes clear that the patterns which they extract do not make any sense.
+None of the suggested changes, be it removing a method call or interchanging one, did have any causal justification and it seems clear that they are only artefacts of randomness in the data.
+\todo{example?, bit better description\ldots}
+All in all, we do not consider our naive application of the majority rule useful for detecting superfluous or wrong method calls.
+
 \section{Threats to Validity}
+% all threats, i.e. reasons why the study results could be wrong. Ideally, it then treats every single threat and describes what you did to make sure that this threat does not invalidate your study results
 
-Split into external vs interal threats!
+There are several internal and external threats to the validity of this study.
 
-and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
+nochmal bisi klüger aufbauen mit start von: results are negative?
 
 % internal: reasons why the results could be invalid for your study objects
-only paramter: strangeness cutoff -> of course could be set higher
+There is the very real threat that our manual evaluation is biased and subjective.
+To prevent results that are 
 
+a threat is taht i simply evaluated shittyly (don't think so\ldots)
 manual eval: biased, subjektive bewertet, but rated rather conversatively at least
 since I wanna have a neg conclusion, I can sY that I graded rather friendly with the hints etc => could be rated even worse
+
+only paramter: strangeness cutoff -> of course could be set higher
 
 general problem of automatic benchmark! (already mentioned but still applies to other questions)
     we can only show that the benchmark is not WRONG, cannot show it's right
@@ -529,5 +539,18 @@ improving the metrics by dropping cases where we know we won't find an answer!!!
 
 % external: reasons why the results encountered for the study objects might not be transferable to other objects.
 % In the example, the way we chose the study objects (through our personal network) might bias our results. To mitigate this threat, we at least chose systems that had different characteristics, such as programming language, development contractor and age.
-wie sehr sind die resultate aus der Android case study 1. Wahr (subjektive bewertet etc) 2. Übertragbar auf andere Anwendungsfälle(sind open-source programme of vergleichbar mit professionellen, Android eco System mit anderen, etc)
+Regarding the external threats, we have to review our study objects.
+To avoid getting results that rely on outliers, we choose 10 applications at random from a big dataset.
+To further hedge against underrating our implementation we also did a side study of the top 50 anomalies. (-> against rating it too bad, consider the highest findings!)
+
+first of: big dataset and random sample -> relatively good usually
+random sample -> maybe better results for other app (but I did the top50 side thingy against that)
+but not completely random from all applciations!
+
+Android eco system with other? 
+    we think it's a system that is ``friendly'' for this method because of focus on gui etc -> patterns should emerge faster? (could be wrong though)
+    maybe this method works much better in another oop language or simply other java frameworks
+
+sind open-source programme of vergleichbar mit professionellen?
+potentially quality lower etc, but that should make it EASier to find bugs\ldots
 
