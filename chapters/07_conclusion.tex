@@ -10,6 +10,11 @@ We improve upon the implementation of Monperrus et al.\ in that we add a databas
 Furthermore, we propose several variations to their method with the goal of better detection of missing calls on the one hand and detecting different kind of errors on the other.
 To get an all-round impression of the results that their method produces and how our variations behave in comparison, we evaluate them on a large dataset of Android applications. 
 
+% general interpretation of ALL the results!
+	And of course relate the partition size graphs to the applicability on real world systems, like xku need a lot of data
+	Can even be combined with the results about sensitivity to input pertubations
+	Make it appear at least slightly clever
+
 % experiments + results
 \todo[inline]{
     Summary of results! + MAIN TAKEAWAY!
@@ -37,7 +42,7 @@ Especially some filters seem like an easy way to decrease the number of false po
 Another way to improve the precision could be to use a completely different anomaly detection algorithm.
 \todo{examples?}
 As mentioned, we did actually invest quite some time researching in that direction but it proved to be rather difficult, because the data on which to learn is actually rather thin.
-\todo{rephrase\ldots -> didn't actually mention anywhere else!
+\todo[inline]{rephrase\ldots -> didn't actually mention anywhere else!
 mention in the end that i tried a 
 Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
     clustering detector try (+ hypersphere idea?)

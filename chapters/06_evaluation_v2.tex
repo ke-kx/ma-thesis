@@ -44,7 +44,7 @@ Knowing the expected answer, they can calculate relevant metrics that capture th
 While such a benchmark makes sense on the face of it, one can question how meaningful are its results.
 Monperrus et al.\ are essentially simulating the situation that a developer forgets the method call they remove and verify if their implementation would be helpful in that case.
 The critical assumption here is that the artificially created missing calls are in some way comparable to real missing method call bugs in software.
-If they are not, the benchmark only measures how well the method performs on the exact problem of detecting randomly removed method calls, which is not very meaningful at all.
+If they are not, the benchmark only measures how well the implementation performs on the exact problem of detecting randomly removed method calls, which is not very meaningful at all.
 \todo[inline]{
     anything else? is the question clear like this?
 ``In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.''
@@ -150,6 +150,8 @@ Does the Strangeness Score behave as expected on Android Apps? (the behavior tha
 \section{Study Design}
 % This section describes how the study, using the information from the study objects, attempts to answer the research questions.
 
+\todo[inline]{check if i can formalize a bit better at places, aka what are the deciding factors for answering the questions}
+
 \paragraph{For RQ 1: True vs False Positives}
 
 To determine if an anomaly that was flagged by our implementation is a true finding, we need to manually review it.
@@ -193,18 +195,19 @@ Even if we have just questioned the validity of the benchmark, we still think th
 Thus, to understand how the quality of findings depends on the amount of input data that is available, we perform a similar kind of benchmark as for RQ 2.
 That is, we sample type usages, degrade them by removing a method call and then check if our implementation recognizes them as anomalies.
 We calculate the same metrics as in the previous experiment, but this time we consider one additional factor: the size of the partition.
+We aim to understand if the partition size has any influence on the precision of our implementation and if so, what partition sizes are advantageous.
+In the discussion, we also present some mathematical considerations to support the results.
 \todo[inline]{need to explain the partition size at least a little bit, at least reference previous section?
     + mention mathematical results here or not?}
-In the discussion, we also present some mathematical considerations to support the results.
-
+    
 \paragraph{For RQ 4: Robustness}
 
-\todo[inline]{mention bug and math answers here or only in discussion? -> right now think only discussion would be best..}
 %threefold: mathematical considerations in discussion, benchmark, true BUG + take away
 It is difficult to give an accurate answer to the question how sensitive the majority rule is to low-quality input data.
 However, we would like to present three different points that should be taken into account.
 The first one is a mathematical consideration with regards to the behavior of the $\operatorname{S-score}$, we give it in full in the discussion.
 The second one is a simulation experiment similarly to the one perform for the previous question and for the third one we examine a true bug that our implementation discovered.
+\todo[inline]{mention bug and math answers here or only in discussion? -> right now think only discussion would be best..}
 
 % benchmark answer: idea
 In the simulation experiment, we again sample a type usage from the dataset and degrade it to create a known missing method call.
@@ -379,6 +382,7 @@ give example about the true bug we found + how fast it would disappear from the 
 \todo[inline]{
     describe results
     lots of findings! (mention numbers at least)
+    -> only present the number of findings and say smth like it was all false positives with some specific failure modes mentiond (one method or init or...)
 }
 
 \section{Discussion}
@@ -466,7 +470,10 @@ Split into external vs interal threats!
 and of course regarding the ``results'' always qualify -> this only for android, open source apps, manual evaluation, blabla, so we never actually know for sure
 
 % internal: reasons why the results could be invalid for your study objects
+only paramter: strangeness cutoff -> of course could be set higher
+
 manual eval: biased, subjektive bewertet, but rated rather conversatively at least
+since I wanna have a neg conclusion, I can sY that I graded rather friendly with the hints etc => could be rated even worse
 
 general problem of automatic benchmark! (already mentioned but still applies to other questions)
     we can only show that the benchmark is not WRONG, cannot show it's right
