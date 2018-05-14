@@ -253,6 +253,7 @@ We then manually review all anomalous type usages and carefully consider the sou
 [not clear (NC)] source code not available, ...
 }
 
+We consider bugs and smells to be true positives.
 Depending on the quality of results one expects, hints could either be counted towards smells or towards false positives.
 \todo{``results one expects'' not clear}
 We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with the code in question.
@@ -289,18 +290,18 @@ In the following, we present our results relating to each of the research questi
 \paragraph{For RQ 1: Manual Review}
 
 % concrete techniques and results
-\begin{figure}[t]
+\begin{table}[t]
     \centering
     \begin{tabular}[h]{c|l|r|c|c|c|c|c}
 \toprule
 Nr & Name & Type Usages & Findings & B & S & H & FP \\
 \midrule
-1 & ar.rulosoft.mimanganu\_78.apk 			& 11241  & 12 & 1 & 1 & 4 &   6 \\
+1 & ar.rulosoft.mimanganu\_78.apk 			& 11241  & 12 & 1 & 1 & 4 & 6   \\
 2 & com.zeapo.pwdstore\_94.apk 				& 12659  & 1  &\cc&\cc& 1 & \cc \\
 3 & net.bitplane.android.microphone\_7.apk 	& 80     & \cc&\cc&\cc&\cc& \cc \\
 4 & com.quaap.dodatheexploda\_2.apk			& 87     & \cc&\cc&\cc&\cc& \cc \\
-5 & com.health.openscale\_23.apk 		   	& 3645   & 3  &\cc& 1 & 2 & \cc \\
-6 & se.tube42.kidsmem.android\_16.apk 		& 13547  & 1  &\cc&\cc& 1 & \cc \\
+5 & com.health.openscale\_23.apk 		   	& 3645   &  3 &\cc& 1 & 2 & \cc \\
+6 & se.tube42.kidsmem.android\_16.apk 		& 13547  &  1 &\cc&\cc&\cc&  1 \\
 7 & org.billthefarmer.diary\_125.apk	   	& 880    & \cc&\cc&\cc&\cc& \cc \\
 8 & org.ligi.blexplorer\_12.apk 	    	& 8350   & \cc&\cc&\cc&\cc& \cc \\
 9 & org.kaqui\_27.apk				    	& 1675   & \cc&\cc&\cc&\cc& \cc \\
@@ -308,57 +309,63 @@ Nr & Name & Type Usages & Findings & B & S & H & FP \\
 \bottomrule
     \end{tabular}
     \caption{The results of the manual evaluation}\label{fig:manual}
-\end{figure}
+\end{table}
 
-In Figure \ref{fig:manual}, we summarize the results of manually reviewing the findings of the $\text{DMMC}$ variation.
-Most of the applications do not exhibit any anomalous type usages and those that do only have a few.
-One of the application is responsible for the majority of findings and also for the majority of false positives.
-However, it is also the only one in which a finding indicates a true bug.
-In fact, we reported this bug and the maintainer already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
+In Table \ref{fig:manual}, we summarize the results of manually reviewing the findings of the $\text{DMMC}$ variation.
+In the entire dataset, on average there were XYZ anomalous type usages per application, so our sample with $1.7$ findings per app seems like a good fit.
+Of the total 17 findings, 3 are true positives (bug or smell) meaning that $17.65\%$ of findings are true findings.
+If we also consider hints to be true findings, this number increases to $58.82\%$.
 \todo[inline]{
-    vllt nochmal erwähnen das H halt auch als FP gezählt werden kann (und prozentzahlen vermeiden weil sample zu klein oder so (in discussion))
+    order of description makes sense like this or not really?
     mention average number of findings per app (remember that the findings now are for all 626 apps) (all findings)
 }
 
-In Figure \ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
-Both variants yield more anomalies than the original version and the number of false positives is also higher.
-\todo[inline]{better general description? / give example?
-the project thing is not clear without explanation!
-}
+Most of the applications do not exhibit any anomalous type usages and those that do only have a few.
+There does not seem to be a relationship between the number of type usages and the number of findings per application.
+One of the application is responsible for the majority of findings and also for the majority of false positives.
+However, it is also the only one in which a finding indicates a true bug.
+In fact, we reported this bug and the maintainer already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
 
-\begin{figure}[t]
+\begin{table}[t]
     \centering
-    \begin{tabular}[h]{r|r|c|c|c|c|c|c|c|c|c|c}
+    \resizebox{\columnwidth}{!}{%
+    \begin{tabular}[h]{r|r|c|c|c|c|c|c|c|c|c|c|c}
 \toprule
 %\cmidrule(l){3-10}
-\multicolumn{2}{c}{ } & \multicolumn{5}{|c|}{noContext} & \multicolumn{5}{|c}{class} \\
-     \midrule
-App & Type Usages & Findings & B & S  & H    & FP & Findings & B & S & H & FP \\
+\multicolumn{1}{c}{ } & \multicolumn{6}{|c}{$\text{DMMC}_\text{noContext}$} & \multicolumn{6}{|c}{$\text{DMMC}_\text{class}$} \\
+App & Type Usages & Findings & B & S  & H    & FP & Type Usages & Findings & B & S & H & FP \\
 \midrule
-1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & 28 &  1  &  \cc &  8  &  19 \\
-2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & 10 & \cc &  \cc &  1  &   9 \\
-3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   &  0 & \cc &  \cc & \cc & \cc \\
-4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   &  0 & \cc &  \cc & \cc & \cc \\
-5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) &  7 & \cc &  \cc & \cc &   7 \\
-6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) &  0 & \cc &  \cc & \cc & \cc \\
-7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & 21 & \cc &  \cc & \cc &  21 \\
-8 & 8350   &  4 (4)  &  \cc   &  \cc  &  \cc    &  4 (4) &  2 & \cc &  \cc &  1  &   1 \\
-9 & 1675   &  2 (1)  &  \cc   &  \cc  &  2 (1)  &  \cc   &  1 & \cc &  \cc &   1 & \cc \\
-10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) &  4 & \cc &  \cc & \cc &   4 \\
+1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & ? & 28 (14)&1 (1)&  \cc &8 (5)& 19 (8) \\
+2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & ? & 10 (8) & \cc &  \cc &1 (1)&  9 (7) \\
+3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
+4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
+5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) & ? &  7 (2) & \cc &  \cc & \cc &  7 (2) \\
+6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
+7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & ? & 21 (2) & \cc &  \cc & \cc &  21 (2) \\
+8 & 8350   &  4 (4)  &  \cc   &  \cc  &  \cc    &  4 (4) & ? &  2 (2) & \cc &  \cc &1 (1)&   1 (1) \\
+9 & 1675   &  2 (1)  &  \cc   &  \cc  &  2 (1)  &  \cc   & ? &  1 (1) & \cc &  \cc &1 (1)& \cc \\
+10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) & ? &  4 (3) & \cc &  \cc & \cc &   4 (3) \\
 \bottomrule
-    \end{tabular}
+    \end{tabular}}
     \caption{Comparing $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
-\end{figure}
-\todo[inline]{include the SC findings or not?
-    2 -> 29 (2) SC
-    8 -> 24 (0) SC
-
-switch toprule to smth else to not go over whole table
-it's too wide right now! Fix that!
-the nr TUS for noContext is not the same as for class!
-
-mention some numbers related to the failure modes? (still not sure if I wanna do their discussion here or below)
+\end{table}
+\todo[inline]{
+Fill the tu nr for classMerge!!!
+consider if there is some better way than the brackets? (tried the / but looks like a fraction\ldots)
 }
+
+In Table \ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
+When ignoring the context, the total number of findings grows to 130 of which only 2 are true positive ($1.54\%$), if we also consider the 32 hints to be true positives, the ratio goes up to $26.15\%$.
+Since this are a lot of anomalies, we apply a filter to the results that removes any anomaly that does not originate from a class that belongs to the application itself.
+As a developer these are the most interesting anomalies, because they can be fixed immediately.
+Other anomalies that originate in libraries or other external code will be much harder to fix as they are usually maintained by different people.
+The number of findings that remain after applying this filter are displayed in brackets.
+It reduces the total number of findings to 49 of which 2 ($4.08\%$) or 19 ($38.78\%$) are true positives depending if we allow hints or not.
+
+The class merge variation detects a total of 73 anomalies with 1 true positive among them ($1.37\%$).
+If we factor in the hints, $16.44\%$ of findings are true positives.
+By excluding the type usages that do not originate form the application itself, we reduce the total number of anomalies to 32 of which $28.12\%$ are true positives (including hints).
+And to clarify, the bug that all of the variations uncover is always the same.
 
 \paragraph{For RQ 2 and 3: Benchmark}
 
@@ -366,58 +373,92 @@ First, we present the benchmark results of the different variants $\text{DMMC}$,
 
 \todo[inline]{
 present results!
-    -> first in general, then also in relation to partition size
+-> first in general, then also in relation to partition size
 (maybe relate the precision etc to the number of tus in the partition -> already have that data)
 }
 
 \paragraph{For RQ 4: Robustness}
 
-\todo[inline]{
-example: use true bug finding, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
-give example about the true bug we found + how fast it would disappear from the findings list? or rather how slow
-}
+benchmark results for degrading 1 or more ADDITIONAL TUS?!
 
 \paragraph{For RQ 5: Other Anomalies}
 
-\todo[inline]{
-    describe results
-    lots of findings! (mention numbers at least)
-    -> only present the number of findings and say smth like it was all false positives with some specific failure modes mentiond (one method or init or...)
-}
+\begin{table}[t]
+    \centering
+    \begin{tabular}[h]{r|l|r|c|c|c|c|c}
+\toprule
+& & \multicolumn{2}{c|}{$\text{DMMC}_\text{superfluous}$} & \multicolumn{3}{c}{$\text{DMMC}_\text{wrong}$} \\
+Nr & Type Usages & Findings & On Project & Findings & >1 Call & On Project \\
+\midrule
+ 1 &  11241  & 51 & 43 & 95 & 18 & 16  \\
+ 2 &  12659  & 22 & 19 & 46 &  5 &  5  \\
+ 3 &  80     &  1 &  1 &  1 & \cc& \cc \\
+ 4 &  87     &  6 &  6 &  8 &  2 &  2  \\
+ 5 &  3645   & 22 & 20 & 33 &  9 &  9  \\
+ 6 &  13547  &  8 &  1 &  1 & \cc& \cc \\
+ 7 &  880    &  4 &  4 &  2 & \cc& \cc \\
+ 8 &  8350   &  5 &  2 &  2 & \cc& \cc \\
+ 9 &  1675   &  4 &  4 &  5 &  1 &  1  \\
+10 &  9547   & 26 & 11 & 39 &  9 &  9  \\
+\bottomrule
+    \end{tabular}
+    \caption{Anomalies flagged by $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$}\label{fig:other}
+\end{table}
+
+The results of applying the two variations $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ to the randomly selected applications are depicted in Table \ref{fig:other}.
+Both methods consider a lot of type usages to be anomalous - 
+ METNION NUBMER!
+During manual review we did not find a single true positive among them or even a smell or hint, that is, all of these anomalies are false positives.
+To put these into proportion, we have again filtered the findings by \ldots
+
+-> mention and explain the >1 call problem!
+general flaw of WRONG -> all tus with just one call (on the same type) are considered AE! (even if with context this is too many!)
+-> LOOOOTS of noise and super uselless, thus we also filter out these
+-> nonethelsse all fps\ldots
 
 \section{Discussion}
 % Interpretation of the results that go further than the research questions. This can, e.g., contain implications for software development.
 
 \paragraph{For RQ 1: True vs False Positives}
+% how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
 
-how is the quality of findings (RQ1), how many findings are there, how much work is it to evaluate them
-somewhere actually mention the percentage of tp to fp?
-general aussage like ``its good or its useless''
+% general
+The results of the manual review show that some of the anomalous type usages indeed indicate true bugs or smells.
+The number of anomalies per app is relatively small, such that a developer could easily evaluate them himself.
+While the manual review was time-consuming, this is partially because we do not know the applications, a developer that is familiar with it would be much faster.
+Because of the small sample size, we consider the actual percentages of true positives to be of little import.
+\todo[inline]{somehwere here say something about general applicability of this method or only in conclusion?}
 
-% Manual eval examples
-qualitatively describe some of the failings?! 
-pick a couple of high scoring findings and explain the failure modes (eg doesn't take branching into account, etc)
-+ of course the REAL bug + some real smells
-mention the remedies we have thought of (filters etc) but also -> say that it would be kinda backwards from the initial idea to stay away from hand crafted rules
+% mention side study of top 50 anomalies!
+Besides manually reviewing the anomalies in 10 random applications, we also performed a side study on the top 50 anomalies of all applications.
+Over its course we did not uncover any additional bugs, but instead a lot of false positives.
+Most of these false positives arise out of a small number of failure modes such as:
+\begin{itemize}
+    \item suggesting a missing call to \code{<init>} (basically never valid, usually the object is a parameter or created by a static function)
+    \item not following static functions (in which the suggested missing method is called)
+    \item detecting not existing patterns with \code{StringBuilder}
+    \item problems with method chaining (does not consider the returned object to be the same as before)
+\end{itemize}
+Some of these could be fixed rather easily, e.g., we could filter all type usages related to \code{StringBuilder} or anomalies that suggest that a call to \code{<init>} is missing.
+Such filters would reduce the number of false positives, but they are also slightly antithetical to the initial idea of avoiding hand crafted rules.
+Other problems are more difficult to remedy.
+Correctly detecting method chaining seems hard or will at least have some trade-offs.
+It seems possible to consider static function evaluations, but we expect it to be expensive in terms of performance.
+
+% no context / class merge
+As for RQ 1.1, regarding the comparison between the different variations, it seems clear that the variants $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ are inferior to the normal $\text{DMMC}$ system.
+Not only do they flag more anomalies, the anomalies that they discover are also less relevant.
+They find a lot of anomalies in libraries and external code, but even after filtering these out, $\text{DMMC}$ is still better.
+\todo{fyi the filter only removes 2 FP anomalies form the normal variation}
+
+\todo[inline]{ even mention this? I think not right now\ldots
+
+failure modes: wihtout context: anomalies when clases call functions in itself
+many repetitions of identical findings
+Kotlin thingy (even mention SC thing?)
 -> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
-(muster: if there is "several" equal ones it doesn't work so well, if its just very few (<4) it's at least a smell?)
-
-example: StringBuilder -> often fails for REASons, but can be easily filtered -> reduce nr of fps
-failure mode: doesn't follow static functions (where the method in question is actually called)
-    suggest improvement to follow them
 failure mode: kotlin -> outlier generally
-suggested improvement: missing <init> basically never valid, usually static function, kotlin oä -> remove?
-dot chaining -> hard to fix / tradeoffs
-
-mention the android.* filter! / does it actually make sense -> data says not really, rather filter on own app\ldots + that only in the end I'd say
-consider filtering for usages that occur inside the app (by package) to exclude libraries (I think it makes sense...)
-+ add the android filter (this will only reduce the number of findings, but maybe improve the quality?!)
-+ add the ``only from my project'' filter
-
-mention this when discussing the results!
-    static functions evaluation!
-    something to fix the dotchaining problems
-    -> for both basically I'm just saying that i looked into it and it was too much work / impossible?
+}
 
 \paragraph{For RQ 2: Benchmark Results}
 
@@ -444,6 +485,12 @@ you could conclude what this means with reference to the question in the title
 
 \paragraph{For RQ 4: Robustness}
 
+\todo[inline]{
+example: use true bug finding, try to throw away parts of the data -> when can we not find this anymore -> mathematical answer!
+give example about the true bug we found + how fast it would disappear from the findings list? or rather how slow
+-> this only in discussion!
+}
+
 For the mathematical answer, consider how the strangeness score of a true bug $b$ behaves if we introduce additional erroneous instances.
 \todo{rather explain with two bugs b and b'?}
 If there are no instances equal to $b$, then $|E(b)|=1$ and $\operatorname{S-score}(b)=1-\frac{1}{1+|A(b)|}$.
@@ -460,9 +507,9 @@ oö
 
 \paragraph{For RQ 5: Other Anomalies}
 
-    -> first problems: things with 1 call will always be almost similar since only one call is different
-    -> problem of superfluous? (init?)
-
+just something like: considering the high number of detected findings and zero actual success
++ the patterns that were detected
+-> majority rule cannot be considered useful for detecting wrong or superfluous calls
 \section{Threats to Validity}
 
 Split into external vs interal threats!
