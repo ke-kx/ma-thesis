@@ -7,13 +7,17 @@ smth like: developers make mistakes when invoking apis. these mistakes can be be
 % intro: using apis is difficult and can lead to errors
 Software reuse is a central pillar of software development, enabling developers to rely on existing frameworks and libraries to do most of the heavy lifting.
 Frameworks and libraries attempt to be as easy to use as possible, but often they provide so much functionality that their application programming interface (API) cannot remain trivial.
-This complexity and the fact that the documentation is often not kept up to date can lead to errors when developers invoke these APIs.
-\todo{still not a fan of this paragraph - is it even necessary? / shorten it?}
+\todo{maybe: a large variety of features, resulting in...}
+This complexity and the fact that the documentation is often not kept up to date can lead to errors when developers work with these APIs.
+\todo{still not a fan of this paragraph - is it even necessary? / shorten it?
+siggy also says should be shorter!
+}
 
 % special error: missing method calls
 In the context of object-oriented programming, one of the errors related to API usages are missing method calls.
 They occur when a developer correctly instantiates some object but forgets to call one or more of the necessary methods.
 We study a new method for detecting missing method calls in Java applications which was proposed by Monperrus et al. \cite{monperrus2010detecting}.
+-> maybe one sentence describing the method?
 \todo{include any more information on the actual method? aka ``relies on the majority rule / the insight that\ldots'' oä?}
 The main goal is to understand how good this method is at detecting code smells and true bugs when applied to a large software system.
 \todo{more concrete research question}

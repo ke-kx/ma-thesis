@@ -22,8 +22,7 @@ new method is amazing and way better in case xy but worse in zz
 robustness has shown this and that
 }
 
-\section{Future Research}
-\todo[inline]{cahnge title to possible improvements oä?}
+\section{Future Work}
 
 % general intro
 \todo{smth with relation to how good i rate the method to be?}
@@ -36,6 +35,7 @@ As for improving the missing method call detection, we would first like to refer
 In it we already address a number of potential improvements as well as their drawbacks.
 Especially some filters seem like an easy way to decrease the number of false positives and thus increase the precision, albeit they are a bit antithetical to the original idea of staying away from hand-crafted rule sets.
 Another way to improve the precision could be to use a completely different anomaly detection algorithm.
+\todo{examples?}
 As mentioned, we did actually invest quite some time researching in that direction but it proved to be rather difficult, because the data on which to learn is actually rather thin.
 \todo{rephrase\ldots -> didn't actually mention anywhere else!
 mention in the end that i tried a 
@@ -60,7 +60,9 @@ We don't expect the performance to be a problem any time soon, however, as soon 
 Besides these measures to improve the detection of missing method calls, one could also envision using the majority rules to detect other types of anomalies.
 Monperrus et al.\ suggest applying concept of almost similarity to execution traces to detect runtime defects or to conditional statements to improve the resilience of software to incorrect input.
 We also see potential in considering other features, for example, the interfaces a class implements or the methods it overrides.
-\todo{idea clear?, any other pairings?, objectübergreifen?}
+\todo{idea clear?, any other pairings?, objectübergreifen?
+right now siggy thought it better fits the first part - improving detection - which it kinda does
+}
 
 \todo[inline]{
     i think not mentioning this is actually smarter!

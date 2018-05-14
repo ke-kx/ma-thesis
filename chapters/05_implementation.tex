@@ -70,7 +70,7 @@ Instead of a singular process with sequential flow, it is split into three diffe
 First, a Java application reads the bytecode of the program under analysis and iterates through all methods to extract the type usages which are present.
 The extracted type usages are then persisted in a database to ensure flexibility and high performance in the following analysis phase.
 For the actual anomaly detection, we use a small Python program.
-It goes through all partitions of type usages (more on the partitions in Section~\ref{sec:anomaly}), requests the type usages in the current set and calculates their strangeness scores.
+It iterates through all partitions of type usages (more on the partitions in Section~\ref{sec:anomaly}), requests the type usages in the current set and calculates their strangeness scores.
 After iterating through all the sets of the application, it finally outputs the results.
 
 %summary of rest
@@ -100,6 +100,7 @@ Jimple is a typed 3-address representation which is especially suited for optimi
 %-- soot startup and settings?
 Soot is a very powerful framework, and one can customize it to cater for quite specialized requirements.
 We analyze mostly Android applications, and the settings we apply to configure it (listed in Figure~\ref{fig:sootparam}) reflect this.
+More detailed explanation is available in the Soot documentation\footnote{\url{https://soot-build.cs.uni-paderborn.de/public/origin/develop/soot/soot-develop/options/soot_options.htm}}.
 
 \begin{figure}[t]
     \centering
@@ -148,6 +149,7 @@ These are all framework classes, and we are primarily interested in the type usa
 \todo[inline]{
 explain a bit better that these classes are kind of exactly what we are most interested in as far as type usages go, but we don't want too step ITNO them
 + make sure this works good together with coresponding paragraph in the next section
+-> right now it's a bit confusing with first talking about excluding them and then how they are important!
 }
 
 \section{Storing Type Usages}
@@ -236,8 +238,11 @@ With this realization, we can continue to the final step of the analysis: detect
 % partitions + analysis
 Some relatively simple Python scripts handle the anomaly detection.
 The first step is to obtain the possible partitions of the dataset, depending on the variant, either all types in the dataset or all valid combinations of type and context.
+\todo[inline]{This sentence was a bit confusing to me. I would change it to something like: "The first step is to partition the type usages by type for DMMCnoContext or a combination of type and context for DMMC. Obtaining these partitions is realized in the outer loop of the script with a simple query to the database: we iterate through all partitions and retrieve..."}
 Observe that the database makes it very simple to obtain these partitions with just one query.
+\todo{remove sentence?}
 In its outer loop, the script iterates through all partitions and retrieves the type usages belonging to the current partition.
+\todo[inline]{where do the partitions we iterate through come from? do we know them in advance? are they initialized beforehand or while iterating? it's a bit strange that we iterate through something we are just creating. maybe describe the outer loop a bit more detailed.}
 Again, querying the database for these type usages is simple and also quite fast because of indices on the relevant columns.
 % analysis
 In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
@@ -247,7 +252,7 @@ After determining the number of exactly and almost similar neighbors for each ty
 Finally, the script saves the results for further analysis and evaluation by an expert.
 
 % other variants: loading
-The anomaly detection is the only part that of the implementation that is affected by the different variants presented in Chapter~\ref{ch:dmmc}.
+The anomaly detection is the only part of the implementation that is affected by the different variants presented in Chapter~\ref{ch:dmmc}.
 We already mentioned the differences between including or excluding the context.
 For the class merge variant, we perform some simple preprocessing before starting the analysis.
 We load the data with type partitioning and merge those type usages which originated in the same class.

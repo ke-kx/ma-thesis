@@ -38,8 +38,8 @@ We define the context as the name of the method in whose body the type usage app
 %--- formalized -> reread the papers for inspiration
 It is useful here to define formal terms.
 For each variable $x$, note its type $T(x)$ and the context $C(x)$ in which it occurs.
-The list of methods which are invoked on $x$ within $C(x)$ is denoted as $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
-If there are two variables of the same type, this results in two type usages being extracted (unless they refer to the same object; more on this in Section~\ref{sec:bytecode}).
+The set of methods which are invoked on $x$ within $C(x)$ is denoted as $M(x) =\{ m_1, m_2, \dotsc, m_n\}$.
+If there are two variables of the same type, this results in two type usages being extracted -- unless they refer to the same object; more on this in Section~\ref{sec:bytecode}.
 
 \begin{figure}[h]
     \begin{subfigure}[c]{0.5\textwidth}
@@ -211,6 +211,7 @@ Given a codebase with $n$ type usages, the sets $E(x)$ and $A(x)$ for one given 
 
 Recall the assumption behind the majority rule: A type usage is abnormal if a small number of type usages is exactly similar, but a significant number are almost similar.
 Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by one method call).
+\todo{places cannot use something\ldots}
 Assuming the majority is correct, the type usage under scrutiny is deviant and potentially erroneous, because it is missing a method call.
 
 To capture concretely how anomalous an object is, we need a measure of strangeness.
@@ -240,14 +241,14 @@ Recall, that an almost similar type usage will make exactly one additional call 
 We then take the frequency of unique calls among the set of additional method calls and use it as the suggestion likelihood.
 
 Formally, the calls we can recommend for a type usage $x$ are the calls that are present in the type usages contained in $A(x)$ but are not in $M(x)$.
-The set of these methods shall be called $R(x)$ and is defined as follows:
+The set of these possibly missing methods shall be called $R(x)$ and is defined as follows:
 \begin{equation*}
     R(x) = \bigcup_{z \in A(x)} M(z) \setminus M(x)
 \end{equation*}
 % todo use this equation or the one in their paper (should be identical, which one is easier to follow?) 
 
 %--- how to decide which is the call which is missing most likely
-Now for each of these methods $m$ in $R(x)$, we can calculate their likelihood as follows:
+Now, for each of these methods $m$ in $R(x)$, we can calculate their likelihood as follows:
 \begin{equation*}
     \phi(m, x) = \frac{|\{z \mid z \in A(x) \land m \in M(z)\}|}{|A(x)|}
 \end{equation*}
@@ -281,7 +282,7 @@ Observe that this definition also works when $M(x)$ is empty or $x$ is \code{thi
 To illustrate these definitions, consider the example in Figure~\ref{fig:missing_calls}.
 The type usage under analysis is denoted with $x$, operates on a \code{Button} object and the only method that it invokes is the initialization.
 There are five almost similar usages denoted as $a$, $b$, $c$, $d$ and $e$.
-Four of them ($a$ through $d$) have a call to \code{setText} after the initialization.
+Four of them, $a$ through $d$, have a call to \code{setText} after the initialization.
 The last one, $e$, has a call to \code{setFont} instead.
 Thus, we can recommend the methods \code{setText} and \code{setFont} with a likelihood of $4/5 = 80\%$ and $1/5 = 20\%$ respectively.
 
@@ -297,9 +298,10 @@ The idea that types are used in different ways seems reasonable, but is the name
 Furthermore, using the context might work well for some types and some systems, but does it make sense everywhere?
 One problem with using the context is that it drastically reduces the number of type usages which are even considered for (almost) similarity.
 In smaller datasets, this makes it much more likely that ``patterns'' appear, which in truth are only artifacts of randomness.
+\todo{what kind of patterns?}
 
 All in all, it is not clear that using the context necessarily improves the performance of the system.
-Because of this, next to the standard variant $\text{DMMC}$ (Detecting Missing Method Calls), we also define a variant called $\text{DMMC}_{\text{noContext}}$, which does not take the context into account.
+Thus, next to the standard variant $\text{DMMC}$ (Detecting Missing Method Calls) that we outlined in the previous sections, we also define a variant called $\text{DMMC}_{\text{noContext}}$, which does not take the context into account.
 It uses adapted measures for similarity and almost similarity, $E'_{\text{noContext}}$ and $A'_{\text{noContext}}$ which are defined in the same manner as $E'$ and $A'$, except that they do not require the context of the type usages to be identical.
 The definitions of $E$, $A$, $\operatorname{S-score}$ and $\phi$ stay the same, besides that they now make use of the newly defined relations.
 

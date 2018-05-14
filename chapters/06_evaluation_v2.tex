@@ -3,7 +3,7 @@
 \todo[inline]{see which parts should be sections or subsections and for which paragraph oä is enough}
 
 % Which questions are we trying to answer with the evaluation?
-Our evaluation of the method proposed by Monperrus et al.\ is aimed at comprehending how well the majority rule is suited to detect missing method calls in object oriented software.
+Our evaluation of the method proposed by Monperrus et al.\ is aimed at understanding how well the majority rule is suited to detect missing method calls in object oriented software.
 We apply our implementation to a large dataset of Android applications and evaluate the results qualitatively and quantitatively.
 % chapter outline
 In the following, we first present the research questions and why they are relevant for our understanding of this method.
@@ -111,9 +111,9 @@ In Figure Z we have plotted how many method calls there are per type usage to gi
 \todo[inline]{Plot method list lenghts}
 
 %   number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
-In the variation $\text{DMMC}$, a partition is a valid combination of type in context and there are 1,410,709 combinations like that in the dataset.
+In the variation $\text{DMMC}$, a partition is a valid combination of type and context and there are 1,410,709 combinations like that in the dataset.
 In the variant $\text{DMMC}_{\text{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
-Since $\text{DMMC}_{\text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same.
+Since $\text{DMMC}_{\text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same as for $\text{DMMC}_{\text{noContext}}$.
 However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to XYZ.
 \todo[inline]{determine class merge no of tus (can just load results)}
 In Figure X we have plotted the distribution of type usages per partition for the different variants.
@@ -126,7 +126,7 @@ mention here: the monperrus2013 p11 highlight? (at least equivalent for my datas
 }
 
 % performance: total time +
-We perform all our experiments on a MacBook Pro with a Intel\textregistered Core™ i7-3720QM CPU @ 2.60GHz and 16GB of RAM.
+We perform all our experiments on a MacBook Pro with an Intel\textregistered Core™ i7-3720QM CPU @ 2.60GHz and 16GB of RAM.
 Extracting the type usages from all applications took a total of 3 hours and 27 minutes, which is an average of around 20 seconds per application.
 \todo[inline]{
 plot duration of tu extraction in relation to number tus (proxy for project size)
@@ -252,7 +252,7 @@ We then manually review all anomalous type usages and carefully consider the sou
 
 Depending on the quality of results one expects, hints could either be counted towards smells or towards false positives.
 \todo{``results one expects'' not clear}
-We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with in the code in question.
+We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with the code in question.
 As an example, consider the situation in which a developer calls \code{next} on an iterator that he just obtained from a list of size one.
 Here, he knows that the iterator contains one element so he does not need to check for it with \code{hasNext}, nonetheless, it is useful to detect locations where \code{next} is invoked without a preceding \code{hasNext}.
 
@@ -312,11 +312,16 @@ Most of the applications do not exhibit any anomalous type usages and those that
 One of the application is responsible for the majority of findings and also for the majority of false positives.
 However, it is also the only one in which a finding indicates a true bug.
 In fact, we reported this bug and the maintainer already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
-\todo[inline]{ mention average number of findings per app (remember that the findings now are for all 626 apps) (all findings)}
+\todo[inline]{
+    vllt nochmal erwähnen das H halt auch als FP gezählt werden kann (und prozentzahlen vermeiden weil sample zu klein oder so (in discussion))
+    mention average number of findings per app (remember that the findings now are for all 626 apps) (all findings)
+}
 
 In Figure \ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
 Both variants yield more anomalies than the original version and the number of false positives is also higher.
-\todo[inline]{better general description? / give example?}
+\todo[inline]{better general description? / give example?
+the project thing is not clear without explanation!
+}
 
 \begin{figure}[t]
     \centering
@@ -427,6 +432,10 @@ It seems that it is rather difficult to obtain the necessary rich dataset, even 
 \todo[inline]{
 We also applied our implementation to a medium sized industry application (TS!) (mention LOC) and the results it produced supported this intuition, being of rather poor quality.
 any other actual results on this? I don't actually think so\ldots
+
+Siggy:
+``maybe 1-2 sentences more where you explain (again) what small datasets mean and why it seems difficult to obtain necessary rich datasets (stated in the next sentence). you could emphasize the size of the analyzed framework here again.''
+you could conclude what this means with reference to the question in the title 
 }
 
 \paragraph{For RQ 4: Robustness}
