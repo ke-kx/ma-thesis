@@ -2,7 +2,6 @@
 
 In the introduction, we explored errors related to missing method calls.
 These occur frequently, particularly when developers are working with unfamiliar or new code.
-\todo{or: Developers working with complicated frameworks and libraries or generally with resources they are new to are particularly prone to missing an important call.}
 We would like to automatically detect instances of missed method calls to make maintenance easier and cheaper.
 In this chapter, we explain in detail the method proposed by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} which is based on the majority rule.
 
@@ -11,9 +10,9 @@ In this chapter, we explain in detail the method proposed by Monperrus et al.~\c
 % general majority rule
 The intuition behind the majority rule is that the way something is done most often is probably the correct way.
 It follows that if everyone or almost everyone is doing something differently than you, you are probably doing it wrong.
-\todo{(This is only relevant when the action being performed is in some way close to what you want to do.) -> smth more\ldots
-    smth about how if it is too far away we don't care anymore at all (spoon / fork analogie\ldots)
-}
+%\todo{(This is only relevant when the action being performed is in some way close to what you want to do.) -> smth more\ldots
+    %smth about how if it is too far away we don't care anymore at all (spoon / fork analogie\ldots)
+%}
 This gives rise to the definition of an anomaly by the majority rule: instances with few or no ``equal'' but many ``slightly different'' neighbors.
 Such anomalies should probably adapt to behave like their very similar neighbors.
 What exactly ``equal'' and ``slightly different'' mean has to be defined for each application of the majority rule.
@@ -297,7 +296,7 @@ However, one can question the general assumption behind using the context.
 The idea that types are used in different ways seems reasonable, but is the name of the function that they are used in a good separator between those use cases?
 Furthermore, using the context might work well for some types and some systems, but does it make sense everywhere?
 One problem with using the context is that it drastically reduces the number of type usages which are even considered for (almost) similarity.
-In smaller datasets, this makes it much more likely that ``patterns'' appear, which in truth are only artifacts of randomness.
+In smaller datasets, this makes it much more likely that patterns appear, which in truth are only artifacts of randomness.
 \todo{what kind of patterns?}
 
 All in all, it is not clear that using the context necessarily improves the performance of the system.
