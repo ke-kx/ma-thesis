@@ -6,35 +6,29 @@ Detecting missing method calls would be useful over the entirety of a software's
 The method we implement does not require any input besides the source code itself as it extracts patterns from the data it receives.
 This makes it superior to other bug detection systems as it does not require the work of keeping hand-crafted detection rules up to date.
 
-We improve upon the implementation of Monperrus et al.\ in that we add a database backend and enable better extensibility.
+We improve upon the implementation of Monperrus et al.\ in that we add a database backend and enhance the extensibility.
 Furthermore, we propose several variations to their method with the goal of better detection of missing calls on the one hand and detecting different kind of errors on the other.
 To get an all-round impression of the results that their method produces and how our variations behave in comparison, we evaluate them on a large dataset of Android applications. 
 
-
-% general interpretation of ALL the results!
-take answers of all the questions into account - oh its a bit sensible to wrong inputs and it is difficult to gather enough data - result quality is also not amazing - all in all it seems that at least in the context of android this is not the best method
-
-general aussage like ``its good or its useless''
-
-	And of course relate the partition size graphs to the applicability on real world systems, like xku need a lot of data
-	Can even be combined with the results about sensitivity to input pertubations
-	Make it appear at least slightly clever
-
-% experiments + results
-\todo[inline]{
-    Summary of results! + MAIN TAKEAWAY!
-performed twofold evaluation, qualitatively and quantitatively
-general takeaway about suitability of this method + reasons WHY I would say so
-mention some numbers!
-
-the numers are ``okay'', still lots of fp, especially among top50
+% MMCS
+As for detecting missing method calls
+    results of benchmark and manual review agree that the original version proposed by mp is the best
+    other methods turned out to be inferior!
+take answers of all the questions into account 
+ oh its a bit sensible to wrong inputs and it is difficult to gather enough data - result quality is also not amazing - 
+    results quality? -> ``okay'' but not amazing (detected one bug, that's it)
+    input size: it is difficult to gather enough data even when using lots of input
+    additionally method is sensible to erroneous / perturbed input data
+lots of fp, especially among top50
+all in all it seems that at least in the context of android this is A method for detecting mmcs, but probably not the best (cant say that without example i gues..)
+tentively that it's inferior because of bad detection rate oä
 could be a solution with the filters, but then you get the same problmes as before
 (i mention this below, is that fine?)
 
-new method is amazing and way better in case xy but worse in zz
-    tentively that it's inferior because of bad detection rate oä
-robustness has shown this and that
-}
+% as for other anomalies
+as for detecting superfluous or wrong method calls
+our simple ideas do not seem to work well
+manual review of results found all of the anomalies to be Fps!
 
 \section{Future Work}
 

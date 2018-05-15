@@ -98,10 +98,16 @@ If a type is used in one particular way many, many times (that is, in the majori
 In this work, we introduce some variants of this idea and examine if they yield any improvements.
 Additionally, we propose using the majority rule to also detect superfluous or wrong method calls.
 Based on the implementation by Monperrus et al., we develop a system for detecting missing method calls.
-We eliminate some minor inaccuracies from their implementation and add a database backend which enables the system to take more data into consideration.
-Furthermore, we conduct an evaluation with the goal of understanding how well this approach works in general and which of the variants performs best.
-For this, we apply the system to a dataset of more than 600 open source Android applications and manually analyze the results.
+We eliminate some minor inaccuracies from their implementation and add a database backend which enables the system to incorporate more data into its decisions.
+
+evaluation to understand stuff
+we answer: which variation performs best, what are some of the prerequisites that the technique has to perform good (input size, input quality)
+
+and examine if using it for different purpose works at all or not?
+
+To understand how well this approach works in general and which of the variants performs best, we apply the system to a dataset of more than 600 open source Android applications and manually analyze the results.
 Finally, we compare the results of the manual evaluation against those of an automated benchmark.
+
 \todo[inline]{
     needs more content! what am i actually doing and why (hoping to find what?) and what are the results?
     implementation also part of my work! -> part of contribution!!!
