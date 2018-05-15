@@ -429,7 +429,8 @@ The results of the manual review show that some of the anomalous type usages ind
 The number of anomalies per app is relatively small, such that a developer could easily evaluate them himself.
 While the manual review was time-consuming, this is partially because we do not know the applications, a developer that is familiar with it would be much faster.
 Because of the small sample size, we consider the actual percentages of true positives to be of little import.
-\todo[inline]{somehwere here say something about general applicability of this method or only in conclusion?}
+\todo[inline]{somehwere here say something about general applicability of this method or only in conclusion?
+do i want to explain the one true bug in some more detail or is it fine without?}
 
 % mention side study of top 50 anomalies!
 Besides manually reviewing the anomalies in 10 random applications, we also performed a side study on the top 50 anomalies of all applications.
@@ -523,14 +524,22 @@ There are several internal and external threats to the validity of this study.
 nochmal bisi klüger aufbauen mit start von: results are negative?
 
 % internal: reasons why the results could be invalid for your study objects
-There is the very real threat that our manual evaluation is biased and subjective.
-To prevent results that are 
+As for the internal threats, the strongest one seems to be that our manual evaluation is biased and subjective.
+Unfortunately, we do not have the resources to let multiple review the anomalies.
+To prevent judging the results too harshly, we introduce the hint category which contains many findings that are not bugs or even smells, but rather subtle pointers for something that could cause problems.
+If we acknowledge them as true positives, we get a favorable picture of the capabilities of our implementation.
+On the other hand, we can also exclude hints and obtain a more strict assessment.
 
-a threat is taht i simply evaluated shittyly (don't think so\ldots)
-manual eval: biased, subjektive bewertet, but rated rather conversatively at least
-since I wanna have a neg conclusion, I can sY that I graded rather friendly with the hints etc => could be rated even worse
+The only parameter that our implementation uses is the strangeness value that indicates that a type usages is an anomaly.
+During the manual review, we often observed that even type usages with a strangeness value much higher than $0.9$ were not really true positives.
+It even seems like anomalies with a strangeness value smaller than $0.95$ are less and less likely to hint at actual problems.
+\todo{smth like ``thisis just an observtion, no actual data''?}
+That is, we deem it unlikely that reducing the cutoff to a lower value would improve the results.
 
-only paramter: strangeness cutoff -> of course could be set higher
+-> other direction set cutoff higher, less findings
+In the other direction, we think that the average number of findings is fine 
+
+
 
 general problem of automatic benchmark! (already mentioned but still applies to other questions)
     we can only show that the benchmark is not WRONG, cannot show it's right

@@ -7,7 +7,6 @@
 It is difficult and time-consuming to fix bugs in software.
 The maintainer has to realize that there is a bug, identify its cause and understand the steps necessary to fix it.
 Especially for larger software systems automatically detecting low-quality code and improving it can contribute significantly to the maintainability of the code and prevent bugs in the future.
-\todo{here citation for codesmells are useful? (in fontana2016comparing or aDocotor i think)}
 Because of this, there has been a lot of interest in approaches for automatically detecting bugs, or even just smells in code.
 
 %--- section summary
@@ -51,11 +50,6 @@ With cutoffs at 10\%, 20\%, 30\%, \ldots of the total findings they achieve prec
 This especially holds true for cutoff values around 50\%.
 
 Other tools for detecting code smells are Decor~\cite{moha2010decor} and iPlasma~\cite{Marinescu2005iPlasmaAI}.
-\todo[inline]{
-some more info for those two?
-Which other papers?! -> should be some which are NOT about findbugs 
-    > present alterantives, maybe work in a slightly different manner, or just some sort of overview paper for static code smell detection oä!
-}
 
 \section{Android-specific Smell Detection}
 
@@ -171,7 +165,6 @@ Using clustering and frequent subsequences mining it then groups the extracted u
 While the tool does not look for any anomalies or code smells, it extracts exactly the type of information that is interesting if one wants to detect anomalies.
 
 There have been some works concerned with finding patterns in the way specific types are used and utilizing those patterns to find potential bugs.
-\todo{explain object usages somewhere? + cite some related work from monperrus here (just citation)?}
 Most relevant for this work and its primary inspiration are two papers by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} that propose a technique for detecting missing method calls.
 It is based on the intuition that an instance is probably an anomaly if it is alone in a large number of instances that do something similar, but not exactly the same.
 They call this the ``majority rule'' and we explain it in detail in Chapter~\ref{ch:dmmc}.
