@@ -1,31 +1,23 @@
 \chapter{\abstractname}
 
-\todo[inline]{
-smth like: developers make mistakes when invoking apis. these mistakes can be because of xYZ (already don't like it again..)
-}
+% intro + method description
+When a developer works with an object-oriented framework that he does not know well it is easy to forget an important method call.
+We study a new technique for detecting missing method calls in Java applications that was proposed by Monperrus et al.~\cite{monperrus2010detecting}.
+It does not use hard coded rules or any input besides the source code itself, instead it detects outliers based on the majority rule:
+If a type is used in one particular way many times and differently only once, this probably indicates a bug.
 
-% intro: using apis is difficult and can lead to errors
-Software reuse is a central pillar of software development, enabling developers to rely on existing frameworks and libraries to do most of the heavy lifting.
-Frameworks and libraries attempt to be as easy to use as possible, but often they provide so much functionality that their application programming interface (API) cannot remain trivial.
-\todo{maybe: a large variety of features, resulting in...}
-This complexity and the fact that the documentation is often not kept up to date can lead to errors when developers work with these APIs.
-\todo{still not a fan of this paragraph - is it even necessary? / shorten it?
-siggy also says should be shorter!
-}
+\todo[inline]{mention some more here  about the variations?, is the results description okay?}
+% proposed changes + implementation
+Based on the implementation by Monperrus et al., we develop a system that supports several different different techniques for detecting missing method calls.
+% evaluation: method + goals?
+To investigate which one produces the best results, we evaluate them on a dataset of more than 600 open source Android applications.
+We manually review the anomalies our implementation finds in 10 randomly selected applications and also use an automated benchmark that relies on artificially degrading existing code.
+% results and conclusion
+In the comparison between the different variations, the original technique by Monperrus et al.\ comes out ahead.
+However, even if it manages to uncover one true bug, its total results are mediocre with only 3 true positives among 17 total findings.
+Additionally, our evaluation points in the direction of the majority rule being sensible to input perturbations and needing a lot of data that is not easy to obtain.
 
-% special error: missing method calls
-In the context of object-oriented programming, one of the errors related to API usages are missing method calls.
-They occur when a developer correctly instantiates some object but forgets to call one or more of the necessary methods.
-We study a new method for detecting missing method calls in Java applications which was proposed by Monperrus et al. \cite{monperrus2010detecting}.
--> maybe one sentence describing the method?
-\todo{include any more information on the actual method? aka ``relies on the majority rule / the insight that\ldots'' oä?}
-The main goal is to understand how good this method is at detecting code smells and true bugs when applied to a large software system.
-\todo{more concrete research question}
+Finally, we propose utilizing the majority rule to also detect superfluous or wrong method calls.
+We present an implementation of the proposed system and perform a manual review of its findings.
+The outcome suggests that the majority rule is not suitable for detecting this particular type of error.
 
-% evaluation + results
-To investigate this, we analyze more than 600 open source android applications.
-We manually evaluate the proposed findings of X randomly selected apps and also use an automatic benchmark which relies on artificially degrading existing code.
-\todo{describe results + concrete numbers}
-% maybe not mention the degrading part?
-We, also, compare the originally proposed technique to some slight variations of it and find [\ldots].
-The results are kind of mixed, but point in the direction of this method being marginally useful.
