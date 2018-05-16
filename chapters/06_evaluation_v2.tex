@@ -90,64 +90,85 @@ Because of the API's emphasis on the user interface, we consider this to be an e
 \todo[inline]{
 lars: can we support this claim with smth?!
 formulate last sentence a bit different + first one as well?
-maybe a bit better rausarbeiten WHY we choose android and what are the CONSEQUENCES
 }
 
 % general dataset
 %    How many Apps + How many TUs in total + each (avg / median) -> how big are the apps, (how are the tus split between the apps)
 Our dataset consists of a total of 3,880,556 type usages that the Java part of our implementation extracted from the 625 Android applications downloaded from F-droid.
-On average there are X type usages per application and the median is Y.
-In Figure X we have plotted the number of type usages per application.
-\todo[inline]{Plot TUS / applications}
-Most applications are rather small with a few outliers responsible for most of the type usages.
+On average there are 6209 type usages per application and the median is 1157.
+In Figure \ref{fig:tus_app}, we have plotted the number of type usages per application.
+Most applications are small with a few outliers responsible for most of the type usages.
 % type usages:
 %    percentage on Android framework, percentage on other stuff
 Of all the type usages in the dataset, $7.66\%$ operate on types from the Android framework (i.e., their fully qualified package name starts with \code{android.*}).
 %    length of method list -> histogram?
-In Figure Z we have plotted how many method calls there are per type usage to give a feeling for the amount of information they provide.
-\todo[inline]{Plot method list lenghts}
+In Figure \ref{fig:method_list}, we have plotted how many method calls there are per type usage to give a feeling for the amount of information they provide.
+A great majority of type usages only calls few methods.
+\todo{description acceptable like this?}
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_tus_app}
+        \caption{Number of Type Usages per Application}
+        \label{fig:tus_app}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_method_list}
+        \caption{Length of Method Lists}
+        \label{fig:method_list}
+    \end{subfigure}
+    \caption{Dataset Overview I}
+\end{figure}
 
 %   number of partitions (types + context / types) + maybe verteilung of number of tus per partition (that seems like an interesting / important one!)
 In the variation $\text{DMMC}$, a partition is a valid combination of type and context and there are 1,410,709 combinations like that in the dataset.
 In the variant $\text{DMMC}_{\text{noContext}}$, the number of partitions is equal to the number of types and the whole dataset includes a total of 202,988 different types.
 Since $\text{DMMC}_{\text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same as for $\text{DMMC}_{\text{noContext}}$.
-However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to XYZ.
-\todo[inline]{determine class merge no of tus (can just load results)}
-In Figure X we have plotted the distribution of type usages per partition for the different variants.
+However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to 958,306.
+In Figure \ref{fig:tus_partition}, we have plotted the distribution of type usages per partition for the different variants.
 Observer that\ldots 
 \todo[inline]{Plot verteilung of TUs per partition!, depending on variant}
 
 \todo[inline]{
-mention here: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
-    % Second, we note that the distributions of type-usages per type and type-usages per context follow a power-law distribution, which means that a few types and a few contexts trust a large number of type-usages. For instance, for eclipse-swt, the top-20 most popular types (out of 389) cover 62% of the type-usages. This goes along the same line as the results of Baxter et al. [Baxter et al. 2006]
-}
-
-% performance: total time +
-We perform all our experiments on a MacBook Pro with an Intel\textregistered Core™ i7-3720QM CPU @ 2.60GHz and 16GB of RAM.
-Extracting the type usages from all applications took a total of 3 hours and 27 minutes, which is an average of around 20 seconds per application.
-\todo[inline]{
-plot duration of tu extraction in relation to number tus (proxy for project size)
-mention somewhere that analysis itself is relatively cheap (especially for new project coming in)
-}
-
-\todo[inline]{
-strangeness score:
-    verteilung of strangeness score (histogram)
-    graphs related to general score verteilung
     explain why we expect the scores verteilung to be like that
-    score in relation to smth? ie method length, nr tus in partition, etc
-    put this only in rq1?  -> not so sure\ldots
     DEFINITELY somewhere mention the average number of anomalies per app!
+        total anomalies: 1650 -> 2.64 avg per app
 Does the Strangeness Score behave as expected on Android Apps? (the behavior that I'm expecting is basically a mathematical necessity!)
     do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
     -> most tus are ``normal'', a few are ``abnormal''
     what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
+
+mention here: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
+    % Second, we note that the distributions of type-usages per type and type-usages per context follow a power-law distribution, which means that a few types and a few contexts trust a large number of type-usages. For instance, for eclipse-swt, the top-20 most popular types (out of 389) cover 62% of the type-usages. This goes along the same line as the results of Baxter et al. [Baxter et al. 2006]
+mention somewhere that analysis itself is relatively cheap (especially for new project coming in)
 }
+
+% performance: total time +
+We perform all our experiments on a MacBook Pro with an Intel\textregistered Core™ i7-3720QM CPU @ 2.60GHz and 16GB of RAM\@.
+Extracting the type usages from all applications took a total of 3 hours and 27 minutes, which is an average of around 20 seconds per application.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_tus_partition}
+        \caption{Distribution of Partition Sizes}
+        \label{fig:tus_partition}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_strangeness}
+        \caption{Strangeness Scores using $\text{DMMC}$}
+        \label{fig:strangeness}
+    \end{subfigure}
+    \caption{Dataset Overview II}
+\end{figure}
 
 \section{Study Design}
 % This section describes how the study, using the information from the study objects, attempts to answer the research questions.
-
-\todo[inline]{check if i can formalize a bit better at places, aka what are the deciding factors for answering the questions}
 
 \paragraph{For RQ 1: True vs False Positives}
 
@@ -312,12 +333,12 @@ Nr & Name & Type Usages & Findings & B & S & H & FP \\
 \end{table}
 
 In Table~\ref{fig:manual}, we summarize the results of manually reviewing the findings of the $\text{DMMC}$ variation.
-In the entire dataset, on average there were XYZ anomalous type usages per application, so our sample with $1.7$ findings per app seems like a good fit.
+In the entire dataset, on average there are $2.64$ anomalous type usages per application, in our sample there are $1.7$ findings per application.
 Of the total 17 findings, 3 are true positives (bug or smell) meaning that $17.65\%$ of findings are true findings.
 If we also consider hints to be true findings, this number increases to $58.82\%$.
 \todo[inline]{
     order of description makes sense like this or not really?
-    mention average number of findings per app (remember that the findings now are for all 626 apps) (all findings)
+    do i really want to consider hints as tps?
 }
 
 Most of the applications do not exhibit any anomalous type usages and those that do only have a few.
@@ -338,7 +359,7 @@ App & Type Usages & Findings & B & S  & H    & FP & Type Usages & Findings & B &
 1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & 4602 & 28 (14)&1 (1)&  \cc &8 (5)& 19 (8) \\
 2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & 1560 & 10 (8) & \cc &  \cc &1 (1)&  9 (7) \\
 3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & 57   &  0 (0) & \cc &  \cc & \cc & \cc \\
-4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & 155  &  0 (0) & \cc &  \cc & \cc & \cc \\
+4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & 74   &  0 (0) & \cc &  \cc & \cc & \cc \\
 5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) & 1918 &  7 (2) & \cc &  \cc & \cc &  7 (2) \\
 6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) & 299  &  0 (0) & \cc &  \cc & \cc & \cc \\
 7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & 427  & 21 (2) & \cc &  \cc & \cc &  21 (2) \\
@@ -365,12 +386,17 @@ By excluding the type usages that do not originate form the application itself, 
 And to clarify, the bug that all of the variations uncover is always the same.
 
 \paragraph{For RQ 2 and 3: Benchmark}
-\todo{merge them? or not?}
 
 First, we present the benchmark results of the different variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ in Table~\ref{fig:bench}.
 The original variation has the best precision, but its recall is a little bit worse than that of $\text{DMMC}_\text{noContext}$.
 Nonetheless, it narrowly reaches a better $F_1$ score.
 The class merge variation exhibits by far the worst results.
+
+We have plotted the development of precision and recall in dependency of the partition size in Figure \ref{fig:partition}.
+Especially small partitions (<10 type usages) have very bad recall, we explain the reason for this in the discussion.
+Because of this, we have also calculated the performance of our implementation for partitions that contain at least 10 type usage, they are indicated on the right side of Table \ref{fig:bench}.
+For these partitions, the superiority of $\text{DMMC}$ over the two other variations is even more clear.
+\todo[inline]{ here graph + description of dmmc behavior (all?) over different partition sizes -> make sure the text still fits!}
 
 \begin{table}[ht]
     \centering
@@ -386,16 +412,29 @@ $\text{DMMC}_\text{class}$       & 38.89\%   & 24.18\% & 29.82\% & 47.27\%   & 4
     \end{tabular}
     \caption{Benchmark Results}\label{fig:bench}
 \end{table}
-\todo[inline]{ maybe merge this table / figure with one of the others that will be nearby?
-    min 10 results also in table?
-    explain them!
-    here graph + description of dmmc behavior (all?) over different partition sizes }
 
 \paragraph{For RQ 4: Robustness}
 
-In Figure ZYW, we have plotted the evolution of precision and recall as we degrade more and more type usages.
+In Figure \ref{fig:robustness}, we have plotted the evolution of precision and recall as we degrade more and more type usages.
 It is obvious that\ldots
 \todo[inline]{ benchmark results for degrading 1 or more ADDITIONAL TUS?!  }
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_partition}
+        \caption{Metrics depending on Partition Size}
+        \label{fig:partition}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.49\textwidth}
+        \centering
+        \includegraphics[width=1.1\textwidth]{figures/graph_robustness}
+        \caption{Impact of degrading additional Type Usages}
+        \label{fig:robustness}
+    \end{subfigure}
+    \caption{Benchmark Results for RQ 2 and 3}
+\end{figure}
 
 \paragraph{For RQ 5: Other Anomalies}
 
@@ -494,16 +533,14 @@ However, at least our results at least do not indicate the opposite: that the be
 
 \paragraph{For RQ 3: Input Size}
 
-The graph in Figure ABC shows clearly that the systems accuracy increases with the size of the partition.
-\todo{REFERENCE!!}
+The graph in Figure \ref{fig:partition} shows clearly that the systems accuracy increases with the size of the partition.
 Especially for partitions smaller than 10, the recall is terrible.
 To explain this, consider the strangeness score of a true bug $b$.
 If there are no instances equal to $b$, then $|E(b)|=1$ and $\operatorname{S-score}(b)=1-\frac{1}{1+|A(b)|}$.
 We consider type usages with a strangeness score of more than $0.9$ to be anomalies, so $b$ can only be flagged as anomalous as soon as there are at least $9$ instances that are almost similar to it.
 It follows that there must be at least 10 type usages within the same partition to have even a theoretical chance of detecting any outliers.
 
-Now consider that the $\text{DMMC}$ variant that takes the context into account has shown the best performance and the distribution of partitions presented in Figure XY.
-\todo{add reference!}
+Now consider that the $\text{DMMC}$ variant that takes the context into account has shown the best performance and the distribution of partitions presented in Figure \ref{fig:tus_partition}.
 Even in our large dataset of 625 applications, most partitions are still rather small.
 In fact, a majority of type usages belong to partitions that are smaller than the necessary minimum of 10, meaning that our system can not actually detect any bugs or other outliers among them.
 \todo{is this true + what are exact numbers?}
@@ -517,8 +554,7 @@ any other actual results on this? I don't actually think so\ldots }
 
 \paragraph{For RQ 4: Robustness}
 
-The graph in Figure ABC makes it plain that the accuracy of our implementation decreases tremendously when we introduce additional degraded type usages into the data.
-\todo{REFERENCE!!!}
+The graph in Figure \ref{fig:robustness}  makes it plain that the accuracy of our implementation decreases tremendously when we introduce additional degraded type usages into the data.
 % then math considerations
 Since we are not confident in the applicability of the benchmark, we also make a mathematical consideration with regards to the behavior of the $\operatorname{S-score}$.
 In the previous paragraph, we already considered the true bug $b$ with no equal instances.
@@ -528,8 +564,7 @@ In other words, we can only detect these anomalous type usages if there are at l
 
 %  verweis auf partitions sizes
 The more errors there are in our dataset, the more data we need to detect them.
-The impact of this becomes especially clear if one consults the graph in Figure X displaying the distribution of partition sizes in our dataset.
-\todo{refrence!}
+The impact of this becomes especially clear if one consults the graph in Figure \ref{fig:tus_partition} displaying the distribution of partition sizes in our dataset.
 Most of them are small and thus having an additional mistake in the dataset can easily prevent our implementation from flagging both as an anomaly.
 % -> tentative answer: it's a little bit sensible to bad inputs
 Al in all, we tentatively conclude that the majority rule is relatively sensible to erroneous input data.

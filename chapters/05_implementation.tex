@@ -211,7 +211,7 @@ After we refactored the code and added the database backend, the database stores
 Therefore, we thought it would be convenient to calculate the strangeness scores in the database as well and only query it for the finished results.
 In hindsight, this was not the best idea.
 The first query we designed to calculate the strangeness score was quite complicated, with many joins over views containing many more joins.
-Even on a small test dataset, it was quite slow.
+Even on a small test dataset, it was pretty slow.
 We attempted many improvements to the query, including better indices and smart cached subtables, but the query remained slow and memory intensive.
 We even invested some time into exploring the possibility of using PostgreSQL\footnote{\url{https://www.postgresql.org/}}, but the results were equally disappointing.
 
@@ -235,20 +235,20 @@ Several simple Python scripts handle the anomaly detection.
 The first step is to partition the type usages by type for $\text{DMMC}_\text{noContext}$ or a combination of type and context for $\text{DMMC}$.
 The script obtains these partitions with a simple query to the database.
 In its outer loop, it iterates through all partitions and retrieves the type usages belonging to the current partition.
-Again, querying the database for these type usages is simple and also quite fast because of indices on the relevant columns.
+Again, querying the database for these type usages is simple and also fast because of indices on the relevant columns.
 
 % analysis
-In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
+In the inner loop, the script iterates through all type usages in the current partition and compares the methods that they invoke.
 We compare each type usage with each other type usage only once, similar to filling an upper triangle matrix, thus saving nearly half of the comparisons.
 % tear down / result
 After determining the number of exactly and almost similar neighbors for each type usage in this manner, it is easy to calculate the strangeness score for all of them.
 Finally, the script saves the results for further analysis and evaluation by an expert.
 
 % other variants: loading
-The anomaly detection is the only part of the implementation that is affected by the different variants presented in Chapter~\ref{ch:dmmc}.
+The anomaly detection is the only part of the implementation that is affected by the different variants presented in Chapter~\ref{ch:ext}.
 We already mentioned the differences between including or excluding the context.
 For the class merge variant, we perform some simple preprocessing before starting the analysis.
 We load the data with type partitioning and merge those type usages which originated in the same class.
 % other variants: anomalies
-For the detection of superfluous or wrong method calls, we can use the same setup and only need to adapt the almost equal check to the new requirements.
+For the detection of superfluous or wrong method calls, we can use the same setup and only need to adapt the almost equal check to the new definitions.
 
