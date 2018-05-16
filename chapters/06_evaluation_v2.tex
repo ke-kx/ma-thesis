@@ -172,10 +172,12 @@ Because we know the correct answer for all degraded type usages, we can use the 
     \item [$\mathbf{F_1}$ score] is the harmonic average of precision and recall.
 \end{description}
 \todo[inline]{add formeln - right now I'm actually thinking not to
-    pr: sum(confidence(correct prediction) ) / | all queries |
-    rc: sum(correctly detected as anomalie) / | all queries |
-    f1: 2* (pr*rc)/(pr+rc)
-}
+My precision is a different one than the one monp et al use, maybe i should change that? + call it smth different?}
+
+%    pr: sum(confidence(correct prediction) ) / | all queries |
+%    rc: sum(correctly detected as anomalie) / | all queries |
+%    f1: 2* (pr*rc)/(pr+rc)
+
 
 % how we want to evaluate the simulation itself
 These metrics are already mildly interesting by themselves if we compare them across the three variants $\text{DMMC}$, $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$.
@@ -330,27 +332,24 @@ In fact, we reported this bug and the maintainer already confirmed and fixed it\
 \begin{tabular}[h]{r|r|c|c|c|c|c|c|c|c|c|c|c}
 \toprule
 %\cmidrule(l){3-10}
-\multicolumn{1}{c}{ } & \multicolumn{6}{|c}{$\text{DMMC}_\text{noContext}$} & \multicolumn{6}{|c}{$\text{DMMC}_\text{class}$} \\
+    & \multicolumn{6}{c|}{$\text{DMMC}_\text{noContext}$} & \multicolumn{6}{c}{$\text{DMMC}_\text{class}$} \\
 App & Type Usages & Findings & B & S  & H    & FP & Type Usages & Findings & B & S & H & FP \\
 \midrule
-1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & ? & 28 (14)&1 (1)&  \cc &8 (5)& 19 (8) \\
-2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & ? & 10 (8) & \cc &  \cc &1 (1)&  9 (7) \\
-3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
-4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
-5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) & ? &  7 (2) & \cc &  \cc & \cc &  7 (2) \\
-6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) & ? &  0 (0) & \cc &  \cc & \cc & \cc \\
-7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & ? & 21 (2) & \cc &  \cc & \cc &  21 (2) \\
-8 & 8350   &  4 (4)  &  \cc   &  \cc  &  \cc    &  4 (4) & ? &  2 (2) & \cc &  \cc &1 (1)&   1 (1) \\
-9 & 1675   &  2 (1)  &  \cc   &  \cc  &  2 (1)  &  \cc   & ? &  1 (1) & \cc &  \cc &1 (1)& \cc \\
-10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) & ? &  4 (3) & \cc &  \cc & \cc &   4 (3) \\
+1 & 11241  & 41 (24) & 1 (1)  & 1 (1) & 20 (15) & 19 (7) & 4602 & 28 (14)&1 (1)&  \cc &8 (5)& 19 (8) \\
+2 & 12659  & 16 (3)  &  \cc   &  \cc  &  \cc    & 16 (3) & 1560 & 10 (8) & \cc &  \cc &1 (1)&  9 (7) \\
+3 & 80     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & 57   &  0 (0) & \cc &  \cc & \cc & \cc \\
+4 & 87     &  0 (0)  &  \cc   &  \cc  &  \cc    &  \cc   & 155  &  0 (0) & \cc &  \cc & \cc & \cc \\
+5 & 3645   &  8 (6)  &  \cc   &  \cc  &  3 (1)  &  5 (5) & 1918 &  7 (2) & \cc &  \cc & \cc &  7 (2) \\
+6 & 13547  & 23 (0)  &  \cc   &  \cc  &  7 (0)  & 16 (0) & 299  &  0 (0) & \cc &  \cc & \cc & \cc \\
+7 & 880    & 21 (2)  &  \cc   &  \cc  &  \cc    & 21 (2) & 427  & 21 (2) & \cc &  \cc & \cc &  21 (2) \\
+8 & 8350   &  4 (4)  &  \cc   &  \cc  &  \cc    &  4 (4) & 730  &  2 (2) & \cc &  \cc &1 (1)&   1 (1) \\
+9 & 1675   &  2 (1)  &  \cc   &  \cc  &  2 (1)  &  \cc   & 863  &  1 (1) & \cc &  \cc &1 (1)& \cc \\
+10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) & 3876 &  4 (3) & \cc &  \cc & \cc &   4 (3) \\
 \bottomrule
     \end{tabular}}
     \caption{Comparing $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
 \end{table}
-\todo[inline]{
-Fill the tu nr for classMerge!!!
-consider if there is some better way than the brackets? (tried the / but looks like a fraction\ldots)
-}
+\todo[inline]{ consider if there is some better way than the brackets? (tried the / but looks like a fraction\ldots) }
 
 In Table~\ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
 When ignoring the context, the total number of findings grows to 130 of which only 2 are true positive ($1.54\%$), if we also consider the 32 hints to be true positives, the ratio goes up to $26.15\%$.
@@ -375,23 +374,22 @@ The class merge variation exhibits by far the worst results.
 
 \begin{table}[ht]
     \centering
-    \begin{tabular}[h]{l|c|c|c}
+    \begin{tabular}[h]{l|c|c|c|c|c|c}
 \toprule
-                                 & Precision & Recall  & $F_1$   \\
+ & \multicolumn{3}{c|}{All Partitions}      & \multicolumn{3}{c}{Partitions $> 9$} \\
+                                 & Precision & Recall  & $F_1$   & Precision & Recall  & $F_1$ \\
 \midrule
-$\text{DMMC}$                    & 88.96\%   & 43.52\% & 58.45\% \\
-$\text{DMMC}_\text{noContext}$   & 59.22\%   & 57.55\% & 58.37\% \\
-$\text{DMMC}_\text{class}$       & 38.89\%   & 24.18\% & 29.82\% \\
+$\text{DMMC}$                    & 88.96\%   & 43.52\% & 58.45\% & 90.12\%   & 80.5\%  & 85.04\% \\
+$\text{DMMC}_\text{noContext}$   & 59.22\%   & 57.55\% & 58.37\% & 60.06\%   & 64.03\% & 61.98\% \\
+$\text{DMMC}_\text{class}$       & 38.89\%   & 24.18\% & 29.82\% & 47.27\%   & 40.05\% & 43.36\% \\
 \bottomrule
     \end{tabular}
     \caption{Benchmark Results}\label{fig:bench}
 \end{table}
-\todo[inline]{ maybe merge this table / figure with one of the others that will be nearby?  } 
-
-\todo[inline]{
+\todo[inline]{ maybe merge this table / figure with one of the others that will be nearby?
     min 10 results also in table?
-    here graph + description of dmmc behavior (all?) over different partition sizes
-}
+    explain them!
+    here graph + description of dmmc behavior (all?) over different partition sizes }
 
 \paragraph{For RQ 4: Robustness}
 
