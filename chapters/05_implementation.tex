@@ -230,16 +230,13 @@ With this realization, we can continue to the final step of the analysis: detect
 
 % overview of process
 
-\todo[inline]{not super happy with this paragraph, but how to change it?}
 % partitions + analysis
-Some relatively simple Python scripts handle the anomaly detection.
-The first step is to obtain the possible partitions of the dataset, depending on the variant, either all types in the dataset or all valid combinations of type and context.
-\todo[inline]{This sentence was a bit confusing to me. I would change it to something like: "The first step is to partition the type usages by type for DMMCnoContext or a combination of type and context for DMMC. Obtaining these partitions is realized in the outer loop of the script with a simple query to the database: we iterate through all partitions and retrieve..."}
-Observe that the database makes it very simple to obtain these partitions with just one query.
-\todo{remove sentence?}
-In its outer loop, the script iterates through all partitions and retrieves the type usages belonging to the current partition.
-\todo[inline]{where do the partitions we iterate through come from? do we know them in advance? are they initialized beforehand or while iterating? it's a bit strange that we iterate through something we are just creating. maybe describe the outer loop a bit more detailed.}
+Several simple Python scripts handle the anomaly detection.
+The first step is to partition the type usages by type for $\text{DMMC}_\text{noContext}$ or a combination of type and context for $\text{DMMC}$.
+The script obtains these partitions with a simple query to the database.
+In its outer loop, it iterates through all partitions and retrieves the type usages belonging to the current partition.
 Again, querying the database for these type usages is simple and also quite fast because of indices on the relevant columns.
+
 % analysis
 In the inner loop, the script iterates through all the type usages in the current partition and compares the methods that they invoke.
 We compare each type usage with each other type usage only once, similar to filling an upper triangle matrix, thus saving nearly half of the comparisons.

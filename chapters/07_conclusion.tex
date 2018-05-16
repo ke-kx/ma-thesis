@@ -4,77 +4,49 @@
 In this thesis, we investigate a method for detecting missing method calls that was proposed by Monperrus et al.
 Detecting missing method calls would be useful over the entirety of a software's lifetime, be it when developing a new program or when maintaining old and mature software.
 The method we implement does not require any input besides the source code itself as it extracts patterns from the data it receives.
-This makes it superior to other bug detection systems as it does not require the work of keeping hand-crafted detection rules up to date.
+This makes it superior to other bug detection systems, because it is not necessary to keep any hand-crafted detection rules up to date.
 
 We improve upon the implementation of Monperrus et al.\ in that we add a database backend and enhance the extensibility.
 Furthermore, we propose several variations to their method with the goal of better detection of missing calls on the one hand and detecting different kind of errors on the other.
 To get an all-round impression of the results that their method produces and how our variations behave in comparison, we evaluate them on a large dataset of Android applications. 
 
 % MMCS
-As for detecting missing method calls
-    results of benchmark and manual review agree that the original version proposed by mp is the best
-    other methods turned out to be inferior!
-take answers of all the questions into account 
- oh its a bit sensible to wrong inputs and it is difficult to gather enough data - result quality is also not amazing - 
-    results quality? -> ``okay'' but not amazing (detected one bug, that's it)
-    input size: it is difficult to gather enough data even when using lots of input
-    additionally method is sensible to erroneous / perturbed input data
-lots of fp, especially among top50
-all in all it seems that at least in the context of android this is A method for detecting mmcs, but probably not the best (cant say that without example i gues..)
-tentively that it's inferior because of bad detection rate oä
-could be a solution with the filters, but then you get the same problmes as before
-(i mention this below, is that fine?)
+As for detecting missing method calls, the results of benchmark and manual review agree that the original version proposed by Monperrus et al.\ is better than the variations that we proposed.
+Neither ignoring the context, nor merging the type usages on class basis improve the results.
+Our implementation found one true bug in the random applications that we reviewed, but most of the anomalies were in fact false positives.
+Apart from the mediocre quality of results, our results also hint at the method being quite sensible to erroneous input data.
+Additionally, it seems difficult to gather enough data even when applying the system to a large software ecosystem like Android.
 
+All in all, we conclude that the majority rule can detect missing method calls under the right circumstances.
+However, the necessary prerequisites are not easy to achieve and the false positive rate is high.
 % as for other anomalies
-as for detecting superfluous or wrong method calls
-our simple ideas do not seem to work well
-manual review of results found all of the anomalies to be Fps!
+As for using the majority rule to detect superfluous or wrong method calls, at least our simple ideas do not work well.
+Our implementation finds a lot of anomalies and the manual review shows all of them to be false positives.
 
 \section{Future Work}
 
 % general intro
-\todo{smth with relation to how good i rate the method to be?}
 In principle there are two dimensions along which we envision future research.
 The first dimension concerns itself with improving the detection of missing method calls in some way.
 The second dimension is about applying the majority rule to other types of anomalies.
 
 % improve the method itself
-As for improving the missing method call detection, we would first like to reference the analysis of typical failures we encountered that we did in Section ABC.
-In it we already address a number of potential improvements as well as their drawbacks.
-Especially some filters seem like an easy way to decrease the number of false positives and thus increase the precision, albeit they are a bit antithetical to the original idea of staying away from hand-crafted rule sets.
+With regards to improving the missing method call detection, we would first like to reference our analysis of typical failures in Section \ref{sc:disc}.
+There, we already address a number of potential improvements as well as their drawbacks.
+Especially filters seem like an easy way to decrease the number of false positives and thus increase the precision, albeit they are a bit antithetical to the original idea of staying away from hand-crafted rule sets.
 Another way to improve the precision could be to use a completely different anomaly detection algorithm.
-\todo{examples?}
-As mentioned, we did actually invest quite some time researching in that direction but it proved to be rather difficult, because the data on which to learn is actually rather thin.
-\todo[inline]{rephrase\ldots -> didn't actually mention anywhere else!
-mention in the end that i tried a 
-Better anomaly detection (is the anomality rule actually a GOOD measure for this kind of anomalies, or should we use something totally different?))
-    clustering detector try (+ hypersphere idea?)
-    but all in all it didnt work out / not enough time
-    + vermutungen warum es nicht funktioniert -> dataset exploration + size of method and typeusage lists per partition!}
-\todo[inline]{correct reference!, mention examples? (dot chaining, static function etc)
-make sure this paragraph works with the actual discussion section, stuff needs to be explained proper!\ldots}
+We did actually invest quite some time into research in this direction but the preliminary results were disappointing, presumably because the type usage abstraction does not contain a lot of data from which to learn from.
+However, we still see potential there, especially when also considering additional features, for example, the interfaces a class implements or the methods it overrides.
 
 We questioned how valid it is to partition the type usages by the context they appear in and suggested two other options for it ($\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$).
 While our evaluation showed that grouping them by context produces the best results, there might be even better ways of organizing them.
-We would be especially interested to see if one can improve the results by considering the inheritance hierarchy of the classes that the type usages appear in.
+We would be especially interested to see if the results can be improved by considering the inheritance hierarchy of the classes that the type usages appear in.
 
-The majority rule is essentially looking for outliers by virtue of being different then the rest, the findings could certainly be improved by taking more data into consideration.
-\todo{terrible first part of the sentence\ldots, actually terrible paragraph\ldots}
+Since the majority rule is essentially looking for deviations from the norm, having more data on what the norm is, could certainly improve the finding quality.
 We already consider a sizeable dataset in our evaluation, however the ecosystem of existing Android applications is by far larger than that.
-Analyzing a large portion of the Google playstore and extracting all of the type usages would certainly increase the precision.
-We don't expect the performance to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize the implementation by using a dedicated database server and Cython (or any regular compiled language) for the analysis phase.
+On could envision analyzing a large portion of the Google playstore and extracting all of the type usages to obtain more accurate results.
+We do not expect the performance to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize the implementation by using a dedicated database server and Cython (or any regular compiled language) for the analysis phase.
 
 % apply to different anomalies
 Besides these measures to improve the detection of missing method calls, one could also envision using the majority rules to detect other types of anomalies.
 Monperrus et al.\ suggest applying concept of almost similarity to execution traces to detect runtime defects or to conditional statements to improve the resilience of software to incorrect input.
-We also see potential in considering other features, for example, the interfaces a class implements or the methods it overrides.
-\todo{idea clear?, any other pairings?, objectübergreifen?
-right now siggy thought it better fits the first part - improving detection - which it kinda does
-}
-
-\todo[inline]{
-    i think not mentioning this is actually smarter!
-of course about temporal properties\ldots
-Reihenfolge von Methoden - hat gut funktioniert und wäre potentiell nützlich, aber kleines subset + lots of research already done
-order of method calls? (probably should wait for empirical results - how long are typical method lists (state explosion, ...) / latice solution?)
-}

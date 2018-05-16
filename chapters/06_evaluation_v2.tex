@@ -7,7 +7,7 @@ We apply our implementation to a large dataset of Android applications and evalu
 % chapter outline
 In the following, we first present the research questions and why they are relevant for our understanding of this method.
 We examine the dataset, present some general data on it and analyze the properties of type usages in Android applications.
-After giving some details on the study design, we present the results of our evaluation in response to our research questions.
+After giving details on the study design, we present the results of our evaluation in response to our research questions.
 Finally, we consider the meaning of these results and what might threaten their validity.
 
 \section{Research Questions}\label{sc:rq}
@@ -16,7 +16,7 @@ Finally, we consider the meaning of these results and what might threaten their 
 Over the course of this evaluation, we would like to understand better the nature and quality of findings produced by our implementation of the $\text{DMMC}$ system for detecting missing method calls.
 We answer the following more detailed research questions.
 
-\subsection{RQ 1: How many true versus false positives are among the anomalous type usages flagged by the majority rule?}
+\subsection*{RQ 1: How many true versus false positives are among the anomalous type usages flagged by the majority rule?}
 
 % motivation behind question + general
 It is among the primary goals of our evaluation to understand if the technique we implemented is something that a developer would use to improve the quality of the software he is developing.
@@ -29,7 +29,7 @@ If, on the other hand, most of the high ranked anomalies are indeed hints for po
 In Chapter \ref{ch:ext}, we suggest $\text{DMMC}_\text{class}$ and Monperrus et al.\ already propose $\text{DMMC}_\text{noContext}$.
 We would like to understand how these variations behave in comparison to the original $\text{DMMC}$ system, are the results they produce of comparable, better or worse quality?
 
-\subsection{RQ 2: Do the benchmark results align with the results of the manual evaluation?}
+\subsection*{RQ 2: Do the benchmark results align with the results of the manual evaluation?}
 
 % general description what benchmark doing + reasons for doing it
 Monperrus et al.\ base a significant part of their evaluation on an automated benchmark with the aim of understanding better how the majority rules behaves under different circumstances.
@@ -48,7 +48,7 @@ If they are not, the benchmark only measures how well the implementation perform
 ``In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.''
 }
 
-\subsection{RQ 3: How many type usages are necessary to detect anomalies?}
+\subsection*{RQ 3: How many type usages are necessary to detect anomalies?}
 
 % motivation + general
 Apart from investigating the quality of results, it is also important to understand what prerequisites this technique has.
@@ -56,7 +56,7 @@ Here, we examine how much data the majority rule needs to produce sensible resul
 Ideally, we would like to understand how big a codebase needs to be before patterns and their violations emerge.
 Can we apply this method to a in-house, closed-source library or does it only work on a well known open source framework like Android where it is easy to gather additional data?
 
-\subsection{RQ 4: How robust is the majority rule in the face of erroneous input data?}
+\subsection*{RQ 4: How robust is the majority rule in the face of erroneous input data?}
 
 % general / motivation
 It is not only important to understand how much data the majority rule requires, we are also interested how sensitive it is to perturbed inputs.
@@ -66,7 +66,7 @@ However, the question is, how much correct input is needed to detect the incorre
 Imagine, for example, a new library that is not very well designed causing many developers to use it in incorrect ways.
 Can we expect the majority rule to be of any help in such a scenario or will it just fail completely?
 
-\subsection{RQ 5: Can the majority rule also detect superfluous or wrong method calls?}
+\subsection*{RQ 5: Can the majority rule also detect superfluous or wrong method calls?}
 
 % motivation + intro
 In Chapter \ref{ch:ext}, we propose extending the method for detecting missing method calls that Monperrus et al.\ introduced to also detect two other anomalies: superfluous and wrong method calls.
@@ -171,7 +171,7 @@ Because we know the correct answer for all degraded type usages, we can use the 
     \item [Recall] is the percentage of degraded type usages that were detected as anomalous. It tracks if our system correctly detects outliers.
     \item [$\mathbf{F_1}$ score] is the harmonic average of precision and recall.
 \end{description}
-\todo[inline]{add formeln!!!
+\todo[inline]{add formeln - right now I'm actually thinking not to
     pr: sum(confidence(correct prediction) ) / | all queries |
     rc: sum(correctly detected as anomalie) / | all queries |
     f1: 2* (pr*rc)/(pr+rc)
@@ -436,7 +436,7 @@ All in all, there is a lot of noise in the data (even if we take the context int
 Thus, we filter all type usages with only one call from the anomaly list, which reduces them considerably.
 However, even the filtered anomalies contain only false positives.
 
-\section{Discussion}
+\section{Discussion}\label{sc:disc}
 % Interpretation of the results that go further than the research questions. This can, e.g., contain implications for software development.
 
 \paragraph{For RQ 1: True vs False Positives}
