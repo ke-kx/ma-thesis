@@ -9,7 +9,7 @@ Additionally, we explore some of the mistakes made and dead ends that we encount
 
 Our system is (primarily) a system that detects missing method calls.
 It works by statically analyzing a given software application, extracting the type usages it contains and finally determining if any of them are anomalous by the majority rule as described in Chapter~\ref{ch:dmmc}.
-The end result is a list of locations which are potentially missing a method call.
+The result is a list of locations which are potentially missing a method call.
 Given a software system which shall be tested for anomalies, the following steps have to be realized:
 
 \begin{enumerate}
@@ -98,28 +98,30 @@ Jimple is a typed 3-address representation which is especially suited for optimi
 
 %-- soot startup and settings?
 Soot is a very powerful framework, and one can customize it to cater for quite specialized requirements.
-We analyze mostly Android applications, and the settings we apply to configure it (listed in Figure~\ref{fig:sootparam}) reflect this.
+We analyze mostly Android applications, and the settings we apply to configure it (listed in Table~\ref{fig:sootparam}) reflect this.
 More detailed explanation is available in the Soot documentation\footnote{\url{https://soot-build.cs.uni-paderborn.de/public/origin/develop/soot/soot-develop/options/soot_options.htm}}.
 
-\begin{figure}[t]
+\begin{table}[t]
     \centering
     \begin{tabular}[h]{c|c|c}
-    Option & Parameter & Explanation \\ \hline
-    \code{-app } & - & Run in application mode \\ \hline
-    \code{-keep-line-number} & - & Keep line number tables \\ \hline
-    \code{-output-format} & none & Set output format for Soot \\ \hline
-    \code{-allow-phantom-refs } & - & Allow unresolved classes \\ \hline
-    \code{-src-prec} & apk-class-jimple & Sets source precedence to format files \\ \hline
-    \code{-process-multiple-dex} & - & Process all DEX files found in APK \\ \hline
-    \code{-android-jars} & [path] & The path for finding the android.jar file \\ \hline
+\toprule
+    Option & Parameter & Explanation \\ \midrule
+    \code{-app } & -- & Run in application mode \\% \hline
+    \code{-keep-line-number} & -- & Keep line number tables \\% \hline
+    \code{-output-format} & none & Set output format for Soot \\% \hline
+    \code{-allow-phantom-refs } & -- & Allow unresolved classes \\% \hline
+    \code{-src-prec} & apk-class-jimple & Sets source precedence to format files \\% \hline
+    \code{-process-multiple-dex} & -- & Process all DEX files found in APK \\% \hline
+    \code{-android-jars} & [path] & The path for finding the android.jar file \\% \hline
+\bottomrule
     \end{tabular}
-    \caption{The parameters passed to Soot}\label{fig:sootparam}
-\end{figure}
+    \caption{The Parameters passed to Soot}\label{fig:sootparam}
+\end{table}
 
 \section{Extracting Type Usages}
 
 %-- general ablauf
-The Soot execution is divided into `phases,' each of which has a specific task, for example the aggregation of local variables.
+The Soot execution is divided into `phases,' each of which has a specific task, for example, the aggregation of local variables.
 Phases consist of transformations, which can modify the input they receive but are not required to do so.
 The phases are grouped into `packs,' and the registered packs are applied successively during the execution.
 To extract type usages, we register a custom transformation in the Jimple transformation pack, which is applied to every method in the analyzed program.
@@ -145,11 +147,6 @@ For performance reasons, we exclude some classes from the extraction.
 We do not store type usages that occur \emph{inside} those classes; we do, however, still record usages of them.
 The packages we exclude in this manner are \code{java.*}, \code{android.*}, \code{soot.*} and  \code{javax.*}.
 These are all framework classes, and we are primarily interested in the type usages occurring in the application itself, not in the framework.
-\todo[inline]{
-explain a bit better that these classes are kind of exactly what we are most interested in as far as type usages go, but we don't want too step ITNO them
-+ make sure this works good together with coresponding paragraph in the next section
--> right now it's a bit confusing with first talking about excluding them and then how they are important!
-}
 
 \section{Storing Type Usages}
 
@@ -177,8 +174,7 @@ Having a database backend facilitates building such a large dataset because it c
 \begin{figure}[t]
     \centering
     \includegraphics[width=\textwidth]{figures/database_layout-light}
-    \caption{Overview of Database Tables}
-    \label{fig:db_layout}
+    \caption{Overview of Database Tables}\label{fig:db_layout}
 \end{figure}
 
 %-- explain database layout 
@@ -223,7 +219,7 @@ The only type usages that are potential candidates for exact or almost similarit
 %%however thinking about what happens - for each tu go through all tus, first check if type and context are the same (/only type for dmmc noContext) - only if that's the case go and compare the methods
 This gives rise to natural partitions of the dataset: the sets of type usages which share the same type and context (or just the same type for the variant $\text{DMMC}_\text{noContext}$).
 Within these partitions, we need to compare each type usage with all of the others, but each partition will only be a fraction of the size of the whole dataset.
-Fortunately, the database is already perfectly suited for obtaining these subsets.
+Fortunately, the database is already ideally suited for obtaining these subsets.
 With this realization, we can continue to the final step of the analysis: detecting anomalies.
 
 \section{Anomaly Detection}\label{sec:anomaly}

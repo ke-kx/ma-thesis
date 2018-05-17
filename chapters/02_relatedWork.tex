@@ -12,15 +12,15 @@ Because of this, there has been a lot of interest in approaches for automaticall
 %--- section summary
 In this chapter, we present a number of different approaches for smell and bug detection.
 We start with some ``conventional'' methods which mostly rely on hard-coded rules and patterns.
-Since we are applying the method studied in this thesis to some Android apps in Chapter~\ref{ch:eval}, we then give a quick overview of smell detection related explicitly to Android applications.
+Since we are applying the method studied in this thesis to some Android applications in Chapter~\ref{ch:eval}, we then give a quick overview of smell detection related explicitly to Android applications.
 Finally, we look into techniques which attempt to learn rules and properties from the code they are analyzing instead of relying on rules which their developers defined a priori.
 These automated techniques need fewer changes when the system under analysis evolves, but they might not be as accurate.
 
-\section{Finding Code Smells with hard coded Rules}
+\section{Finding Code Smells with hard-coded Rules}
 
 Findbugs\footnote{\url{http://findbugs.sourceforge.net/}, successor: \url{https://spotbugs.github.io/}} is a static analysis tool that finds bugs and smells in Java code.
 It reports around 400 bug patterns and can be extended using a plugin architecture.
-Each bug pattern has a specific detector, which uses some special, sometimes quite elaborate detection mechanism.
+Each bug pattern has a specific detector, which uses some unique, sometimes quite elaborate detection mechanism.
 These detectors are mostly built starting from a real bug, first attempting to find the bug in question and then all similar ones automatically as well.
 
 Ayewah et al.~\cite{ayewah2007evaluating} apply Findbugs to several large open source applications
@@ -38,7 +38,7 @@ In their analysis Findbugs detects 379 medium and high priority warnings which t
 \end{itemize}
 Their main takeaway is that this kind of static analysis can find a lot of true bugs, but there will also be a lot of false positives among them, and it can be difficult to distinguish them.
 
-To alleviate the problem of a high false positive rate among the findings reported by Findbugs, Shen et al.~\cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less important warnings.
+To alleviate the problem of a high false positive rate among the findings reported by Findbugs, Shen et al.~\cite{shen2011efindbugs} propose a ranking method which attempts to rank true bugs before less critical warnings.
 It is based on a principle they call ``defect likelihood'', which is essentially the probability that a finding is a true defect.
 They calculate this probability using the findings of a large project (in this case the JDK), each of which they manually flag as either a true or a false positive.
 The defect likelihood can not only be calculated for one specific bug pattern but also across categories and types with variance as a tiebreaker.
@@ -66,10 +66,10 @@ This enables them to recognize four Android specific smells and four general, OO
 
 To evaluate this approach, the authors use a witness application, which contains 62 known smells.
 Using the right kind of metrics, they achieve precision and recall of 1 on this application.
-Further, they apply their tool to a number of free Android apps and make some assertions about the occurrence of antipatterns in publicly available applications.
+Further, they apply their tool to some free Android applications and make some assertions about the occurrence of antipatterns in publicly available applications.
 One finding to emphasize is that some antipatterns, especially those related to memory leaks, appear in up to 39\% of applications, even well known and widely used ones like Facebook or Skype.
 
-Another paper worth mentioning is the work by Murali et al. \cite{murali2017bayesian}.
+Another paper worth mentioning is the work by Murali et al.~\cite{murali2017bayesian}.
 They leverage a Bayesian approach for learning specifications in conjunction with neural networks, to discover API usage errors.
 They evaluate their method on a large corpus of Android applications and are able to detect multiple subtle bugs.
 
@@ -80,7 +80,7 @@ an oracle that was created by having two Masters students study the code of the 
 While they reach an average precision and recall of 98\%, there are some cases in which their tool fails or yields false positives.
 
 One especially interesting failure is the smell of `missing compression'.
-It advises to compress the data when making external requests in order to save bandwidth.
+It advises compressing the data when making external requests in order to save bandwidth.
 To detect places in the code where a request is made, but compression is missing, their hard-coded rule checks if the developer used one of two popular compression libraries.
 However, recently a competing compression library has been gaining in popularity.
 Their rule does not include it and, thus, falsely flags the usage of this library as the ``missing compression'' smell.
@@ -92,12 +92,12 @@ As the results of the previous paper showed, it can be difficult and costly to k
 Because of this, there has been interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
 Engler et al.~\cite{engler2001bugs} were probably the first to propose the general idea behind the majority rule.
-In their paper they rely on contradiction and common behavior to ``find what is incorrect without knowing what is correct''.
+In their paper, they rely on contradiction and common behavior to ``find what is incorrect without knowing what is correct''.
 To do this, they use static analysis to infer what a programmer believes about the system state and then check these beliefs for contradictions.
 They provide several ``templates'' for beliefs the programmer must or may hold.
-Each template is catered for a specific type of belief and can concern wide range of things (a pointer being null or not being null, a lock being locked or unlocked, etc).
+Each template is catered for a specific type of belief and can concern a wide range of things (a pointer being null or not being null, a lock being locked or unlocked, etc.).
 Among the beliefs they extract in this manner they look for common behavior or outright contradictions and use this to flag potential anomalies.
-In their evaluation on Linux and OpenBSD they find hundreds of bugs related to the different bug types that their templates can discover.
+In their evaluation on Linux and OpenBSD, they find hundreds of bugs related to the different bug types that their templates can discover.
 Their approach is more general, whereas we are focused on detecting one specific error type.
 Conversely, our approach is more automated and does not need templates.
 
@@ -110,7 +110,7 @@ If reordering the names yields a significantly better similarity score, they rep
 In their evaluation on 12 Java programs from the DaCapo Benchmark suite~\cite{blackburn2006dacapo} (more than 1.5 Million lines of code), they reach a precision of 72\% and recall of 38\% on seeded (i.e. ``faked'') anomalies.
 In real code, they found 29 anomalies of which 22 revealed true problems (76\%).
 
-In a related work, Rice et al. \cite{rice2017detecting} also use identifier names to detect argument selection defects, in which the programmer has chosen the wrong argument to a method call.
+In a related work, Rice et al.~\cite{rice2017detecting} also use identifier names to detect argument selection defects, in which the programmer has chosen the wrong argument to a method call.
 Using a high sensitivity threshold, their method reaches a precision of 85\%. Lower thresholds improve the recall but also lower the true positive rates.
 The last two works are different from our approach as they are looking at a different type of error.
 
@@ -126,8 +126,8 @@ To alleviate this problem, Zhou et al.~\cite{zhou2017analyzing} propose an autom
 They consider two situations: either the documentation is incomplete in describing the constraints at hand, or the description exists, but it does not match the realities of the code.
 They make one crucial assumption: the code is correct because, contrary to the documentation, it has been tested extensively.
 
-Their approach analyzes the code statically and uses pattern-based natural language processing to build a first order logic formula of the constraints which are present.
-For the API documentation, they use heuristics and a part-of-speech tagger to find the restrictions and constraints which are mentioned, before synthesizing them into another first order logic formula.
+Their approach analyzes the code statically and uses pattern-based natural language processing to build a first-order logic formula of the constraints which are present.
+For the API documentation, they use heuristics and a part-of-speech tagger to find the restrictions and constraints which are mentioned, before synthesizing them into another first-order logic formula.
 The resulting formulas are fed into an SMT (satisfiability modulo theories) solver~\cite{barrett2009satisfiability} to detect inconsistencies between them.
 They apply their prototype implementation to the \code{java.awt} and \code{java.swing} packages and find 1419 defects, of which 81.6\% are true positives.
 Using the heuristics extracted from these packages, they also apply the prototype to other packages and find 1188 defects of which 659 are true positives (a precision of 55.5\%).
@@ -135,17 +135,17 @@ Overall it is worrying (if not surprising), that there are so many inconsistenci
 Less well-known APIs will probably have inferior documentation and thus, even further increase the risk of API usage related bugs.
 
 Wang et al.~\cite{wang2016bugram} propose a method that leverages n-gram language models to detect bugs.
-Other approaches do not learn from the code at all, for example Hanam et al.~\cite{hanam2016discovering} use unsupervised machine learning over bug fixes to extract bug patterns.
+Other approaches do not learn from the code at all, for example, Hanam et al.~\cite{hanam2016discovering} use unsupervised machine learning over bug fixes to extract bug patterns.
 For more research in the direction of learning API properties, we recommend the survey paper by Robillard et al.~\cite{robillard2013automated}.
 
 \section{Detecting Method Call Anomalies}
 
-Bad documentation and high complexity often make it difficult to correctly invoke API methods.
+Bad documentation and high complexity often make it difficult to invoke API methods correctly.
 To circumvent this problem, developers often search for examples of how to use a particular API\@.
 To aid with this search, Zhong et al.~\cite{zhong2009mapo} built a search tool for example code snippets.
 It extracts API usages which describe how in certain scenarios some API methods are frequently called together and if the usage follows any sequential order.
 Using clustering and frequent subsequences mining it then groups the extracted usages into usage patterns over which the search operates.
-While the tool does not look for any anomalies or code smells, it extracts exactly the type of information that is interesting if one wants to detect anomalies.
+While the tool does not look for any anomalies or code smells, it extracts precisely the type of information that is interesting if one wants to detect anomalies.
 
 There have been some works concerned with finding patterns in the way specific types are used and utilizing those patterns to find potential bugs.
 Most relevant for this work and its primary inspiration are two papers by Monperrus et al.~\cite{monperrus2010detecting}\cite{monperrus2013detecting} that propose a technique for detecting missing method calls.
@@ -154,17 +154,17 @@ They call this the ``majority rule'' and we explain it in detail in Chapter~\ref
 
 The evaluation they present is split into two parts.
 The first is based on a simulation which creates defects by degrading real software.
-It removes singular method calls from the code and check if the majority rule can detect these known missing calls.
+It removes singular method calls from the code and checks if the majority rule can detect these known missing calls.
 They perform this simulation on several software packages, among them the Eclipse user interface, Apache Derby\footnote{\url{https://db.apache.org/derby/}} and Apache Tomcat\footnote{\url{https://tomcat.apache.org/}}.
-Their system can answer between 54\% and 76\% of the simulated queries (depending on the package) and of the queries it can answer 73\% to 89\% actually contain the missing call, albeit not necessarily as the first recommendation.
+Their system can answer between 54\% and 76\% of the simulated queries (depending on the package), and of the queries it can answer, 73\% to 89\% contain the missing call, albeit not necessarily as the first recommendation.
 All in all, it reaches precision between 59\% and 83\% and recall of 41\% to 68\%.
-However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with these artificially created cases.
+However, it is questionable how relevant these numbers are because it is not clear in how far real bugs will share characteristics with these artificially created cases.
 
 Therefore, Monperrus et al.\ also perform an additional, qualitative evaluation.
-They apply their tool to Eclipse, Derby and Tomcat and manually analyze 30 very anomalous cases reported by it.
-They find that there are different reasons for an instance to be anomalous, not all of them actually indicate a missing call.
+They apply their tool to Eclipse, Derby, and Tomcat and manually analyze 30 very anomalous cases reported by it.
+They find that there are different reasons for an instance to be anomalous, not all of them indicate a missing call.
 Some are just a code smell, i.e., a situation which could be rewritten or refactored for more clarity, or related to software aging, like code using an old version of the API\@.
-They reported 17 issues and got 9 patches accepted, but there are also some negative results, where the anomaly is just that: an outlier, which is totally valid, even if a majority of other instances behave differently.
+They reported 17 issues and got 9 patches accepted, but there are also some negative results, where the anomaly is just that: an outlier, which is completely valid, even if a majority of other instances behave differently.
 
 Before this, Wasylkowski et al.~\cite{wasylkowski2007detecting} introduced a method to locate anomalies in the order of method calls.
 First, they extract usage models from Java code by building a finite state automaton for each method.
@@ -176,9 +176,9 @@ Finally, they are using frequent itemset mining~\cite{han2006data} to combine th
 In their work, an anomaly also occurs when many methods respect a pattern, and only a few (a single one) break it.
 In their experiments, they find 790 violations when analyzing several open source programs.
 Manual evaluation classifies these into 2 real defects, 5 smells and 84 ``hints'' (readability or maintainability could be improved).
-This adds up to a false positive rate of 87.8\%, but with the help of a ranking method they can obtain the 2 defects and 3 out of 5 smells within the top 10 results.
+This adds up to a false positive rate of 87.8\%, but with the help of a ranking method, they can obtain the 2 defects and 3 out of 5 smells within the top 10 results.
 
-Gruska et al.~\cite{gruska2010learning} extend the work of Wasylkowsky et al.\ and use a lightweight parser to extract temporal properties from more than 6,000 open source Linux projects.
+Gruska et al.~\cite{gruska2010learning} extend the work of Wasylkowsky et al.\ and use a lightweight parser to extract temporal properties from more than 6,000 open-source Linux projects.
 They manually evaluate the findings of 20 randomly selected projects and find that around 25\% of the high-ranked anomalies uncover actual code smells or defects.
 
 In a related work, Nguyen et al.~\cite{nguyen2009graph} use a graph-based representation of object usages to detect temporal dependencies.

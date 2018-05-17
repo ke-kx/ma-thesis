@@ -1,23 +1,23 @@
 \chapter{\abstractname}
 
 % intro + method description
-When a developer works with an object-oriented framework that he does not know well it is easy to forget an important method call.
+When a developer works with an object-oriented framework that he does not know well, it is easy to forget an important method call.
 We study a new technique for detecting missing method calls in Java applications that was proposed by Monperrus et al.~\cite{monperrus2010detecting}.
-It does not use hard coded rules or any input besides the source code itself, instead it detects outliers based on the majority rule:
+The technique does not rely on hard-coded rules or any input besides the source code itself; instead, it detects outliers based on the majority rule:
 If a type is used in one particular way many times and differently only once, this probably indicates a bug.
 
-\todo[inline]{mention some more here  about the variations?, is the results description okay?}
 % proposed changes + implementation
-Based on the implementation by Monperrus et al., we develop a system that supports several different different techniques for detecting missing method calls.
+Based on the implementation by Monperrus et al., we develop a system that supports three slightly different techniques for detecting missing method calls.
 % evaluation: method + goals?
-To investigate which one produces the best results, we evaluate them on a dataset of more than 600 open source Android applications.
-We manually review the anomalies our implementation finds in 10 randomly selected applications and also use an automated benchmark that relies on artificially degrading existing code.
+To investigate which one produces the best results, we evaluate them on a dataset of more than 600 open-source Android applications.
+We manually review the anomalies our implementation finds in 10 randomly selected applications and also perform an automated benchmark that relies on artificially degrading existing code.
+
 % results and conclusion
 In the comparison between the different variations, the original technique by Monperrus et al.\ comes out ahead.
 However, even if it manages to uncover one true bug, its total results are mediocre with only 3 true positives among 17 total findings.
 Additionally, our evaluation points in the direction of the majority rule being sensible to input perturbations and needing a lot of data that is not easy to obtain.
 
-Finally, we propose utilizing the majority rule to also detect superfluous or wrong method calls.
+Finally, we propose utilizing the majority rule to detect superfluous or wrong method calls, as well.
 We present an implementation of the proposed system and perform a manual review of its findings.
 The outcome suggests that the majority rule is not suitable for detecting this particular type of error.
 

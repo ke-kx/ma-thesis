@@ -38,7 +38,7 @@ Similarly, if we have an object of type $T_2$ where only \code{X} is invoked, we
 %-- not clear what's the point of this one
 Developers often fail to make important method calls when using types with which they are not deeply familiar.
 As this can occur with a new library, an extensive framework, or even a whole platform (e.g., Android), we use these terms interchangeably.
-Lack of familiarity may also arise not just when using code from an external source, but also when working on a large codebase.
+Lack of familiarity may arise not just when using code from an external source, but also when working on a large codebase.
 In large software projects it is common that one developer does not know all of the code, and thus, they will often encounter types which they do not know how to use correctly.
 
 %--- Monperrus et al. also showed that the bugs sometimes DO get into the code, all in all, we want to be able to detect them
@@ -90,7 +90,7 @@ If a type is used in one particular way many, many times (that is, in the majori
 % This thesis builds on their work, re-evaluating the characterization of type usages and anomalies among them.
 
 In this work, we introduce some variants of this idea and examine if they yield any improvements.
-Additionally, we propose using the majority rule to also detect superfluous or wrong method calls.
+Additionally, we propose using the majority rule to detect superfluous or wrong method calls.
 Based on the implementation by Monperrus et al., we develop a system for detecting missing method calls.
 We eliminate some minor inaccuracies from their implementation and add a database backend which enables the system to incorporate more data into its decisions.
 

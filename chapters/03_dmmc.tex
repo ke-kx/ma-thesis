@@ -68,8 +68,7 @@ C(t) = 'Page.createButton()'
 M(t) = {<init>}
         \end{lstlisting}
     \end{subfigure}
-    \caption{Example illustrating the Extraction of Type Usages (taken from \cite{monperrus2013detecting})}
-    \label{fig:tu_example}
+    \caption{Example illustrating the Extraction of Type Usages (taken from~\cite{monperrus2013detecting})}\label{fig:tu_example}
 \end{figure}
 
 As an example, consider the code in Figure~\ref{fig:tu_example}.
@@ -225,7 +224,7 @@ Formally, we define the S(trangeness)-Score as:
 To see that this definition makes sense, consider the following extreme cases:
 Given one type usage $a$ without any additional exactly similar or almost similar type usages, it will have $|E(a)| = 1$ and $|A(a)| = 0$.
 Then, we can calculate the strangeness score: $\operatorname{S-score}(a) = 1-\frac{1}{1} = 0$.
-So a unique type usage without any ``neighbors'' to consider is completely normal and not strange.
+So a unique type usage without any ``neighbors'' to consider is entirely normal and not strange.
 On the other hand, given a type usage $b$ with $99$ almost similar and no other exactly similar type usages, we have $|E(b)| = 1$ and $|A(b)| = 99$.
 This results in a strangeness score of $\operatorname{S-score}(b) = 1-\frac{1}{1+99} = 0.99$.
 Intuitively such a type usage is very strange, and indeed, the S-score supports the intuition.
