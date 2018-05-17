@@ -43,10 +43,7 @@ While such a benchmark makes sense on the face of it, one can question how meani
 Monperrus et al.\ are essentially simulating the situation that a developer forgets the method call they remove and verify if their implementation would be helpful in that case.
 The critical assumption here is that the artificially created missing calls are in some way comparable to real missing method call bugs in software.
 If they are not, the benchmark only measures how well the implementation performs on the exact problem of detecting randomly removed method calls, which is not very meaningful at all.
-\todo[inline]{
-    anything else? is the question clear like this?
-``In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.''
-}
+\todo{ ``In the end, we would like to answer, if it make sense to evaluate this method using degenerated type usages as proposed by Monperrus et al.'' }
 
 \subsection*{RQ 3: How many type usages are necessary to detect anomalies?}
 
@@ -86,11 +83,6 @@ From the 625 Android applications obtained in this manner, we extract all type u
 The Android ecosystem is particularly suited for this evaluation and enables us to evaluate how type usages and the majority rule behave on real software.
 The Java code is easy to analyze and there is a rich open source community, placing many sample applications at our disposal.
 Each of these applications uses the Android API, so that we can generate a large dataset on the classes in the API, and detect any common patterns that emerge when using it.
-Because of the API's emphasis on the user interface, we consider this to be an environment in which patterns will appear most frequently and most clearly.
-\todo[inline]{
-lars: can we support this claim with smth?!
-formulate last sentence a bit different + first one as well?
-}
 
 % general dataset
 %    How many Apps + How many TUs in total + each (avg / median) -> how big are the apps, (how are the tus split between the apps)
@@ -103,8 +95,7 @@ Most applications are small with a few outliers responsible for most of the type
 Of all the type usages in the dataset, $7.66\%$ operate on types from the Android framework (i.e., their fully qualified package name starts with \code{android.*}).
 %    length of method list -> histogram?
 In Figure \ref{fig:method_list}, we have plotted how many method calls there are per type usage to give a feeling for the amount of information they provide.
-A great majority of type usages only calls few methods.
-\todo{description acceptable like this?}
+Observe the logarithmic scale on the y-Axis, indicating that a great majority of type usages only call few (<10) methods.
 
 \begin{figure}[t]
     \centering
@@ -129,23 +120,12 @@ In the variant $\text{DMMC}_{\text{noContext}}$, the number of partitions is equ
 Since $\text{DMMC}_{\text{class}}$ relies on $A'_\text{noContext}$, the partitions for it are the same as for $\text{DMMC}_{\text{noContext}}$.
 However, because we merge the type usages before analyzing them, the total number of type usages for this variant goes down to 958,306.
 In Figure \ref{fig:tus_partition}, we have plotted the distribution of type usages per partition for the different variants.
-Observer that\ldots 
-\todo[inline]{Plot verteilung of TUs per partition!, depending on variant}
+Observer that especially for the variation that takes the context into account most type usages lie in a small partition.
+\todo{a bit more than just ``small partition?''}
 
-\todo[inline]{
-    explain why we expect the scores verteilung to be like that
-    DEFINITELY somewhere mention the average number of anomalies per app!
-        total anomalies: 1650 -> 2.64 avg per app
-Does the Strangeness Score behave as expected on Android Apps? (the behavior that I'm expecting is basically a mathematical necessity!)
-    do the general assumptions hold? (most tus have a low score, most apps have few findings, etc)
-    -> most tus are ``normal'', a few are ``abnormal''
-    what do those assumptions mean? -> they expect some kind of uniformity to the type usages, probably mostly present in GUI etc frameworks
-
-mention here: the monperrus2013 p11 highlight? (at least equivalent for my dataset)
-    % Second, we note that the distributions of type-usages per type and type-usages per context follow a power-law distribution, which means that a few types and a few contexts trust a large number of type-usages. For instance, for eclipse-swt, the top-20 most popular types (out of 389) cover 62% of the type-usages. This goes along the same line as the results of Baxter et al. [Baxter et al. 2006]
-mention somewhere that analysis itself is relatively cheap (especially for new project coming in)
-}
-
+We have plotted the distribution of strangeness scores across all type usages in Figure \ref{fig:strangeness}.
+Most type usages are normal and have a low or very low strangeness score.
+Using $\text{DMMC}$, our dataset contains a total of 1650 anomalies, that is an average of $2.64$ anomalies per application.
 % performance: total time +
 We perform all our experiments on a MacBook Pro with an Intel\textregistered Core™ i7-3720QM CPU @ 2.60GHz and 16GB of RAM\@.
 Extracting the type usages from all applications took a total of 3 hours and 27 minutes, which is an average of around 20 seconds per application.
@@ -192,8 +172,6 @@ Because we know the correct answer for all degraded type usages, we can use the 
     \item [Recall] is the percentage of degraded type usages that were detected as anomalous. It tracks if our system correctly detects outliers.
     \item [$\mathbf{F_1}$ score] is the harmonic average of precision and recall.
 \end{description}
-\todo[inline]{add formeln - right now I'm actually thinking not to
-My precision is a different one than the one monp et al use, maybe i should change that? + call it smth different?}
 
 %    pr: sum(confidence(correct prediction) ) / | all queries |
 %    rc: sum(correctly detected as anomalie) / | all queries |
@@ -207,12 +185,7 @@ To do so, we compare the benchmark results of each variant to the results of the
 We would expect them to align, that is if one variant produces bad results in the manual evaluation it should also yield bad results in the benchmark.
 If there is a serious mismatch between the manual and the benchmark results, this would question the validity of the benchmark.
 However, if they agree, it would at least strengthen the idea that the benchmark has some relation to the real world performance of these techniques.
-
-\todo[inline]{
-rephrase end of this paragraph - the second part does not actually follow!
-am i actually describing ``how to answer the question'' or smth else?
-concrete measures for success or not sucess?
-}
+\todo{ rephrase end of this paragraph - the second part does not actually follow!  }
 
 \paragraph{For RQ 3: Input Size}
 
@@ -222,9 +195,6 @@ That is, we sample type usages, degrade them by removing a method call and then 
 We calculate the same metrics as in the previous experiment, but this time we consider one additional factor: the size of the partition.
 We aim to understand if the partition size has any influence on the quality of results and if so, what partition sizes are advantageous.
 In the discussion, we also present some mathematical considerations to support the results.
-\todo[inline]{need to explain the partition size at least a little bit, at least reference previous section?
-formalize a bit more? aka say if detection rate does this and that?
-have the last sentence or not?}
     
 \paragraph{For RQ 4: Robustness}
 
@@ -237,9 +207,6 @@ Instead, we pick a second random type usage from the same partition as the first
 Thus, we simulate the situation that the type in question is in some way difficult to use and it has been used wrongly in multiple places.
 We can then calculate precision and recall as before and investigate how this lower quality input data affects the performance of our implementation.
 To get the full picture, we observe how the metrics change when we degrade more and more type usages at once.
-
-\todo[inline]{ more formal about performance?
-last sentence remix?}
 
 \paragraph{For RQ 5: Other Anomalies}
 
@@ -270,24 +237,10 @@ We then manually review all anomalous type usages and carefully consider the sou
     \item [false positive (FP)] the usage is totally fine; no causal relation implying the ``missing'' method must be called
 \end{description}
 
-\todo[inline]{ descriptions fine like this? }
-
 We consider bugs and smells to be true positives.
-Depending on the quality of results one expects, hints could either be counted towards smells or towards false positives.
-\todo{``results one expects'' not clear}
 We classify type usages as hints when it makes sense that the pattern exists, because many people will use the methods together and there is some causal connection, but, strictly speaking, there is nothing wrong with the code in question.
 As an example, consider the situation in which a developer calls \code{next} on an iterator that he just obtained from a list of size one.
 Here, he knows that the iterator contains one element so he does not need to check for it with \code{hasNext}, nonetheless, it is useful to detect locations where \code{next} is invoked without a preceding \code{hasNext}.
-
-\todo[inline]{
-a bit more explanation?
-    proper example code for better understanding?
-    just use the easiest example? -> height and width pairs
-
-additional examples:
-only height() or width()
-setTitle not called -> not strictly necessary but ``makes sense''
-}
 
 \subsection{Automated Benchmark}
 
@@ -299,7 +252,6 @@ To retain a reasonable performance and execution time, we only apply this proced
 
 For the evaluation of RQ 4, we also support a different process of degradation.
 Instead of just removing one method call from one type usage, we randomly sample additional type usages from the same partition as the first one and remove one of their calls as well.
-\todo[inline]{seems a bit repetitive to the description above, maybe move most stuff here?}
 
 \section{Results \& Interpretation}
 % describe results + interpret them with respect to rqs
@@ -335,17 +287,12 @@ Nr & Name & Type Usages & Findings & B & S & H & FP \\
 In Table~\ref{fig:manual}, we summarize the results of manually reviewing the findings of the $\text{DMMC}$ variation.
 In the entire dataset, on average there are $2.64$ anomalous type usages per application, in our sample there are $1.7$ findings per application.
 Of the total 17 findings, 3 are true positives (bug or smell) meaning that $17.65\%$ of findings are true findings.
-If we also consider hints to be true findings, this number increases to $58.82\%$.
-\todo[inline]{
-    order of description makes sense like this or not really?
-    do i really want to consider hints as tps?
-}
 
 Most of the applications do not exhibit any anomalous type usages and those that do only have a few.
 There does not seem to be a relationship between the number of type usages and the number of findings per application.
-One of the application is responsible for the majority of findings and also for the majority of false positives.
+One of the applications is responsible for the majority of findings and also for the majority of false positives.
 However, it is also the only one in which a finding indicates a true bug.
-In fact, we reported this bug and the maintainer already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
+In fact, we reported this bug and the maintainer of the application already confirmed and fixed it\footnote{\url{https://github.com/raulhaag/MiMangaNu/issues/535}}.
 
 \begin{table}[t]
     \centering
@@ -368,21 +315,19 @@ App & Type Usages & Findings & B & S  & H    & FP & Type Usages & Findings & B &
 10& 9547   & 15 (9)  &  \cc   &  \cc  &  \cc    & 15 (9) & 3876 &  4 (3) & \cc &  \cc & \cc &   4 (3) \\
 \bottomrule
     \end{tabular}}
-    \caption{Comparing $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
+    \caption{Comparison of $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$. The numbers in brackets indicate findings on the project itself.}\label{fig:manual2}
 \end{table}
-\todo[inline]{ consider if there is some better way than the brackets? (tried the / but looks like a fraction\ldots) }
 
 In Table~\ref{fig:manual2}, we present the results of applying $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ to the same applications.
-When ignoring the context, the total number of findings grows to 130 of which only 2 are true positive ($1.54\%$), if we also consider the 32 hints to be true positives, the ratio goes up to $26.15\%$.
+When ignoring the context, the total number of findings grows to 130 of which only 2 are true positive ($1.54\%$).
 Since this are a lot of anomalies, we apply a filter to the results that removes any anomaly that does not originate from a class that belongs to the application itself.
 As a developer these are the most interesting anomalies, because they can be fixed immediately.
 Other anomalies that originate in libraries or other external code will be much harder to fix as they are usually maintained by different people.
 The number of findings that remain after applying this filter are displayed in brackets.
-It reduces the total number of findings to 49 of which 2 ($4.08\%$) or 19 ($38.78\%$) are true positives depending if we allow hints or not.
+The filter reduces the total number of findings to 49 of which 2 ($4.08\%$) are true positives.
 
 The class merge variation detects a total of 73 anomalies with 1 true positive among them ($1.37\%$).
-If we factor in the hints, $16.44\%$ of findings are true positives.
-By excluding the type usages that do not originate form the application itself, we reduce the total number of anomalies to 32 of which $28.12\%$ are true positives (including hints).
+By excluding the type usages that do not originate form the application itself, we reduce the total number of anomalies to 32 of which one is a true positive.
 And to clarify, the bug that all of the variations uncover is always the same.
 
 \paragraph{For RQ 2 and 3: Benchmark}
@@ -398,7 +343,7 @@ Because of this, we have also calculated the performance of our implementation f
 For these partitions, the superiority of $\text{DMMC}$ over the two other variations is even more clear.
 \todo[inline]{ here graph + description of dmmc behavior (all?) over different partition sizes -> make sure the text still fits!}
 
-\begin{table}[ht]
+\begin{table}[t]
     \centering
     \begin{tabular}[h]{l|c|c|c|c|c|c}
 \toprule
@@ -430,7 +375,7 @@ It is obvious that\ldots
     \begin{subfigure}[h]{0.49\textwidth}
         \centering
         \includegraphics[width=1.1\textwidth]{figures/graph_robustness}
-        \caption{Impact of degrading additional Type Usages}
+        \caption{Impact of degrading more Type Usages}
         \label{fig:robustness}
     \end{subfigure}
     \caption{Benchmark Results for RQ 2 and 3}
@@ -460,7 +405,7 @@ Nr & Type Usages & Findings & On Project & Findings & >1 Call & On Project \\
     \caption{Anomalies flagged by $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$}\label{fig:other}
 \end{table}
 
-The results of applying the two variations $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ to the randomly selected applications are depicted in Table \ref{fig:other}.
+The results of applying the two variations $\text{DMMC}_\text{wrong}$ and $\text{DMMC}_\text{superfluous}$ to the randomly selected applications are depicted in Table \ref{fig:other}.
 Both methods detect a lot of anomalies.
 During the manual review we did not find a single true positive among them or even a smell or hint, that is, all of these anomalies are false positives.
 We again filtered the findings to only include those type usages that originate from the application and not from libraries, however this only reduces the number of findings a little bit.
@@ -484,24 +429,23 @@ The results of the manual review show that some of the anomalous type usages ind
 The number of anomalies per app is relatively small, such that a developer could easily evaluate them himself.
 While the manual review was time-consuming, this is partially because we do not know the applications, a developer that is familiar with it would be much faster.
 Because of the small sample size, we consider the actual percentages of true positives to be of little import.
-\todo[inline]{somehwere here say something about general applicability of this method or only in conclusion?
-do i want to explain the one true bug in some more detail or is it fine without?}
 
 % mention side study of top 50 anomalies!
 Besides manually reviewing the anomalies in 10 random applications, we also performed a side study on the top 50 anomalies of all applications.
 Over its course we did not uncover any additional bugs, but instead a lot of false positives.
 Most of these false positives arise out of a small number of failure modes such as:
 \begin{itemize}
-    \item suggesting a missing call to \code{<init>} (basically never valid, usually the object is a parameter or created by a static function)
+    \item suggesting a missing call to \code{<init>} (basically never valid, usually the object is a parameter of the method or created by a static function)
     \item not following static functions (in which the suggested missing method is called)
     \item detecting not existing patterns with \code{StringBuilder}
     \item problems with method chaining (does not consider the returned object to be the same as before)
 \end{itemize}
-Some of these could be fixed rather easily, e.g., we could filter all type usages related to \code{StringBuilder} or anomalies that suggest that a call to \code{<init>} is missing.
-Such filters would reduce the number of false positives, but they are also slightly antithetical to the initial idea of avoiding hand crafted rules.
+Some of these could be fixed rather easily, e.g., we could filter all type usages related to \code{StringBuilder} or anomalies that suggest a call to \code{<init>} is missing.
+Such filters would reduce the number of false positives, but they are also antithetical to the initial idea of avoiding hand crafted rules.
 Other problems are more difficult to remedy.
 Correctly detecting method chaining seems hard or will at least have some trade-offs.
 It seems possible to consider static function evaluations, but we expect it to be expensive in terms of performance.
+\todo{somewhere give a GENERAL aussage like: its good or not so much!}
 
 % no context / class merge
 As for RQ 1.1, regarding the comparison between the different variations, it seems clear that the variants $\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$ are inferior to the normal $\text{DMMC}$ system.
@@ -509,27 +453,17 @@ Not only do they flag more anomalies, the anomalies that they discover are also 
 They find a lot of anomalies in libraries and external code, but even after filtering these out, $\text{DMMC}$ is still better.
 \todo{fyi the filter only removes 2 FP anomalies form the normal variation}
 
-\todo[inline]{ even mention this? I think not right now\ldots
-
-failure modes: wihtout context: anomalies when clases call functions in itself
-many repetitions of identical findings
-Kotlin thingy (even mention SC thing?)
--> not many kotlin apps -> easy to be an outlier for some stuff (init for example), etc
-failure mode: kotlin -> outlier generally
-}
-
 \paragraph{For RQ 2: Benchmark Results}
 
 For this question, we compare the results of the benchmark with those of the manual evaluation.
-In the manual review $\text{DMMC}$ is the superior method by far.
+In the manual review, $\text{DMMC}$ is the superior method by far.
 From the benchmark results this is not as clear, it has the best precision but the recall is worse than that of $\text{DMMC}_\text{noContext}$.
 If we consider the benchmark results for partitions that have at least 10 type usages, $\text{DMMC}$ becomes the sole leader.
 This is due to the fact that $\text{DMMC}_\text{noContext}$ does not have many partitions that are smaller than 10 and, as we will explain in the next paragraph, 10 is the crucial minimal size for this method to detect anything.
 Thus, it seems fair to conclude that the results of the manual evaluation align with the benchmark results.
 This is not enough to conclude that the benchmark itself is a good or realistic measure for the performance of different missing method call detectors.
-\todo{-> critical assumption not further looked at (they are the same as real mmc bugs)}
 However, at least our results at least do not indicate the opposite: that the benchmark is a bad measure of their performance.
-\todo[inline]{not super happy with the end\ldots}
+\todo{ not super happy with the end\ldots}
 
 \paragraph{For RQ 3: Input Size}
 
@@ -538,7 +472,7 @@ Especially for partitions smaller than 10, the recall is terrible.
 To explain this, consider the strangeness score of a true bug $b$.
 If there are no instances equal to $b$, then $|E(b)|=1$ and $\operatorname{S-score}(b)=1-\frac{1}{1+|A(b)|}$.
 We consider type usages with a strangeness score of more than $0.9$ to be anomalies, so $b$ can only be flagged as anomalous as soon as there are at least $9$ instances that are almost similar to it.
-It follows that there must be at least 10 type usages within the same partition to have even a theoretical chance of detecting any outliers.
+It follows that there must be at least 10 type usages within the same partition to have even a theoretical chance of detecting any outliers among them.
 
 Now consider that the $\text{DMMC}$ variant that takes the context into account has shown the best performance and the distribution of partitions presented in Figure \ref{fig:tus_partition}.
 Even in our large dataset of 625 applications, most partitions are still rather small.
@@ -560,7 +494,7 @@ Since we are not confident in the applicability of the benchmark, we also make a
 In the previous paragraph, we already considered the true bug $b$ with no equal instances.
 We need at least 9 almost similar instances to detect it.
 Now, consider another true bug $b'$ that has one exactly similar neighbor, that is $|E(b')|=2$ and thus $\operatorname{S-score}(b')=1-\frac{2}{2+|A(b)|}$.
-In other words, we can only detect these anomalous type usages if there are at least 18 instances that are almost equal to them, double as many as before.
+This means, we can only detect these anomalous type usages if there are at least 18 instances that are almost equal to them, double as many as before.
 
 %  verweis auf partitions sizes
 The more errors there are in our dataset, the more data we need to detect them.
@@ -573,8 +507,7 @@ Al in all, we tentatively conclude that the majority rule is relatively sensible
 
 Our implementations of $\text{DMMC}_\text{superfluous}$ and $\text{DMMC}_\text{wrong}$ both detect a relatively high number of findings without any actual success.
 More damningly, upon manual review of the findings it becomes clear that the patterns which they extract do not make any sense.
-None of the suggested changes, be it removing a method call or exchanging one, did have any causal justification and it seems clear that they are only artefacts of randomness in the data.
-\todo{example?, bit better description\ldots}
+None of the suggested changes, be it removing a method call or exchanging one, does have any causal justification and it seems clear that they are only artefacts of randomness in the data.
 All in all, we do not consider our naive application of the majority rule useful for detecting superfluous or wrong method calls.
 
 \section{Threats to Validity}
@@ -588,7 +521,7 @@ Unfortunately, we do not have the resources to let multiple developers review th
 To prevent judging the results too harshly, we introduce the hint category which contains many findings that are not bugs or even smells, but rather subtle pointers for something that could cause problems.
 If we acknowledge them as true positives, we get a favorable picture of the capabilities of our implementation.
 On the other hand, we can also exclude the hints and thus, obtain a lower bound.
-The truth probably lies somewhere between them.
+The truth probably lies somewhere between the two.
 
 The only parameter that our implementation uses is the strangeness value above that a type usages is considered an anomaly.
 We could set it lower to improve the recall or higher in an attempt to improve the precision.
@@ -606,11 +539,8 @@ Regarding the external threats, we have to review our study objects.
 We use a large dataset and choose the applications for manual review at random, to avoid getting results that rely on outliers.
 To hedge against underrating our implementation, we performed a side study on the top 50 anomalies among all applications.
 However, of course all study objects are Android applications and open source.
-We think that the Android framework should be a favorable for this method because of its focus on user interface, but it is feasible that this method works much better on another OOP language or simply another Java framework.
+We think that the Android framework should be a favorable for this method because of its focus on the user interface, but it is feasible that this method works much better on another OOP language or simply another Java framework.
 Finally, it is not clear if open source applications are comparable to commercial software in terms of size or quality.
 
-\todo[inline]{
-schönere aufbauen iwie? vllt mit ende starten -> we dont know this, but at least we are selecting at random and there is a wide variety of software in Fdroid oä
-
-open source: potentially quality lower etc, but that should make it EASier to find bugs\ldots}
+\todo[inline]{not yet perfect but not sure how to change it\ldots (letzter absatz)}
 

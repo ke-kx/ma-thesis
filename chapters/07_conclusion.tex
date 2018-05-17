@@ -11,11 +11,12 @@ Furthermore, we propose several variations to their method with the goal of bett
 To get an all-round impression of the results that their method produces and how our variations behave in comparison, we evaluate them on a large dataset of Android applications. 
 
 % MMCS
-As for detecting missing method calls, the results of benchmark and manual review agree that the original version proposed by Monperrus et al.\ is better than the variations that we proposed.
+As for detecting missing method calls, the results of benchmark and manual review agree that the original version proposed by Monperrus et al.\ is better than the variations that we suggest.
 Neither ignoring the context, nor merging the type usages on class basis improve the results.
-Our implementation found one true bug in the random applications that we reviewed, but most of the anomalies were in fact false positives.
-Apart from the mediocre quality of results, our results also hint at the method being quite sensible to erroneous input data.
-Additionally, it seems difficult to gather enough data even when applying the system to a large software ecosystem like Android.
+Our implementation finds one true bug in the random applications that we reviewed, but most of the anomalies were in fact false positives.
+Apart from the mediocre quality of the suggested findings, our results also hint at the method being quite sensible to erroneous input data.
+Additionally, it seems difficult to gather enough data for the system even when applying the system to a large software ecosystem like Android.
+\todo{improve this sentence!}
 
 All in all, we conclude that the majority rule can detect missing method calls under the right circumstances.
 However, the necessary prerequisites are not easy to achieve and the false positive rate is high.
@@ -26,7 +27,7 @@ Our implementation finds a lot of anomalies and the manual review shows all of t
 \section{Future Work}
 
 % general intro
-In principle there are two dimensions along which we envision future research.
+There are two dimensions along which we envision future research.
 The first dimension concerns itself with improving the detection of missing method calls in some way.
 The second dimension is about applying the majority rule to other types of anomalies.
 
@@ -38,14 +39,14 @@ Another way to improve the precision could be to use a completely different anom
 We did actually invest quite some time into research in this direction but the preliminary results were disappointing, presumably because the type usage abstraction does not contain a lot of data from which to learn from.
 However, we still see potential there, especially when also considering additional features, for example, the interfaces a class implements or the methods it overrides.
 
-We questioned how valid it is to partition the type usages by the context they appear in and suggested two other options for it ($\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$).
-While our evaluation showed that grouping them by context produces the best results, there might be even better ways of organizing them.
-We would be especially interested to see if the results can be improved by considering the inheritance hierarchy of the classes that the type usages appear in.
+We question how valid it is to partition the type usages by the context they appear in and suggest two other options for it ($\text{DMMC}_\text{noContext}$ and $\text{DMMC}_\text{class}$).
+While our evaluation shows that grouping them by context produces the best results, there might be even better ways of organizing them.
+We would be especially interested to see if the results can be improved by factoring in the inheritance hierarchy of the classes that the type usages appear in.
 
 Since the majority rule is essentially looking for deviations from the norm, having more data on what the norm is, could certainly improve the finding quality.
 We already consider a sizeable dataset in our evaluation, however the ecosystem of existing Android applications is by far larger than that.
 On could envision analyzing a large portion of the Google playstore and extracting all of the type usages to obtain more accurate results.
-We do not expect the performance to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize the implementation by using a dedicated database server and Cython (or any regular compiled language) for the analysis phase.
+We do not expect the performance of our implementation to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize it by using a dedicated database server and Cython or any compiled language for the analysis phase.
 
 % apply to different anomalies
 Besides these measures to improve the detection of missing method calls, one could also envision using the majority rules to detect other types of anomalies.
