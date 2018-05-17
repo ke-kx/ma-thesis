@@ -2,7 +2,7 @@
 
 % summary of what i did (maybe look at intro as well?)
 In this thesis, we investigate a method for detecting missing method calls that was proposed by Monperrus et al.
-Detecting missing method calls would be useful over the entirety of a software's lifetime, be it when developing a new program or when maintaining old and mature software.
+Detecting missing method calls would be useful over the entire lifetime of a software, be it when developing a new program or when maintaining old and mature software.
 The method we implement does not require any input besides the source code itself as it extracts patterns from the data it receives.
 This makes it superior to other bug detection systems, because it is not necessary to keep any hand-crafted detection rules up to date.
 
@@ -45,7 +45,7 @@ We would be especially interested to see if the results can be improved by facto
 
 Since the majority rule is essentially looking for deviations from the norm, having more data on what the norm is, could certainly improve the finding quality.
 We already consider a sizeable dataset in our evaluation, however the ecosystem of existing Android applications is by far larger than that.
-On could envision analyzing a large portion of the Google playstore and extracting all of the type usages to obtain more accurate results.
+One could envision analyzing a large portion of the Google playstore and extracting all of the type usages to obtain more accurate results.
 We do not expect the performance of our implementation to be a problem any time soon, however, as soon as any problems in that area emerge, it would be easy to optimize it by using a dedicated database server and Cython or any compiled language for the analysis phase.
 
 % apply to different anomalies
