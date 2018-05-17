@@ -210,7 +210,6 @@ Given a codebase with $n$ type usages, the sets $E(x)$ and $A(x)$ for one given 
 
 Recall the assumption behind the majority rule: A type usage is abnormal if a small number of type usages is exactly similar, but a significant number are almost similar.
 Informally, this means a few places use this type in exactly the same way, but a significant majority use it in a way which is slightly different (by one method call).
-\todo{places cannot use something\ldots}
 Assuming the majority is correct, the type usage under scrutiny is deviant and potentially erroneous, because it is missing a method call.
 
 To capture concretely how anomalous an object is, we need a measure of strangeness.
@@ -297,7 +296,6 @@ The idea that types are used in different ways seems reasonable, but is the name
 Furthermore, using the context might work well for some types and some systems, but does it make sense everywhere?
 One problem with using the context is that it drastically reduces the number of type usages which are even considered for (almost) similarity.
 In smaller datasets, this makes it much more likely that patterns appear, which in truth are only artifacts of randomness.
-\todo{what kind of patterns?}
 
 All in all, it is not clear that using the context necessarily improves the performance of the system.
 Thus, next to the standard variant $\text{DMMC}$ (Detecting Missing Method Calls) that we outlined in the previous sections, we also define a variant called $\text{DMMC}_{\text{noContext}}$, which does not take the context into account.

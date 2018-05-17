@@ -91,16 +91,15 @@ This is an excellent example of a case where hard-coded rules fail because they 
 As the results of the previous paper showed, it can be difficult and costly to keep hard-coded detection rules up to date and relevant.
 Because of this, there has been interest in approaches which adapt automatically to changing requirements by learning rules from the source code and looking for violations of those rules.
 
-Engler et al.~\cite{engler2001bugs} were probably the first to propose the general idea of learning from the code at hand instead of using predefined static rules.
-\todo{is that true? or just the ``general idea behind dmmc''? + kinda sort sentences below better\ldots}
+Engler et al.~\cite{engler2001bugs} were probably the first to propose the general idea behind the majority rule.
 In their paper they rely on contradiction and common behavior to ``find what is incorrect without knowing what is correct''.
 To do this, they use static analysis to infer what a programmer believes about the system state and then check these beliefs for contradictions.
 They provide several ``templates'' for beliefs the programmer must or may hold.
 Each template is catered for a specific type of belief and can concern wide range of things (a pointer being null or not being null, a lock being locked or unlocked, etc).
 Among the beliefs they extract in this manner they look for common behavior or outright contradictions and use this to flag potential anomalies.
 In their evaluation on Linux and OpenBSD they find hundreds of bugs related to the different bug types that their templates can discover.
-\todo{difference from what I'm doing? -> check monperrus}
-\todo[inline]{Siggy:I don't really understand this. Especially how the contradictions look like and how they can be found.}
+Their approach is more general, whereas we are focused on detecting one specific error type.
+Conversely, our approach is more automated and does not need templates.
 
 Pradel et al.~\cite{pradel2011detecting} noticed that in statically typed languages the compiler helps the programmer with passing method arguments in the correct order.
 However, the compiler cannot ensure the correct order of equally typed arguments (such as \code{setEndPoints(int low, int high)}).
@@ -135,25 +134,9 @@ Using the heuristics extracted from these packages, they also apply the prototyp
 Overall it is worrying (if not surprising), that there are so many inconsistencies in the JDK documentation, which even has a reputation for being of rather high quality.
 Less well-known APIs will probably have inferior documentation and thus, even further increase the risk of API usage related bugs.
 
-\todo[inline]{
-Mention MUBench?! \cite{amann2016mubench}
-    -> useful classification of api misuses
-    Dataset of bugs related to API misuses
-
-not necessary only learning from the code at hand: \cite{hanam2016discovering}
-    unsupervised machine learning over bug FIXES?!
-
-stuff related to ``usage diversity'' of classes \cite{mendez2013empirical}, again monperrus involved though\ldots
-
-uses n-grams so intersting cause different approach? \cite{wang2016bugram}
-    + check related work section for some stuff that could be important!
-}
-
-\todo[inline]{
-General: read the summary paper \cite{robillard2013automated} again and check which approaches are there and which could / should be mentioned
-+ for more information: check this summary paper / the 2017 one? / both?
-also mention overview paper \cite{amann2017systematic}
-}
+Wang et al.~\cite{wang2016bugram} propose a method that leverages n-gram language models to detect bugs.
+Other approaches do not learn from the code at all, for example Hanam et al.~\cite{hanam2016discovering} use unsupervised machine learning over bug fixes to extract bug patterns.
+For more research in the direction of learning API properties, we recommend the survey paper by Robillard et al.~\cite{robillard2013automated}.
 
 \section{Detecting Method Call Anomalies}
 
@@ -174,7 +157,6 @@ The first is based on a simulation which creates defects by degrading real softw
 It removes singular method calls from the code and check if the majority rule can detect these known missing calls.
 They perform this simulation on several software packages, among them the Eclipse user interface, Apache Derby\footnote{\url{https://db.apache.org/derby/}} and Apache Tomcat\footnote{\url{https://tomcat.apache.org/}}.
 Their system can answer between 54\% and 76\% of the simulated queries (depending on the package) and of the queries it can answer 73\% to 89\% actually contain the missing call, albeit not necessarily as the first recommendation.
-\todo{queries is not good to understand\ldots}
 All in all, it reaches precision between 59\% and 83\% and recall of 41\% to 68\%.
 However, it is questionable how relevant these numbers are, because it is not clear in how far real bugs will share characteristics with these artificially created cases.
 
